@@ -1,8 +1,30 @@
-# Sample GitLab Project
-
-This sample project shows how a project in GitLab looks for demonstration purposes. It contains issues, merge requests and Markdown files in many branches,
-named and filled with lorem ipsum.
-
-You can look around to get an idea how to structure your project and, when done, you can safely delete this project.
-
-[Learn more about creating GitLab projects.](https://docs.gitlab.com/ee/gitlab-basics/create-project.html)
+#### Quia
+Eaque impedit rerum.
+### Dignissimos# Velit
+Sapiente consequuntur neque.
+* Dicta. 
+* Quia. 
+* Quis. 
+* Eos. 
+* Ratione. 
+* Rerum. 
+* Laborum. 
+* Sint. 
+* Omnis. 
+### Expedita
+Nihil ut omnis.
+###### Veritatis##### Sunt
+Porro dignissimos quam.
+```ruby
+Eligendi.
+```#### Laboriosam
+Et et voluptatem.
+* Nesciunt. 
+* Praesentium. 
+* Doloribus. 
+* Qui. 
+* Culpa. 
+* Optio. 
+* Ratione. 
+* Asperiores. 
+* Qui. 
