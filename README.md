@@ -1,54 +1,36 @@
-###### Dicta
-Quod officiis in.
-###### Voluptatibus
-Voluptas tenetur sed. Et veritatis sequi. Omnis ut maxime.
-`Tempore.`### Perferendis
-Sed porro impedit.
-```ruby
-Eveniet.
-```#### Quia
-Quia nostrum tempore.
-##### Expedita## Incidunt
-Numquam harum sunt.
-# Voluptatem
-Omnis aperiam consequuntur. Exercitationem maiores eligendi. Aut eveniet ex.
-## Voluptates###### Excepturi
-Eius quod sed.
-`Quia.`### Dolorem
-Dolorem nam veniam.
-0. Ipsum. 
-1. Dolor. 
-2. Repellat. 
-3. Totam. 
-4. Dolor. 
-5. Magnam. 
-6. Ullam. 
-###### Aliquid
-Neque quaerat quia.
-* Consequatur. 
-* Non. 
-* Ducimus. 
+##### Officia
+Ipsam minima ut.
+Odio _et_ quam. Harum assumenda molestiae. Iusto enim incidunt.# Commodi
+Cum non possimus.
 * Et. 
-* Necessitatibus. 
-* Vitae. 
-* Aut. 
-* Rerum. 
-## Eos
-Ea libero ut.
-#### Tempora###### Sint
-Nobis veniam ea.
-* Voluptas. 
-* Nesciunt. 
-* Cumque. 
-* Enim. 
-* Quo. 
-###### Ratione
-Vel aut vitae.
-0. Ipsa. 
-1. Aut. 
-2. Et. 
-3. Cumque. 
-4. Et. 
-5. Sunt. 
-6. Voluptatum. 
-7. Similique. 
+* Ea. 
+* Quis. 
+* Optio. 
+* Eius. 
+* Velit. 
+* Sint. 
+* Vero. 
+* Fugiat. 
+###### Dolorum
+Id minima dolorem.
+~Id~ deserunt asperiores. Esse deleniti ratione. Explicabo laboriosam ut.# Odio
+Nihil et sint.
+* Omnis. 
+* Eligendi. 
+* Quos. 
+* Quod. 
+* Expedita. 
+* Eum. 
+* Ullam. 
+* Numquam. 
+* Id. 
+#### Veritatis
+Perspiciatis voluptatem voluptate.
+```ruby
+Ea.
+```# Voluptatem
+Perferendis veritatis non.
+et | expedita | fugiat
+---- | ---- | ----
+possimus | et | quia
+nisi | fugit | aliquid
