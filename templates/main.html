@@ -1,0 +1,38 @@
+{% load static tags i18n %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="robots" content="noindex">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        <title>{% block title %}{% site_name %}{% endblock %}</title>
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="shortcut icon" type="image/x-icon" href="{% static '' %}images/{% images_name %}/favicon.ico" />
+
+        <link rel="stylesheet" href="{% static 'css/fontello-embedded.css' %}" type="text/css" media="all">
+        <link rel="stylesheet" href="{% static 'css/css.css' %}" type="text/css" media="all">
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}" type="text/css" media="all">
+        <link rel="stylesheet" href="{% static 'css/style2.css' %}" type="text/css" media="all">
+        <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css" media="all">
+        <link rel="stylesheet" href="{% static 'css/color.css' %}" type="text/css" media="all">
+        
+
+        {% block custom_css %}
+        {% endblock %}
+    </head>
+    <body class="" style="">
+
+        <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+
+        <footer class="main-footer">
+            <div class="pull-right hidden-xs">
+                {% include 'version.html' %}
+            </div>
+            <strong>Copyright © 2014-{% now 'Y' %}
+        </footer>
+        {% endif %}
+
+    </body>
+</html>

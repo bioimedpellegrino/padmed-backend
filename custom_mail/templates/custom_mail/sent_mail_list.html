@@ -1,0 +1,120 @@
+{% extends BASE_TEMPLATE %}
+
+{% load i18n %}
+
+{% block content %}
+<div class="row table-container" style="overflow: auto;">
+
+
+
+        <div class="col-xs-6">
+            <a class="btn btn-success" id='reminder_mail' href="{% url 'mail_reminder' from_who=from_who %}">{% trans 'Reminder Email' %}</a>
+                {% if back_source %}
+            <a class="btn btn-warning pull-right" href="{{ back_source }}">{% trans 'Back' %}</a>
+            {% endif %}
+        </div>
+
+
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+
+            <div class="panel-body PanelTableContainer">
+                <h3>All Mails</h3>
+                <div class="dataTable_wrapper">
+                    <table class="table table-bordered table-hover" id="dataTables-kpitypelist">
+                        <tfoot>
+                            <tr>
+                                <th class="visually-hidden"></th>
+                                <th style="text-align: center;"></th>
+                                <th class="text-align: center;"></th>
+                                <th class="text-align: center;"></th>
+                                <th style="text-align: center;"></th>
+                                <th class="visually-hidden"></th>
+                                <th class="text-align: center;"></th>
+                                <th class="visually-hidden"></th>
+                            </tr>
+                        </tfoot>
+                        <thead>
+                            <tr>
+                                <th style="text-align: center;">Id</th>
+                                <th style="text-align: center;">{% trans 'Sending Time' %}</th>
+                                <th style="text-align: center;">{% trans 'From' %}</th>
+                                <th style="text-align: center;">{% trans 'To' %}</th>
+                                <th style="text-align: center;">{% trans 'Subject' %}</th>
+                                <th style="text-align: center;">{% trans 'Text' %}</th>
+                                <th style="text-align: center;">{% trans 'Sent' %}</th>
+                                <th style="text-align: center;">{% trans 'Html' %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for mi in mails %}
+                            <tr>
+                                <td style="text-align: right;"><a href="{% url 'sent_mail' from_who=from_who id=mi.pk %}">{{ mi.pk }}</a></td>
+                                <td style="text-align: center" data-sort='{{ mi.end_date|date:"YmdHMS"  }}'>{{ mi.end_date }}</td>
+                                <td style="text-align: center;">{{ mi.from_who }}</td>
+                                <td style="text-align: left;">{{ mi.to_who|truncatechars:80}}</td>
+                                <td style="text-align: center;">{{ mi.subject }}</td>
+                                <td style="text-align: left;">{{ mi.txt_text|truncatechars:100}}</td>
+                                <td style="text-align: center;">{{ mi.sent }}</td>
+                                <td style="text-align: center;">
+                                    <a class="btn btn-warning pull-right" target="_blank" href="{% url 'render_mail'  uuid=mi.uuid %}">{% trans 'Html' %}</a>
+                                </td>
+                                
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block custom_javascript %}
+<script>
+    $(document).ready(function() {
+
+        $('#dataTables-kpitypelist').DataTable({
+            "paging":   true,
+            "pageLength" : 25,
+            "searching": true,
+            "info": true,
+            "order": [[ 1, "desc" ]],
+
+            // "responsive": true,
+            "language": {
+                "search": "",
+                "searchPlaceholder": "{% trans 'Search' %}"
+            },
+
+            initComplete: function () {
+                this.api().columns().every( function () {
+                    var column = this;
+                    var select = $('<select class="form-control input-sm"><option value=""></option></select>')
+                        .appendTo( $(column.footer()).empty() )
+                        .on( 'change', function () {
+                            var val = $.fn.dataTable.util.escapeRegex(
+                                $(this).val()
+                            );
+
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append( '<option value="'+d+'">'+d+'</option>' )
+                } );
+
+                } );
+            }
+
+        });
+    });
+</script>
+{% endblock %}

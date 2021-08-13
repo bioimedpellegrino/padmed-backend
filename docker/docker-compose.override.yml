@@ -1,0 +1,37 @@
+version: '3.7'
+
+services:
+  db:
+    ports:
+      - "5432:5432"
+    volumes:
+      - django-psql-development-vol:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=django
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=django
+  web:
+    expose:
+      - "8000"
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+      target: release
+    environment:
+      - DEBUG=${DEBUG:-False}
+      - DJANGO_DB_HOST=db
+      - DJANGO_MANAGEPY_COLLECTSTATIC=${DJANGO_MANAGEPY_COLLECTSTATIC:-on}
+      - DJANGO_MANAGEPY_MIGRATE=${DJANGO_MANAGEPY_MIGRATE:-on}
+    volumes:
+      - django-media-development-vol:/sources/media
+      - django-static-development-vol:/sources/collected_static
+  nginx:
+    ports:
+      - '80:80'
+    volumes:
+    - django-media-development-vol:/opt/services/djangoapp/media:ro
+    - django-static-development-vol:/opt/services/djangoapp/static:ro
+volumes:
+  django-psql-development-vol:
+  django-media-development-vol:
+  django-static-development-vol:

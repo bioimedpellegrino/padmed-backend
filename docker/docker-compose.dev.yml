@@ -1,0 +1,42 @@
+version: '3.7'
+
+services:
+  db:
+    ports:
+      - 5432:5432
+    image: postgres:9.6
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-project}
+    expose:
+      - "5432"
+    volumes:
+      - project-psql-development-external-vol:/var/lib/postgresql/data
+  web:
+    ports:
+     - "8000:8000"
+    image: ${DOCKER_REGISTRY}project-dev-image:${BUILD_NUMBER:-local}
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile-dev
+    environment:
+      - DEBUG=True
+      - DJANGO_DB_HOST=db
+      - DJANGO_MANAGEPY_COLLECTSTATIC=off
+      - DJANGO_MANAGEPY_MIGRATE=on
+      - CLEAN_VENV=${CLEAN_VENV:-off}
+      - SAML_AUTH_ENABLED=${SAML_AUTH_ENABLED:-False}
+    depends_on:
+      - db
+    volumes:
+     - ../:/sources
+     - project-media-development-vol:/sources/media
+     - project-static-development-vol:/sources/collected_static
+volumes:
+  project-psql-development-external-vol:
+     external:
+        name: ${EXTERNAL_VOLUME_NAME:-project-psql-development-external-vol}
+  project-psql-development-vol:
+  project-media-development-vol:
+  project-static-development-vol:

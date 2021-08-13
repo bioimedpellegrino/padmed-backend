@@ -1,0 +1,48 @@
+{% extends BASE_TEMPLATE %}
+{% load cms_tags i18n %}
+
+{% block content %}
+{{ form.media }}
+
+{{ form.non_field_errors }}
+{{ form.errors }}
+
+
+
+<div class="row table-container">
+<div class="col-xs-12">
+        <div class="row">
+            <div class="panel-body PanelTableContainer">
+            <h3>{{mail.error_type}}</h3>
+            <div class="dataTable_wrapper table-responsive">
+                <table class="table table-striped table-bordered table-hover" id="dataTables-graphshareList">
+                <tbody>
+                    <tr><td>Sent</td><td>{{mail.sent}}</td></tr>
+                    <tr><td>From Who</td><td>{{mail.from_who}}</td></tr>
+                    <tr><td>To</td><td>{{mail.to_who}}</td></tr>
+                    <tr><td>Cc</td><td>{{mail.cc_who}}</td></tr>
+                    <tr><td>Bcc</td><td>{{mail.bcc_who}}</td></tr>
+                    <tr><td>Subject</td><td>{{mail.subject}}</td></tr>
+                    <tr><td>JSON</td><td>{{mail.json_message}}</td></tr>
+                    <tr><td>Template</td><td>{{mail.template_name}}</td></tr>
+                    <tr><td>Attachments</td><td>{{mail.attachments}}</td></tr>
+                    <tr><td>Uuid</td><td>{{mail.uuid}}</td></tr>
+                    <tr><td>Text</td><td>{{mail.txt_text}}</td></tr>
+                    <tr><td>Html</td><td>{{mail.html_text}}</td></tr>
+                </tbody>
+                </table>
+            </div>
+
+
+
+   
+
+        </div>
+    </div>
+</div>
+</div>
+
+
+{% endblock %}
+
+

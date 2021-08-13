@@ -1,0 +1,40 @@
+FROM python:3.7-slim-buster
+
+RUN apt-get -y update
+RUN apt-get install -yqq --no-install-recommends wget gpg gpg-agent postgresql-common libpq-dev
+RUN apt-get install --no-install-recommends apt-transport-https
+# install google chrome
+RUN apt-get update && apt-get install --no-install-recommends -y make gcc libldap2-dev libssl-dev libsasl2-dev libxmlsec1-dev libxmlsec1-openssl
+#RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+#RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+RUN apt-get -y update
+#RUN apt-get install --no-install-recommends -y google-chrome-stable
+
+# install chromedriver
+#RUN apt-get install -yqq unzip
+#RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`wget -q chromedriver.storage.googleapis.com/LATEST_RELEASE -O -`/chromedriver_linux64.zip
+#RUN unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
+
+# mssql drivers
+#RUN wget -q https://packages.microsoft.com/keys/microsoft.asc -O - | apt-key add -
+#RUN wget -q https://packages.microsoft.com/config/debian/9/prod.list -O - > /etc/apt/sources.list.d/mssql-release.list
+#RUN exit
+#RUN apt-get -y update
+#RUN ACCEPT_EULA=Y apt-get install -y --no-install-recommends msodbcsql17 libffi-dev python-numpy unoconv unixodbc unixodbc-dev xvfb
+
+# install xvfb
+ENV DISPLAY=:99
+ENV DBUS_SESSION_BUS_ADDRESS=/dev/null
+# set display port and dbus env to avoid hangin
+
+RUN rm -fr /var/lib/apt/lists/*
+RUN pip install virtualenv
+RUN pip install --upgrade pip
+
+EXPOSE 8000
+RUN addgroup --gid 65000 devgroup
+RUN adduser --disabled-password --gecos "" --force-badname --ingroup devgroup devuser
+USER devuser
+ENTRYPOINT ["/sources/docker-entrypoint.sh"]
+WORKDIR /sources
+CMD ./run-make.sh run

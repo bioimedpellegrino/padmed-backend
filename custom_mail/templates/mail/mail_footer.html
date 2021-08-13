@@ -1,0 +1,54 @@
+{% load settingsdata i18n static cms_tags %}
+
+    <tr>
+        <td class="footer" bgcolor="{{base_color}}" style="padding-top:20px;padding-bottom:15px;padding-right:30px;padding-left:30px;" >
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+            <td align="center" class="footercopy" style="font-size:14px;color:#ffffff;" >
+                &copy;<br/>
+                <span class="hide"><a style="font-size:14px;color:#ffffff;" href="mailto:info@prodigysgroup.it">info@prodigysgroup.it</a></span>
+            </td>
+            </tr>
+            {% if uuid %}
+            <tr>
+                <td align="center" class="footercopy" style="font-size:14px;color:#ffffff;" >
+                    <a href="{{url}}/mail/render/{{uuid}}/">{% trans "Can't see images? Try the web version of this email." %}</a>
+                </td>
+            </tr>
+            {% endif %}
+            <tr>
+            <td align="center" style="padding-top:20px;padding-bottom:0;padding-right:0;padding-left:0;" >
+                <table border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td width="37" style="text-align:center;padding-top:0;padding-bottom:0;padding-right:10px;padding-left:10px;" >
+                    </td>
+                    <td width="37" style="text-align:center;padding-top:0;padding-bottom:0;padding-right:10px;padding-left:10px;" >
+                    </td>
+                </tr>
+                </table>
+            </td>
+            </tr>
+
+            {% if unsubscribe %}
+            <tr>
+                <td align="center" class="footercopy" style="font-size:14px;color:#ffffff;" >
+                    Non vuoi più ricevere queste email? <a href="{{unsubscribe}}">Disiscriviti</a>
+                </td>
+            </tr>
+            {% endif %}
+
+        </table>
+        </td>
+    </tr>
+    </table>
+    <!--[if (gte mso 9)|(IE)]>
+        </td>
+        </tr>
+    </table>
+    <![endif]-->
+    </td>
+</tr>
+</table>
+
+</body>
+</html>

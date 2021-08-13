@@ -1,0 +1,7 @@
+{% load settingsdata i18n static cms_tags %}
+
+Dear {{username}},
+you can now access to {{ site_url }}. The credentials are:
+username: {{ username }}
+
+password:{{ password }}

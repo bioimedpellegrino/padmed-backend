@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+  db:
+    expose:
+      - "5432"
+    volumes:
+      - django-psql-production-vol:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${DJANGO_DB_NAME}
+      - POSTGRES_PASSWORD=${DJANGO_DB_PASSWORD}
+      - POSTGRES_DB=django
+  web:
+    expose:
+      - "8000"
+    volumes:
+      - django-media-production-vol:/sources/media
+      - django-static-production-vol:/sources/collected_static
+    environment:
+      - DEBUG=False
+      - DJANGO_DB_HOST=db
+      - DJANGO_MANAGEPY_COLLECTSTATIC=on
+      - DJANGO_MANAGEPY_MIGRATE=on
+      - DJANGO_CSRF_COOKIE_SECURE=True
+      - DJANGO_SESSION_COOKIE_SECURE=True
+  nginx:
+    expose:
+     - "80"
+    volumes:
+     - django-media-production-vol:/opt/services/djangoapp/media:ro
+     - django-static-production-vol:/opt/services/djangoapp/static:ro
+   
+volumes:
+  django-psql-production-vol:
+  django-media-production-vol:
+  django-static-production-vol:
+networks:
+  traefik:
+   external: true
+

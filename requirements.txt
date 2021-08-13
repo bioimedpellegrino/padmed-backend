@@ -1,0 +1,14 @@
+Django==3.1
+wheel
+psycopg2-binary==2.8.3
+envparse==0.2.0
+uWSGI==2.0.18
+python-dotenv==0.9.1
+jsonfield==3.1.0
+python-dateutil
+django-ipware
+django-debug-panel
+django-debug-toolbar
+django-silk
+django-cors-headers
+drf-yasg==1.17.1

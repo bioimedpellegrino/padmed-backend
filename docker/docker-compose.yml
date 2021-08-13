@@ -1,0 +1,59 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres:9.6
+    networks:
+      - backend
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=django
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=django
+    env_file:
+      - ${ENV_FILE:-.empty.env}
+  web:
+    image: ${DOCKER_REGISTRY}project:${BUILD_NUMBER:-local}
+    environment:
+      - DJANGO_DB_HOST=db
+      - DEBUG=${DEBUG:-False}
+      - DJANGO_MANAGEPY_COLLECTSTATIC=on
+      - DJANGO_MANAGEPY_MIGRATE=on
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      - db
+    restart: unless-stopped
+    env_file:
+      - ${ENV_FILE:-.empty.env}
+    deploy:
+       update_config:
+         order: start-first
+  nginx:
+    image: nginx:1.14
+    environment:
+      - affinity:service==web
+      - FQDN=${FQDN:-localhost}
+    env_file:
+      - ${ENV_FILE:-.empty.env}
+    networks:
+      - frontend
+      - traefik
+    deploy:
+      labels:
+        - "traefik.port=80"
+        - "traefik.frontend.rule=Host:${FQDN:-localhost}"
+        - "traefik.frontend.entryPoints=http,https"
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik"
+    depends_on:
+      - web
+    command: /bin/bash -c "echo 'c2VydmVyIHsKCXJlc29sdmVyIDEyNy4wLjAuMTEgdmFsaWQ9MXM7CiAgICAgICAgbGlzdGVuIDgwOwoJc2VydmVyX25hbWUgYWdyZWdnIGRlZmF1bHRfc2VydmVyOwoKICAgICAgICBjbGllbnRfbWF4X2JvZHlfc2l6ZSAxME07CglrZWVwYWxpdmVfdGltZW91dCAgMjQwOwoJc2V0ICRiYWNrZW5kIHdlYjsKCiAgICAgICAgbG9jYXRpb24gLyB7CgkJdXdzZ2lfY29ubmVjdF90aW1lb3V0IDEwMHM7CgkJdXdzZ2lfc2VuZF90aW1lb3V0IDI0MHM7CiAgICAgICAgICAgICAgICB1d3NnaV9yZWFkX3RpbWVvdXQgMjQwczsKICAgICAgICAgICAgICAgIHV3c2dpX3Bhc3MgdXdzZ2k6Ly8kYmFja2VuZDo4MDAwOwogICAgICAgICAgICAgICAgaW5jbHVkZSAvZXRjL25naW54L3V3c2dpX3BhcmFtczsKICAgICAgICB9CgogICAgICAgIGxvY2F0aW9uIC9zdGF0aWMvIHsKICAgICAgICAgICAgICAgIGFsaWFzIC9vcHQvc2VydmljZXMvZGphbmdvYXBwL3N0YXRpYy87CiAgICAgICAgfQoKICAgICAgICBsb2NhdGlvbiAvbWVkaWEvIHsKICAgICAgICAgICAgICAgIGFsaWFzIC9vcHQvc2VydmljZXMvZGphbmdvYXBwL21lZGlhLzsKICAgICAgICB9Cn0K' | base64 -d | envsubst '$$FQDN' > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"
+    restart: unless-stopped
+networks:
+  frontend:
+  backend:
+  traefik:
+
+

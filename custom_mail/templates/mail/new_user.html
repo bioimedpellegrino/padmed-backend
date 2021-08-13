@@ -1,0 +1,24 @@
+{% load settingsdata i18n static cms_tags %}
+{% mail_header %}
+
+<tr>
+    <td class="innerpadding borderbottom" style="padding-top:30px;padding-bottom:30px;padding-right:30px;padding-left:30px;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#f2eeed;" >
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+        <td class="bodycopy" style="color:#153643;font-size:16px;line-height:22px;" >
+            <br>
+            {% trans "Dear" %} <b>{{username}}</b>,
+            <br><br>
+            {% trans "you can now access to" %} <a href="{{ site_url }}">{{ site_name }}</a>.<br><br>{% trans "The credentials are" %}:
+            <br>
+            {% trans "username" %}: <b>{{ username }}</b>
+            <br>
+            {% trans "password" %}: <b>{{ password }}</b>
+        </td>
+        </tr>
+    </table>
+    </td>
+</tr>
+<tr><td>{{extra_info}}</td></tr>
+
+{% mail_footer uuid=uuid %}

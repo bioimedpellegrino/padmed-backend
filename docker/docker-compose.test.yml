@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres:9.6
+    environment:
+      - POSTGRES_USER=django
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=django
+    expose:
+      - "5432"
+  web-test:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: test
+    image: django-test:${BUILD_NUMBER:-local}
+    environment:
+      - DEBUG=False
+      - DJANGO_DB_HOST=db
+      - DJANGO_MANAGEPY_COLLECTSTATIC=on
+      - DJANGO_MANAGEPY_MIGRATE=on
+    depends_on:
+      - db
+    networks:
+      - frontend
+      - backend

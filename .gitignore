@@ -1,0 +1,16 @@
+venv/*
+.vscode
+*.pyc
+__pycache__
+.env
+.bilimetrix.env
+collected_static
+!.gitkeep
+media/*
+!media/.gitkeep
+
+.sass-cache/
+node_modules/
+!bower.json
+
+*.sqlite3
