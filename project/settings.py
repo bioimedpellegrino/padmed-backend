@@ -48,13 +48,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-
     'corsheaders',
     'drf_yasg',
-    
     'auditlog',
     'custom_logger',
     'custom_mail',
+    'padmed',
 ]
 
 MIDDLEWARE = [
