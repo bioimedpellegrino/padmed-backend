@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     'auditlog',
     'custom_logger',
     'custom_mail',
-    'padmed',
+    'generic',
 ]
 
 MIDDLEWARE = [

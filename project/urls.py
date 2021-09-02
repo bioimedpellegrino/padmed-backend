@@ -4,6 +4,9 @@ from django.conf.urls import include
 from django.conf import settings
 from django.conf.urls.static import static
 
+admin.autodiscover()
+admin.site.enable_nav_sidebar = False
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('mails/', include('custom_mail.urls')),
