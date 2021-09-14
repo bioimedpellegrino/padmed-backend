@@ -10,6 +10,7 @@ admin.site.enable_nav_sidebar = False
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('mails/', include('custom_mail.urls')),
+    path('padmed/', include('generic.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

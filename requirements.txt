@@ -12,3 +12,4 @@ django-debug-toolbar
 django-silk
 django-cors-headers
 drf-yasg==1.17.1
+python-codicefiscale==0.3.7
