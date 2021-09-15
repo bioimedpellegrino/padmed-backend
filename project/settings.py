@@ -221,3 +221,9 @@ if DEBUG_PERFORMANCE:
         'debug_toolbar.panels.redirects.RedirectsPanel',
         'debug_toolbar.panels.profiling.ProfilingPanel',
     ]
+
+#DFX
+LICENCE_KEY=env("LICENCE_KEY", default='1209f55c-f4df-4ae1-96de-f5fe70b891b9')
+ORG_KEY=env("ORG_KEY", default='demo')
+DFX_USER=env("DFX_USER", default='alessandro.pellegrino9494@gmail.com')
+DFX_PASSWORD=env("DFX_PASSWORD", default='4Bc553e7')
