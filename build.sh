@@ -25,10 +25,10 @@ fi
 
  VERSION_MODE=$1  
  ENV_TAG_PREFIX=V
- # "major": 1,  
- # "minor": 0,  
- # "revision": 0,  
- # "buildNumber": 1  
+#  "major": 1,  
+#  "minor": 0,  
+#  "revision": 0,  
+#  "buildNumber": 1  
  if [ "$VERSION_MODE" = "" ] ; then  
       VERSION_MODE="buildNumber"  
  fi  

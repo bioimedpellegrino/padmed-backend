@@ -1,40 +1,15 @@
-# Django starter Kit
+## PADMED ##
 
-## Dependencies
-Django3.X  
-at least Python3.6 
+sudo apt-get install build-essential git # Compiler and Git
+sudo apt-get install python3.8-dev python3.8-venv # or 3.7
+sudo apt-get install python3-mediainfodll # for pymediainfo
+sudo apt-get install libopenblas-dev liblapack-dev # for Dlib
 
-## Docker
+# Installation of dfx #
 
-### DEVELOPMENT
+python3 -m venv venv
+source venv/bin/activate # on Windows: venv\Scripts\activate
+python -m pip install --upgrade pip setuptools
+python -m pip install --upgrade wheel cmake
 
-copy .empty.env and create you local .env file
-
-RUN      : ```ENV_FILE=.env ./scripts/run-dev.sh``` 
-
-RUN      : ```CLEAN_VENV=on ENV_FILE=.env ./scripts/run-dev.sh``` 
-
-### Release 
-
-create .env file with the parameters
-
-BUILD    : ```./scripts/build-in-docker-sh```
-
-RUN      : ```./scripts/run-stack.sh``` 
-
-VIEW LOGS: ```cd docker && docker-compose logs -f```
-
-USE      : Browse to http://localhost/
-
-
-## Native 
-
-Create empty env file with `touch .env`
-
-Create new user `./run-make.sh createsuperuser`
-
-TEST     : ```./run-make.sh test```
-
-RUN      : ```./run-make.sh run``` #Default DB configuration looks for a PostgreSQL db on port 5432 named django. 
-
-USE      : Browse to http://localhost:8000
+pip install dfxapi/lib/libdfx-4.9.3.0-py3-none-linux_x86_64.whl

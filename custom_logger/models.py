@@ -53,6 +53,7 @@ class LoggerMessage(models.Model):
 
 
 class WebRequest(models.Model):
+    id = models.AutoField(primary_key=True)
     time = models.DateTimeField(auto_now_add=True)
     host = models.CharField(max_length=1000)
     path = models.CharField(max_length=1000)

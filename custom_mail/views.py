@@ -1,6 +1,6 @@
 from __future__ import print_function
 from __future__ import absolute_import
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import View
 from django.utils.decorators import method_decorator

@@ -1,7 +1,15 @@
-{% load settingsdata i18n static cms_tags %}
+{% load i18n static cms_tags %}
 
 Dear {{username}},
-you can now access to {{ site_url }}. The credentials are:
-username: {{ username }}
+the subscription request to MyBilimetrix - {{ site_url }} - is successful, thank you.
 
-password:{{ password }}
+The reserved area is a place where you can modify the profile, register the
+Bilistick ® System and download material for better user experience.
+
+To access the area, go to MyBilimetrix and insert the same email address
+({{username}}) and password used at the time of registration.
+
+Please, do not reply to this email, the address is not enabled to receive
+messages.
+For any further information visit our site www.bilimetrix.net.
+Thank you for your interest.

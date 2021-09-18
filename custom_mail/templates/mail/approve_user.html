@@ -1,0 +1,26 @@
+{% load i18n static cms_tags tags %}
+{% mail_header uuid=uuid %}
+
+<tr>
+    <td class="innerpadding borderbottom" style="padding-top:30px;padding-bottom:30px;padding-right:30px;padding-left:30px;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#f2eeed;" >
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+        <td class="bodycopy" style="color:#153643;font-size:16px;line-height:22px;" >
+            <br>
+            {% trans "Dear" %} <b>{{username}}</b>,
+            <br><br>
+            {% trans "your account has been approved. Now you can access to more section and materials!."%}.<br><br>
+            <br><br>
+            {% trans "Please, do not reply to this email, the address is not enabled to receive messages." %}
+            <br><br>
+            {% trans "For any further information visit our site www.bilimetrix.net. Thank you for your interest." %} 
+            <br><br>   
+            {% trans "MyBilimetrix Staff" %}
+        </td>
+        </tr>
+    </table>
+    </td>
+</tr>
+<tr><td>{{extra_info}}</td></tr>
+
+{% mail_footer uuid=uuid %}

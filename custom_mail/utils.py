@@ -43,7 +43,7 @@ def _send(mail):
         print('error on utils.py')
         json_message = mail.json_message
 
-    json_message['uuid'] = mail.uuid
+    json_message['uuid'] = str(mail.uuid)
 
     if settings.DEBUG_EMAIL:
         json_message['extra_info'] = 'to=' + ';'.join(to) + '   cc=' + ';'.join(cc)+ '   bcc=' + ';'.join(bcc)

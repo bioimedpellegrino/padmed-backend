@@ -1,5 +1,5 @@
-{% load settingsdata i18n static cms_tags %}
-{% mail_header %}
+{% load i18n static cms_tags tags %}
+{% mail_header uuid=uuid %}
 
 <tr>
     <td class="innerpadding borderbottom" style="padding-top:30px;padding-bottom:30px;padding-right:30px;padding-left:30px;border-bottom-width:1px;border-bottom-style:solid;border-bottom-color:#f2eeed;" >
@@ -9,11 +9,17 @@
             <br>
             {% trans "Dear" %} <b>{{username}}</b>,
             <br><br>
-            {% trans "you can now access to" %} <a href="{{ site_url }}">{{ site_name }}</a>.<br><br>{% trans "The credentials are" %}:
+            {% trans "the subscription request to MyBilimetrix is successful, thank you."%}.<br><br>
             <br>
-            {% trans "username" %}: <b>{{ username }}</b>
+            {% trans "The reserved area is a place where you can modify the profile, register the" %}
             <br>
-            {% trans "password" %}: <b>{{ password }}</b>
+            {% trans "Bilistick ® System and download material for better user experience." %}
+            <br>
+            {% trans "To access the area, go to MyBilimetrix and insert the same email address and password used at the time of registration." %}
+            <br>
+            {% trans "Please, do not reply to this email, the address is not enabled to receive messages." %}
+            <br>
+            {% trans "For any further information visit our site www.bilimetrix.net. Thank you for your interest." %}        
         </td>
         </tr>
     </table>
