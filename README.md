@@ -13,3 +13,18 @@ python -m pip install --upgrade pip setuptools
 python -m pip install --upgrade wheel cmake
 
 pip install dfxapi/lib/libdfx-4.9.3.0-py3-none-linux_x86_64.whl
+
+
+# ENV
+
+# GENERAL SETTINGS
+DEBUG=True
+#SECRET_KEY=S3cr3t_K#Key
+#SERVER=boilerplate-code-django-dashboard.appseed.us
+
+# DFX SETTINGS
+LICENCE_KEY=1209f55c-f4df-4ae1-96de-f5fe70b891b9
+ORG_KEY=demo
+DFX_USER=alessandro.pellegrino9494@gmail.com
+DFX_PASSWORD=4Bc553e7
+
