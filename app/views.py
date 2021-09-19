@@ -8,6 +8,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.template import loader
 from django.http import HttpResponse
 from django import template
+from django.conf import settings
 
 @login_required(login_url="/login/")
 def index(request):
@@ -27,16 +28,20 @@ def pages(request):
         
         load_template      = request.path.split('/')[-1]
         context['segment'] = load_template
-        
+
         html_template = loader.get_template( load_template )
         return HttpResponse(html_template.render(context, request))
         
     except template.TemplateDoesNotExist:
-
+        if settings.DEBUG:
+            import traceback
+            traceback.print_exc()
         html_template = loader.get_template( 'page-404.html' )
         return HttpResponse(html_template.render(context, request))
 
     except:
-    
+        if settings.DEBUG:
+            import traceback
+            traceback.print_exc()
         html_template = loader.get_template( 'page-500.html' )
         return HttpResponse(html_template.render(context, request))

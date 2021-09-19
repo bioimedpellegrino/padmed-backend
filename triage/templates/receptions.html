@@ -6,9 +6,91 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
+<!-- Header -->
+<div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center" 
+        style="min-height: 600px; background-image: url(/static/assets/img/triage/doctor-group.png); background-size: cover; background-position: center top;">
+    <!-- Mask -->
+    <span class="mask bg-gradient-default opacity-4"></span>
+    <!-- Header container -->
+    <div class="container-fluid d-flex align-items-center">
+        <div class="row">
+            <div class="col-lg-7 col-md-10">
+                <h1 class="display-2 text-white">Benvenuto</h1>
+                <p class="text-white lead mt-0 mb-5">
+                    <b>
+                        Questo è PadMed. 
+                        Per ottenere il tuo codice di accesso al pronto soccorso usa la 
+                        tua tessera sanitaria oppure inserisci il tuo codice fiscale
+                    </b>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
 
-
-
+    <div class="container-fluid mt--7">
+      <div class="row justify-content-center">
+        <div class="col-xl-4 order-xl-1 mb-5 mb-xl-0">
+          <div class="card card-profile shadow">
+            <div class="row justify-content-center">
+              <div class="col-lg-3 order-lg-2">
+                <div class="card-profile-image">
+                  <a href="#">
+                    <img src="/static/assets/img/triage/tessera-sanitaria.png" class="rounded-circle">
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="card-header text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
+              <div class="d-flex justify-content-between">
+              </div>
+            </div>
+            <div class="card-body pt-0 pt-md-4">
+              <div class="row">
+                <div class="col">
+                  <div class="card-profile-stats d-flex justify-content-center mt-md-5">
+                    <div>
+                        <button class="btn btn-primary">Inserisci la tessera nel lettore</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex justify-content-left mt-md-5">
+                <div>
+                  <i class="fas fa-arrow-down fa-4x" style="color: #78ceb5;"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-4 order-xl-2">
+          <div class="card bg-secondary shadow">
+            <div class="card-header bg-white border-0">
+              <div class="row align-items-center">
+                <div class="col-8">
+                  <h3 class="mb-0">Oppure digita il tuo Codice Fiscale</h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <form>
+                <h6 class="heading-small text-muted mb-4">Codice Fiscale</h6>
+                <div class="pl-lg-4">
+                  <div class="row">
+                    <div class="col-lg-6">
+                      <div class="form-group">
+                        <label class="form-control-label" for="fiscal-code">Codice Fiscale</label>
+                        <input type="text" id="fiscal-code" class="form-control form-control-alternative" placeholder="Codice Fiscale">
+                      </div>
+                      <button type="submit" class="btn btn-primary">Continua</button>
+                    </div>
+                <hr class="my-4" />
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 {% endblock content %}
 
 <!-- Specific JS goes HERE --> 

@@ -13,5 +13,7 @@ media/*
 node_modules/
 !bower.json
 
+staticfiles/*
+
 dfxutils/res/*
 *.sqlite3
