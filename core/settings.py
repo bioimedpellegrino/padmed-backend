@@ -34,7 +34,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'custom_logger',
     'custom_mail',
-    'app'  # Enable the inner app 
+    'app',
+    'generic',
+    'triage' 
 ]
 
 MIDDLEWARE = [
@@ -51,12 +53,14 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'core.urls'
 LOGIN_REDIRECT_URL = "home"   # Route defined in app/urls.py
 LOGOUT_REDIRECT_URL = "home"  # Route defined in app/urls.py
+
 TEMPLATE_DIR = os.path.join(CORE_DIR, "core/templates")  # ROOT dir for templates
+TEMPLATE_DIR_TRIAGE = os.path.join(CORE_DIR, "triage/templates")  # ROOT dir for templates
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [TEMPLATE_DIR],
+        'DIRS': [TEMPLATE_DIR, TEMPLATE_DIR_TRIAGE],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
