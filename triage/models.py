@@ -25,8 +25,14 @@ NATIONALITY = (
     ('foreign', 'foreign'),
 )
 
+TRIAGE_CODES = (
+    ('WHITE', 'WHITE'),
+    ('GREEN', 'GREEN'),
+    ('YELLOW', 'YELLOW')
+)
         
 class Hospital(models.Model):
+    
     id = models.AutoField(primary_key=True)
     name = models.CharField(blank=True, null=True, max_length=512, default="")
     full_address = models.TextField(blank=True, null=True, default="")
@@ -34,6 +40,9 @@ class Hospital(models.Model):
     province = models.ForeignKey(Province, blank=True, null=True, on_delete=models.CASCADE, related_name="hospital_province")
     country = models.ForeignKey(Country, blank=True, null=True,on_delete=models.CASCADE, related_name="hospital_country")
     
+    def __str__(self):
+        return self.name
+        
     class Meta:
         verbose_name = "Ospedale"
         verbose_name_plural = "Ospedali"
@@ -77,4 +86,47 @@ class Patient(models.Model):
         verbose_name = "Paziente"
         verbose_name_plural = "Pazienti"
         ordering = ('last_name',)
+
+class TriageCode(models.Model):
+    
+    id = models.AutoField(primary_key=True)
+    code = models.CharField(max_length=32, blank=True, null=True, choices=TRIAGE_CODES)
+    
+    def __str__(self):
+        return self.code
         
+    class Meta:
+        verbose_name = "Codice triage"
+        verbose_name_plural = "Codici triage"
+
+class TriageAccessReason(models.Model):
+    
+    id = models.AutoField(primary_key=True)
+    hospital = models.ForeignKey(Hospital, blank=True, null=True, on_delete=models.CASCADE)
+    reason = models.CharField(blank=True, null=True, max_length=512, default="")
+    related_code = models.ForeignKey(TriageCode, blank=True, null=True, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return self.reason
+    
+    class Meta:
+        verbose_name = "Motivo accesso"
+        verbose_name_plural = "Motivi accesso al pronto soccorso"
+
+
+class TriageAccess(models.Model):
+    
+    id = models.AutoField(primary_key=True)
+    created = models.DateTimeField(auto_now_add=True)
+    patient = models.ForeignKey(Patient, blank=True, null=True, related_name='accesses', on_delete=models.CASCADE)
+    hospital = models.ForeignKey(Hospital, blank=True, null=True, related_name='accesses', on_delete=models.CASCADE)
+    triage_code = models.ForeignKey(TriageCode, blank=True, null=True, on_delete=models.CASCADE)
+    access_reason = models.ForeignKey(TriageAccessReason, blank=True, null=True, on_delete=models.CASCADE)
+    access_date = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return self.id
+    
+    class Meta:
+        verbose_name = "Accesso"
+        verbose_name_plural = "Accessi al pronto soccorso"

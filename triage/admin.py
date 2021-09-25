@@ -16,8 +16,20 @@ class ProvinceAdmin(admin.ModelAdmin):
 class CountryAdmin(admin.ModelAdmin):
     pass
 
+class TriageCodeAdmin(admin.ModelAdmin):
+    pass
+
+class TriageAccessReasonAdmin(admin.ModelAdmin):
+    pass
+
+class TriageAccessAdmin(admin.ModelAdmin):
+    pass
+
 admin.site.register(Patient, PatientAdmin)
 admin.site.register(Hospital, HospitalAdmin)
 admin.site.register(City, CityAdmin)
 admin.site.register(Province, ProvinceAdmin)
 admin.site.register(Country, CountryAdmin)
+admin.site.register(TriageCode, TriageCodeAdmin)
+admin.site.register(TriageAccessReason, TriageAccessReasonAdmin)
+admin.site.register(TriageAccess, TriageAccessAdmin)
