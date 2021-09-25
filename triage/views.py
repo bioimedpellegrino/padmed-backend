@@ -1,11 +1,13 @@
 from django.shortcuts import render
+from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
 from codicefiscale import codicefiscale
-import asyncio
 from dfxapi.api import register_device #async
+import asyncio
+import datetime
 
 from .forms import PatientForm
 from .models import Hospital, Patient, TriageCode, TriageAccessReason, TriageAccess
@@ -44,7 +46,7 @@ class ReceptionsView(APIView):
     Args:
         APIView ([type]): [description]
     """
-    template_name = 'receptions.html'
+    template_name = 'receptions-access.html'
     
     def get(self, request, *args, **kwargs):
         
@@ -58,15 +60,50 @@ class ReceptionsView(APIView):
         if form.is_valid():
             fiscal_code = str(form.cleaned_data['fiscal_code']).upper()
             fiscal_code_decoded = codicefiscale.decode(fiscal_code)
-            patient, created = Patient.objects.get_or_create(fiscal_code=fiscal_code_decoded['code'])
+            user, c = User.objects.get_or_create(username=fiscal_code_decoded['code'])
+            patient, created = Patient.objects.get_or_create(fiscal_code=fiscal_code_decoded['code'], user=user)
+            hospital = Hospital.objects.all().first()
+            
             if created:
                 patient.birth_date = fiscal_code_decoded['birthdate']
                 patient.gender = fiscal_code_decoded['sex']
                 patient.birth_place = fiscal_code_decoded['birthplace']['name']
                 patient.save()
             
-            access = PatientAccess
-            return render(request, self.template_name, {'form': form})
+            access = TriageAccess()
+            access.patient = patient
+            access.hospital = hospital
+            access.access_date = datetime.datetime.now()
+            access.save()
+            
+            reasons = TriageAccessReason.objects.filter(hospital=hospital)
+            res = [{ 'label': reason.reason, 'id': reason.id } for reason in reasons]
+            return render(request, 'receptions-accessreason.html', {'access_id': access.id, 'reasons': res})
         else:
             form = PatientForm()
             return render(request, self.template_name, {'form': form, 'errors': 'Il codice fiscale inserito non è valido'})
+        
+class ReceptionsReasonsView(APIView):
+    """[summary]
+
+    Args:
+        APIView ([type]): [description]
+    """
+    template_name = 'receptions-accessreason.html'
+    
+    def get(self, request, *args, **kwargs):
+        
+        access_id = kwargs.get('access_id', None)
+        reason_id = kwargs.get('reason_id', None)
+
+        access = TriageAccess.objects.get(pk=access_id)
+        reason = TriageAccessReason.objects.get(pk=reason_id)
+        
+        access.access_reason = reason
+        access.triage_code = reason.related_code
+        access.save()
+        
+        return render(request, 'receptions-videomeasuring.html', {'access_id': access_id })
+        
+        
+    

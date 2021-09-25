@@ -1,0 +1,63 @@
+{% extends 'layouts/base-triage.html' %}
+
+{% block title %} Receptions {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<!-- Header -->
+<div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center" 
+        style="min-height: 600px; background-image: url(/static/assets/img/triage/doctor-group.png); background-size: cover; background-position: center top;">
+    <!-- Mask -->
+    <span class="mask bg-gradient-default opacity-4"></span>
+    <!-- Header container -->
+    <div class="container-fluid d-flex align-items-center">
+        <div class="row">
+            <div class="col-lg-7 col-md-10">
+                <h1 class="display-2 text-white">Benvenuto</h1>
+                <p class="text-white lead mt-0 mb-5">
+                    <b>
+                        Questo è PadMed. 
+                        Per ottenere il tuo codice di accesso al pronto soccorso usa la 
+                        tua tessera sanitaria oppure inserisci il tuo codice fiscale
+                    </b>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="container-fluid mt--7">
+      <div class="row justify-content-center">
+        <div class="col-xl-12 order-xl-1">
+          <div class="card bg-secondary shadow">
+            <div class="card-header bg-white border-0">
+              <div class="row align-items-center">
+                <div class="col-8">
+                  <h3 class="mb-0">Perché ti stai recando al pronto soccorso?</h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="row triage-reasons">
+                {% for reason in reasons %}
+                    <div class="col-lg-4 col-md-6 m-3">
+                    <a class="btn btn-lg btn-primary" style="width: 250px;" href="{% url 'receptions_accessreason' access_id=access_id reason_id=reason.id %}">
+                        <div>
+                            <i class="fas fa-hospital fa-2x"></i>
+                            <span>{{ reason.label }}</span>
+                        </div>
+                    </a>
+                    </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}{% endblock javascripts %}

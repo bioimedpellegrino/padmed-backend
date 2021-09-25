@@ -82,6 +82,9 @@ class Patient(models.Model):
     domicile_country = models.ForeignKey(Country, blank=True, null=True,on_delete=models.CASCADE, related_name="domicile_country")
     hospital = models.ForeignKey(Hospital, blank=True, null=True, on_delete=models.CASCADE)
     
+    def __str__(self):
+        return self.fiscal_code
+    
     class Meta:
         verbose_name = "Paziente"
         verbose_name_plural = "Pazienti"
@@ -125,7 +128,7 @@ class TriageAccess(models.Model):
     access_date = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return self.id
+        return str(self.id)
     
     class Meta:
         verbose_name = "Accesso"
