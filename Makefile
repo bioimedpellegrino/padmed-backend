@@ -8,9 +8,9 @@ endif
 
 venv: $(VENV)/bin/activate
 
-$(VENV)/bin/activate: requirements.txt
+$(VENV)/bin/activate: requirements3.txt
 	test -d $(VENV) || $(PYTHON) -m venv $(VENV)
-	. $(VENV)/bin/activate; pip3 install  --ignore-installed -Ur requirements.txt
+	. $(VENV)/bin/activate; pip3 install  --ignore-installed -Ur requirements3.txt
 	touch $(VENV)/bin/activate
 
 init: venv
