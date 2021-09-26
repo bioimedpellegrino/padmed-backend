@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'custom_logger',
     'custom_mail',
+    'fontawesomefree',
     'app',
     'generic',
     'triage' 
