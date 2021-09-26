@@ -1,0 +1,145 @@
+{% extends 'layouts/base-triage.html' %}
+
+{% block title %} Receptions {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<!-- Header -->
+<div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center" 
+        style="min-height: 600px; background-image: url(/static/assets/img/triage/doctor-group.png); background-size: cover; background-position: center top;">
+    <!-- Mask -->
+    <span class="mask bg-gradient-default opacity-4"></span>
+    <!-- Header container -->
+    <div class="container-fluid d-flex align-items-center">
+        <div class="row">
+            <div class="col-lg-7 col-md-10">
+                <h1 class="display-2 text-white">Benvenuto</h1>
+                <p class="text-white lead mt-0 mb-5">
+                    <b>
+                        Questo è PadMed. 
+                        Per ottenere il tuo codice di accesso al pronto soccorso usa la 
+                        tua tessera sanitaria oppure inserisci il tuo codice fiscale
+                    </b>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="container-fluid mt--7">
+      <div class="row justify-content-center">
+        <div class="col-xl-12 order-xl-1">
+          <div class="card bg-secondary shadow">
+            <div class="card-header bg-white border-0">
+              <div class="row align-items-center">
+                <div class="col-8">
+                  <h3 class="mb-0">La misurazione sta per partire</h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+                  <div class="left">
+                    <div id="startButton" class="button">
+                        Start
+                    </div>
+                    <h2>Preview</h2>
+                    <video id="preview" width="800" height="800" autoplay muted></video>
+                    </div>
+
+                  <div class="right">
+                    <div id="stopButton" class="button">
+                        Stop
+                    </div>
+                    <h2>Recording</h2>
+                    <video id="recording" width="800" height="800" controls></video>
+                    <a id="downloadButton" class="button">
+                        Download
+                    </a>
+                  </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% block javascripts %}
+<!-- Specific JS goes HERE --> 
+    <script>
+
+    let preview = document.getElementById("preview");
+    let recording = document.getElementById("recording");
+    let startButton = document.getElementById("startButton");
+    let stopButton = document.getElementById("stopButton");
+    let downloadButton = document.getElementById("downloadButton");
+    let logElement = document.getElementById("log");
+
+    let recordingTimeMS = 5000;
+
+
+    function log(msg) {
+        //logElement.innerHTML += msg + "\n";
+    }
+
+    function wait(delayInMS) {
+        return new Promise(resolve => setTimeout(resolve, delayInMS));
+    }
+
+    function startRecording(stream, lengthInMS) {
+        let recorder = new MediaRecorder(stream);
+        let data = [];
+
+        recorder.ondataavailable = event => data.push(event.data);
+        recorder.start();
+        log(recorder.state + " for " + (lengthInMS/1000) + " seconds...");
+
+        let stopped = new Promise((resolve, reject) => {
+        recorder.onstop = resolve;
+        recorder.onerror = event => reject(event.name);
+        });
+
+        let recorded = wait(lengthInMS).then(
+        () => recorder.state == "recording" && recorder.stop()
+        );
+
+        return Promise.all([
+            stopped,
+            recorded
+        ])
+        .then(() => data);
+    }
+
+    function stop(stream) {
+        stream.getTracks().forEach(track => track.stop());
+    }
+
+    startButton.addEventListener("click", function() {
+        navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false
+        }).then(stream => {
+                preview.srcObject = stream;
+                downloadButton.href = stream;
+                preview.captureStream = preview.captureStream || preview.mozCaptureStream;
+                return new Promise(resolve => preview.onplaying = resolve);
+              }).then(() => startRecording(preview.captureStream(), recordingTimeMS))
+              .then (recordedChunks => {
+                let recordedBlob = new Blob(recordedChunks, { type: "video/mp4" });
+                recording.src = URL.createObjectURL(recordedBlob);  
+                downloadButton.href = recording.src;
+                downloadButton.download = "RecordedVideo.mp4";
+
+                log("Successfully recorded " + recordedBlob.size + " bytes of " +
+                    recordedBlob.type + " media.");
+              })
+              .catch(log);
+        }, false);
+
+
+        stopButton.addEventListener("click", function() {
+        stop(preview.srcObject);
+        }, false);
+
+    </script>
+{% endblock javascripts %}
+{% endblock content %}
