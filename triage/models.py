@@ -133,3 +133,17 @@ class TriageAccess(models.Model):
     class Meta:
         verbose_name = "Accesso"
         verbose_name_plural = "Accessi al pronto soccorso"
+        
+class PatientVideo(models.Model):
+    
+    id = models.AutoField(primary_key=True)
+    patient = models.ForeignKey(Patient, blank=True, null=True, on_delete=models.CASCADE)
+    triage_access = models.ForeignKey(TriageAccess, blank=True, null=True, on_delete=models.CASCADE)
+    video = models.FileField(blank=True, null=True)
+    
+    def __str__(self):
+        return "{} - {}".format(self.patient, self.triage_access)
+    
+    class Meta:
+        verbose_name = "Video Misura"
+        verbose_name_plural = "Video Misura"

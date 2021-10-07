@@ -128,9 +128,9 @@
         stream.getTracks().forEach(track => track.stop());
     }
 
-    function sendData(data) {
+    function sendData(data, access_id) {
       let csrftoken = getCookie('csrftoken');
-      let response=fetch("/triage/recordvideo/", {
+      let response=fetch("/triage/recordvideo/" + access_id + "/", {
       method: "post",
       body: data,
       headers: { "X-CSRFToken": csrftoken, "Content-Type": "video/mp4"},
@@ -152,26 +152,7 @@
                 recording.src = URL.createObjectURL(recordedBlob);  
                 downloadButton.href = recording.src;
                 downloadButton.download = "RecordedVideo.mp4";
-                console.log(recordedBlob)
-                console.log("Successfully recorded " + recordedBlob.size + " bytes of " +
-                    recordedBlob.type + " media.");
-                /*const form = document.createElement('form');
-                form.method = "post";
-                form.action = "{% url 'record_video' %}";
-                const csfrtoken = document.createElement('input');
-                csfrtoken.name = "csrfmiddlewaretoken";
-                csfrtoken.type = "hidden";
-                csfrtoken.value = getCookie('csrftoken');
-                form.appendChild(csfrtoken);
-                const hiddenField = document.createElement('input');
-                hiddenField.type = 'hidden';
-                hiddenField.name = 'video';
-                hiddenField.value = recordedBlob;
-                form.appendChild(hiddenField);
-                document.body.appendChild(form);
-                form.submit();*/
-                //sendData(recordedBlob);
-                var url = "/triage/recordvideo/";
+                var url = "/triage/recordvideo/" + {{access_id}} + "/";
                 var request = new XMLHttpRequest();      
                 var xhr = new XMLHttpRequest();
                 var fd = new FormData();

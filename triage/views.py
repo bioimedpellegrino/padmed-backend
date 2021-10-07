@@ -1,5 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
+from django.core.files.storage import default_storage
+from django.conf import settings
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
@@ -9,9 +12,10 @@ from codicefiscale import codicefiscale
 from dfxapi.api import register_device #async
 import asyncio
 import datetime
+import os
 
 from .forms import PatientForm
-from .models import Hospital, Patient, TriageCode, TriageAccessReason, TriageAccess
+from .models import Hospital, Patient, TriageCode, TriageAccessReason, TriageAccess, PatientVideo
 
 class DecodeFiscalCodeView(APIView):
     """[summary]
@@ -117,6 +121,13 @@ class RecordVideoView(APIView):
 
     def post(self, request, *args, **kwargs):
         
-        r = request.data
-        print(request.data)
+        video = request.FILES['video']
+        access_id = kwargs.get('access_id')
+        triage_access = TriageAccess.objects.get(pk=access_id)
+        
+        file_name = default_storage.save('tmp/' + "{}.mp4".format(access_id), video)
+        patient_video = PatientVideo()
+        patient_video.video = file_name
+        #TODO fix path in admin site!!!!!!!
+        patient_video.save()
         return Response({'message': 'ok'}, status=status.HTTP_200_OK)
