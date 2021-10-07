@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser
 from rest_framework import status
 
 from codicefiscale import codicefiscale
@@ -105,5 +106,17 @@ class ReceptionsReasonsView(APIView):
         
         return render(request, 'receptions-videomeasuring.html', {'access_id': access_id })
         
-        
+
+class RecordVideoView(APIView):
+    """
+    Args:
+        APIView ([type]): [description]
+    """
     
+    parser_classes = (MultiPartParser,)
+
+    def post(self, request, *args, **kwargs):
+        
+        r = request.data
+        print(request.data)
+        return Response({'message': 'ok'}, status=status.HTTP_200_OK)

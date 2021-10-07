@@ -74,7 +74,7 @@
     let downloadButton = document.getElementById("downloadButton");
     let logElement = document.getElementById("log");
 
-    let recordingTimeMS = 5000;
+    let recordingTimeMS = 15000;
 
 
     function log(msg) {
@@ -109,9 +109,33 @@
         .then(() => data);
     }
 
+    function getCookie (name) {
+      var cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          var cookies = document.cookie.split(';');
+          for (var i = 0; i < cookies.length; i++) {
+              var cookie = cookies[i].trim();
+              if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+    }
+
     function stop(stream) {
         stream.getTracks().forEach(track => track.stop());
     }
+
+    function sendData(data) {
+      let csrftoken = getCookie('csrftoken');
+      let response=fetch("/triage/recordvideo/", {
+      method: "post",
+      body: data,
+      headers: { "X-CSRFToken": csrftoken, "Content-Type": "video/mp4"},
+      })
+   }
 
     startButton.addEventListener("click", function() {
         navigator.mediaDevices.getUserMedia({
@@ -128,13 +152,39 @@
                 recording.src = URL.createObjectURL(recordedBlob);  
                 downloadButton.href = recording.src;
                 downloadButton.download = "RecordedVideo.mp4";
-
-                log("Successfully recorded " + recordedBlob.size + " bytes of " +
+                console.log(recordedBlob)
+                console.log("Successfully recorded " + recordedBlob.size + " bytes of " +
                     recordedBlob.type + " media.");
+                /*const form = document.createElement('form');
+                form.method = "post";
+                form.action = "{% url 'record_video' %}";
+                const csfrtoken = document.createElement('input');
+                csfrtoken.name = "csrfmiddlewaretoken";
+                csfrtoken.type = "hidden";
+                csfrtoken.value = getCookie('csrftoken');
+                form.appendChild(csfrtoken);
+                const hiddenField = document.createElement('input');
+                hiddenField.type = 'hidden';
+                hiddenField.name = 'video';
+                hiddenField.value = recordedBlob;
+                form.appendChild(hiddenField);
+                document.body.appendChild(form);
+                form.submit();*/
+                //sendData(recordedBlob);
+                var url = "/triage/recordvideo/";
+                var request = new XMLHttpRequest();      
+                var xhr = new XMLHttpRequest();
+                var fd = new FormData();
+                fd.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+                fd.append('video', recordedBlob);
+
+                request.open("post", url, true);
+                request.send( fd );
               })
-              .catch(log);
+              .catch(console.log(log));
         }, false);
 
+        
 
         stopButton.addEventListener("click", function() {
         stop(preview.srcObject);
