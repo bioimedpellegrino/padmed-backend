@@ -170,9 +170,24 @@
 
                 xhr.onreadystatechange = function() {
                   if (xhr.readyState === 4) {
-                    console.log(xhr.response);
                     patient_id = eval('('+xhr.response+')' );
-                    console.log(patient_id['patient_video_id']);
+                    if(patient_id){
+                      const form = document.createElement('form');
+                      form.method = "post";
+                      form.action = "{% url 'patient_results' %}"
+                      const csfrtoken = document.createElement('input');
+                      csfrtoken.name = "csrfmiddlewaretoken";
+                      csfrtoken.type = "hidden";
+                      csfrtoken.value = getCookie('csrftoken');
+                      form.appendChild(csfrtoken);
+                      const hiddenField = document.createElement('input');
+                      hiddenField.type = 'hidden';
+                      hiddenField.name = 'patient_video_id';
+                      hiddenField.value = patient_id['patient_video_id'];
+                      form.appendChild(hiddenField);
+                      document.body.appendChild(form);
+                      form.submit();
+                    }
                   }
                 }
                 xhr.open("post", url, true);

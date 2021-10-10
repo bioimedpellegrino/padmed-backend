@@ -139,7 +139,7 @@ class PatientResults(APIView):
         ApiView ([type]): [description]
     """
     
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         
         patient_video_id = kwargs.get('patient_video_id')
         return render(request,'receptions-results.html', {'patient_video_id': ''})
