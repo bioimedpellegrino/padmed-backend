@@ -127,7 +127,19 @@ class RecordVideoView(APIView):
         
         file_name = default_storage.save('tmp/' + "{}.mp4".format(access_id), video)
         patient_video = PatientVideo()
+        patient_video.triage_access = triage_access
         patient_video.video = file_name
-        #TODO fix path in admin site!!!!!!!
         patient_video.save()
-        return Response({'message': 'ok'}, status=status.HTTP_200_OK)
+        #TODO fix path in admin site!!!!!!!
+        return Response({'patient_video_id': patient_video.pk }, status=status.HTTP_200_OK)
+    
+class PatientResults(APIView):
+    """
+    Args:
+        ApiView ([type]): [description]
+    """
+    
+    def get(self, request, *args, **kwargs):
+        
+        patient_video_id = kwargs.get('patient_video_id')
+        return render(request,'receptions-results.html', {'patient_video_id': ''})

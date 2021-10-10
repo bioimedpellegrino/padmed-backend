@@ -47,7 +47,7 @@
                     <video id="preview" width="800" height="800" autoplay muted></video>
                     </div>
 
-                  <div class="right">
+                  <div class="right" style="display:none">
                     <div id="stopButton" class="button">
                         Stop
                     </div>
@@ -75,6 +75,7 @@
     let logElement = document.getElementById("log");
 
     let recordingTimeMS = 15000;
+    let patient_id;
 
 
     function log(msg) {
@@ -128,6 +129,15 @@
         stream.getTracks().forEach(track => track.stop());
     }
 
+    function stopMeasure(){
+      stopButton.click();
+    }
+
+    function doMeasure(){
+      startButton.click();
+      let stop = setTimeout(stopMeasure, 19000);
+    }
+
     function sendData(data, access_id) {
       let csrftoken = getCookie('csrftoken');
       let response=fetch("/triage/recordvideo/" + access_id + "/", {
@@ -152,17 +162,23 @@
                 recording.src = URL.createObjectURL(recordedBlob);  
                 downloadButton.href = recording.src;
                 downloadButton.download = "RecordedVideo.mp4";
-                var url = "/triage/recordvideo/" + {{access_id}} + "/";
-                var request = new XMLHttpRequest();      
+                var url = "/triage/recordvideo/" + '{{access_id}}' + "/";
                 var xhr = new XMLHttpRequest();
                 var fd = new FormData();
                 fd.append('csrfmiddlewaretoken', getCookie('csrftoken'));
                 fd.append('video', recordedBlob);
 
-                request.open("post", url, true);
-                request.send( fd );
+                xhr.onreadystatechange = function() {
+                  if (xhr.readyState === 4) {
+                    console.log(xhr.response);
+                    patient_id = eval('('+xhr.response+')' );
+                    console.log(patient_id['patient_video_id']);
+                  }
+                }
+                xhr.open("post", url, true);
+                xhr.send( fd );
               })
-              .catch(console.log(log));
+              .catch(log);
         }, false);
 
         
@@ -171,6 +187,8 @@
         stop(preview.srcObject);
         }, false);
 
+        measure_started = setTimeout(doMeasure, 100);
+      
     </script>
 {% endblock javascripts %}
 {% endblock content %}

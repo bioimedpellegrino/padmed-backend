@@ -137,7 +137,6 @@ class TriageAccess(models.Model):
 class PatientVideo(models.Model):
     
     id = models.AutoField(primary_key=True)
-    patient = models.ForeignKey(Patient, blank=True, null=True, on_delete=models.CASCADE)
     triage_access = models.ForeignKey(TriageAccess, blank=True, null=True, on_delete=models.CASCADE)
     video = models.FileField(blank=True, null=True)
     
