@@ -128,7 +128,8 @@ class TriageAccess(models.Model):
     access_date = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return str(self.id)
+        return "{} - {}".format(self.id, self.patient)
+
     
     class Meta:
         verbose_name = "Accesso"
@@ -141,7 +142,7 @@ class PatientVideo(models.Model):
     video = models.FileField(blank=True, null=True)
     
     def __str__(self):
-        return "{} - {}".format(self.patient, self.triage_access)
+        return "{}".format(self.triage_access)
     
     class Meta:
         verbose_name = "Video Misura"

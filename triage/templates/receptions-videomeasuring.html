@@ -33,30 +33,27 @@
           <div class="card bg-secondary shadow">
             <div class="card-header bg-white border-0">
               <div class="row align-items-center">
-                <div class="col-8">
+                <div class="col-sm" align="center">
                   <h3 class="mb-0">La misurazione sta per partire</h3>
                 </div>
               </div>
             </div>
-            <div class="card-body">
-                  <div class="left">
-                    <div id="startButton" class="button">
-                        Start
-                    </div>
-                    <h2>Preview</h2>
-                    <video id="preview" width="800" height="800" autoplay muted></video>
-                    </div>
-
-                  <div class="right" style="display:none">
-                    <div id="stopButton" class="button">
-                        Stop
-                    </div>
-                    <h2>Recording</h2>
-                    <video id="recording" width="800" height="800" controls></video>
-                    <a id="downloadButton" class="button">
-                        Download
-                    </a>
+              <div class="body">
+                <div class="row">
+                  <div class="col-sm"></div>
+                  <div class="col-sm">
+                      <div id="startButton" class="button"></div>
+                      <div style="width:800px border-radius:10px; overflow:hidden">
+                        <video id="preview" width="800" height="800" autoplay muted></video>
+                      </div>
+                      <div style="display:none">
+                        <div id="stopButton" class="button"></div>
+                        <video id="recording" width="800" height="800" controls></video>
+                        <a id="downloadButton" class="button"></a>
+                      </div>
                   </div>
+                  <div class="col-sm"></div>
+                </div>
             </div>
           </div>
         </div>
@@ -146,10 +143,17 @@
       headers: { "X-CSRFToken": csrftoken, "Content-Type": "video/mp4"},
       })
    }
+   function getDevices() {
+      return navigator.mediaDevices.enumerateDevices();
+    }
+
+    const devId = "9dfa6272feb725b2a045a691505042966c49473be54fb4c03831af1936d32f3e";
 
     startButton.addEventListener("click", function() {
         navigator.mediaDevices.getUserMedia({
-            video: true,
+            video: {
+                deviceId: { exact: devId }
+              },
             audio: false
         }).then(stream => {
                 preview.srcObject = stream;
