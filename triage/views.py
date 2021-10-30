@@ -16,6 +16,7 @@ import os
 
 from .forms import PatientForm
 from .models import Hospital, Patient, TriageCode, TriageAccessReason, TriageAccess, PatientVideo
+from .utils import generate_video_measure
 
 class DecodeFiscalCodeView(APIView):
     """[summary]
@@ -120,12 +121,15 @@ class RecordVideoView(APIView):
     parser_classes = (MultiPartParser,)
 
     def post(self, request, *args, **kwargs):
-        
+
         video = request.FILES['video']
         access_id = kwargs.get('access_id')
         triage_access = TriageAccess.objects.get(pk=access_id)
+
+        file_path = default_storage.save('tmp/' + "{}.webm".format(access_id), video)
+
+        file_name = generate_video_measure(file_path, access_id)
         
-        file_name = default_storage.save('tmp/' + "{}.mp4".format(access_id), video)
         patient_video = PatientVideo()
         patient_video.triage_access = triage_access
         patient_video.video = file_name

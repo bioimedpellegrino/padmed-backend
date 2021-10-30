@@ -71,7 +71,7 @@
     let downloadButton = document.getElementById("downloadButton");
     let logElement = document.getElementById("log");
 
-    let recordingTimeMS = 15000;
+    let recordingTimeMS = 35000;
     let patient_id;
 
 
@@ -84,7 +84,8 @@
     }
 
     function startRecording(stream, lengthInMS) {
-        let recorder = new MediaRecorder(stream);
+        let options = { mimeType: 'video/webm'}
+        let recorder = new MediaRecorder(stream, options);
         let data = [];
 
         recorder.ondataavailable = event => data.push(event.data);
@@ -132,7 +133,7 @@
 
     function doMeasure(){
       startButton.click();
-      let stop = setTimeout(stopMeasure, 19000);
+      let stop = setTimeout(stopMeasure, 40000);
     }
 
     function sendData(data, access_id) {
@@ -140,7 +141,7 @@
       let response=fetch("/triage/recordvideo/" + access_id + "/", {
       method: "post",
       body: data,
-      headers: { "X-CSRFToken": csrftoken, "Content-Type": "video/mp4"},
+      headers: { "X-CSRFToken": csrftoken, "Content-Type": 'video/webm'},
       })
    }
    function getDevices() {
@@ -162,7 +163,8 @@
                 return new Promise(resolve => preview.onplaying = resolve);
               }).then(() => startRecording(preview.captureStream(), recordingTimeMS))
               .then (recordedChunks => {
-                let recordedBlob = new Blob(recordedChunks, { type: "video/mp4" });
+                console.log(recordedChunks, typeof recordedChunks)
+                let recordedBlob = new Blob(recordedChunks, { type: 'video/webm' });
                 recording.src = URL.createObjectURL(recordedBlob);  
                 downloadButton.href = recording.src;
                 downloadButton.download = "RecordedVideo.mp4";
@@ -178,7 +180,7 @@
                     if(patient_id){
                       const form = document.createElement('form');
                       form.method = "post";
-                      form.action = "{% url 'patient_results' %}"
+                      form.action = "{% url 'patient_results' %}";
                       const csfrtoken = document.createElement('input');
                       csfrtoken.name = "csrfmiddlewaretoken";
                       csfrtoken.type = "hidden";
@@ -197,7 +199,7 @@
                 xhr.open("post", url, true);
                 xhr.send( fd );
               })
-              .catch(log);
+              .catch(console.log(log));
         }, false);
 
         

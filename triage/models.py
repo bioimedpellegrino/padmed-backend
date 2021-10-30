@@ -147,3 +147,16 @@ class PatientVideo(models.Model):
     class Meta:
         verbose_name = "Video Misura"
         verbose_name_plural = "Video Misura"
+        
+class PatientMeasureResult(models.Model):
+    
+    id = models.AutoField(primary_key=True)
+    patient_video = models.ForeignKey(PatientVideo, blank=True, null=True, on_delete=models.CASCADE)
+    result = models.TextField(blank=True, null=True, default="{}")
+    
+    def __str__(self):
+        return "{} - {}".format(self.id, self.patient_video)
+    
+    class Meta:
+        verbose_name = "Esito misurazioni"
+        verbose_name_plural = "Esiti misurazioni"
