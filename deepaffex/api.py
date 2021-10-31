@@ -24,8 +24,17 @@ from dfxutils.prettyprint import PrettyPrinter as PP
 from dfxutils.renderer import NullRenderer, Renderer
 from dfxutils.sdkhelpers import DfxSdkHelpers
 
+# Api method for device registration. Be careful with that (must be sure to store the device_token)
 async def register(config=None, license_key=None):
-    
+    """[summary]
+
+    Args:
+        config ([type], optional): [description]. Defaults to None.
+        license_key ([type], optional): [description]. Defaults to None.
+
+    Returns:
+        [type]: [description]
+    """
     if not license_key:
         license_key = settings.LICENCE_KEY
     
@@ -47,49 +56,25 @@ async def register(config=None, license_key=None):
         else:
             print(f"Register failed {status}: {body}")
             return {}
-        
-def save_config(config, config_file_path="./config.json"):
-    with open(config_file_path, "w") as c:
-        c.write(json.dumps(config, indent=4))
-        print(f"Config updated in {config_file_path}")
-        
-def load_config(config_file):
-    config = {
-        "device_id": "",
-        "device_token": "",
-        "role_id": "",
-        "user_id": "",
-        "user_token": "",
-        "selected_study": "",
-        "last_measurement": "",
-        "study_cfg_hash": "",
-        "study_cfg_data": "",
-    }
-    if os.path.isfile(config_file):
-        with open(config_file, "r") as c:
-            read_config = json.loads(c.read())
-            config = {**config, **read_config}
-
-    dfxapi.Settings.device_id = config["device_id"]
-    dfxapi.Settings.device_token = config["device_token"]
-    dfxapi.Settings.role_id = config["role_id"]
-    dfxapi.Settings.role_id = config["role_id"]
-    dfxapi.Settings.user_token = config["user_token"]
-    if "rest_url" in config and config["rest_url"]:
-        dfxapi.Settings.rest_url = config["rest_url"]
-    if "ws_url" in config and config["ws_url"]:
-        dfxapi.Settings.ws_url = config["ws_url"]
-
-    return config
-        
-        
+# Fast way for register a new device
+# TODO  ->Must be tested first!!!
 async def register_device():
     config = await register()
     
     if config:
         save_config(config)
-        
+# Login to DeepAffex service api. 
 async def login(config, email, password):
+    """[summary]
+
+    Args:
+        config [(dict)]: [Dict previously loaded by the config.json file, which contains user-licence informations]
+        email [(str)]: [Email address to DeepAffex dashboard]
+        password [(str)]: [Password to DeepAffex dashboard]
+
+    Returns:
+        [boolean]: [return True if user_token in the config.json file is populated, False otherwise]
+    """
     if dfxapi.Settings.user_token:
         print("Already logged in")
         return False
@@ -108,13 +93,27 @@ async def login(config, email, password):
         else:
             print(f"Login failed {status}: {body}")
             return False
-        
+# Save/Load the config.json file
 def save_config(config, config_file_path="./config.json"):
+    """[summary]
+
+    Args:
+        config [(dict)]: [Actual config dict to store]
+        config_file_path [(str), optional]: [description]. Defaults to "./config.json".
+    """
     with open(config_file_path, "w") as c:
         c.write(json.dumps(config, indent=4))
         print(f"Config updated in {config_file_path}")
         
 def load_config(config_file):
+    """[summary]
+
+    Args:
+        config_file [(srt)]: [config.json file path]
+
+    Returns:
+        (dict): [dict containing config.json]
+    """
     config = {
         "device_id": "",
         "device_token": "",
