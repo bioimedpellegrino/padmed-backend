@@ -141,3 +141,41 @@ def load_config(config_file):
         dfxapi.Settings.ws_url = config["ws_url"]
 
     return config
+
+
+async def get_studies_by_id(config=None, config_path=None, study_id=None):
+    config = load_config(config_path) if not config else config
+    token = dfxapi.Settings.user_token if dfxapi.Settings.user_token else dfxapi.Settings.device_token
+    headers = {"Authorization": f"Bearer {token}"}
+    async with aiohttp.ClientSession(headers=headers, raise_for_status=True) as session:
+        study_id = config["selected_study"] if study_id is None else study_id
+        if not study_id or study_id.isspace():
+            print("Please select a study or pass a study id")
+            return
+        _, study = await dfxapi.Studies.retrieve(session, study_id, raise_for_status=False)
+        return study
+
+async def get_studies_list(config=None, config_path=None):
+    try:
+        config = load_config(config_path) if not config else config
+    except TypeError:
+        raise TypeError("If config argument is not passed, you should pass a valid config.json file path")
+
+    token = dfxapi.Settings.user_token if dfxapi.Settings.user_token else dfxapi.Settings.device_token
+    headers = {"Authorization": f"Bearer {token}"}
+    async with aiohttp.ClientSession(headers=headers, raise_for_status=True) as session:
+        _, studies = await dfxapi.Studies.list(session)
+        print(json.dumps(studies))
+        return studies
+    
+async def select_study(study_id, config, config_path):
+    
+    token = dfxapi.Settings.user_token if dfxapi.Settings.user_token else dfxapi.Settings.device_token
+    headers = {"Authorization": f"Bearer {token}"}
+    async with aiohttp.ClientSession(headers=headers, raise_for_status=True) as session:
+        status, response = await dfxapi.Studies.retrieve(session, study_id, raise_for_status=False)
+        if status >= 400:
+            PP.print_pretty(response)
+            return
+        config["selected_study"] = study_id
+        save_config(config, config_path)
