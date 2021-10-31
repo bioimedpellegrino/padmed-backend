@@ -220,8 +220,10 @@ async def retrieve_sdk_config(config, config_file, sdk_id):
 
         return base64.standard_b64decode(config["study_cfg_data"])
     
-async def make_measure(config, video_path, demographics=None, start_time=2, end_time=20, rotation=None, fps=None, debug_study_cfg_file=None):
+async def make_measure(config, config_path, video_path, demographics=None, start_time=2, end_time=20, rotation=None, fps=None, debug_study_cfg_file=None):
     
+    token = dfxapi.Settings.user_token if dfxapi.Settings.user_token else dfxapi.Settings.device_token
+    headers = {"Authorization": f"Bearer {token}"}
     # Prepare to make a measurement..
     app = AppState()
     try:
@@ -244,10 +246,10 @@ async def make_measure(config, video_path, demographics=None, start_time=2, end_
         # Get study config data..
         if debug_study_cfg_file is None:
             # ..from API required to initialize DFX SDK collector (or FAIL)
-            study_cfg_bytes = await retrieve_sdk_config(headers, config, args.config_file, sdk_id)
+            study_cfg_bytes = await retrieve_sdk_config(config, config_path, sdk_id)
         else:
             # .. or from a file
-            with open(args.debug_study_cfg_file, 'rb') as f:
+            with open(debug_study_cfg_file, 'rb') as f:
                 study_cfg_bytes = f.read()
     except Exception as e:
         print(e)
