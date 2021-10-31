@@ -49,7 +49,6 @@
                       <div style="display:none">
                         <div id="stopButton" class="button"></div>
                         <video id="recording" width="800" height="800" controls></video>
-                        <a id="downloadButton" class="button"></a>
                       </div>
                   </div>
                   <div class="col-sm"></div>
@@ -68,7 +67,6 @@
     let recording = document.getElementById("recording");
     let startButton = document.getElementById("startButton");
     let stopButton = document.getElementById("stopButton");
-    let downloadButton = document.getElementById("downloadButton");
     let logElement = document.getElementById("log");
 
     let recordingTimeMS = 35000;
@@ -158,7 +156,6 @@
             audio: false
         }).then(stream => {
                 preview.srcObject = stream;
-                downloadButton.href = stream;
                 preview.captureStream = preview.captureStream || preview.mozCaptureStream;
                 return new Promise(resolve => preview.onplaying = resolve);
               }).then(() => startRecording(preview.captureStream(), recordingTimeMS))
@@ -166,8 +163,6 @@
                 console.log(recordedChunks, typeof recordedChunks)
                 let recordedBlob = new Blob(recordedChunks, { type: 'video/webm' });
                 recording.src = URL.createObjectURL(recordedBlob);  
-                downloadButton.href = recording.src;
-                downloadButton.download = "RecordedVideo.mp4";
                 var url = "/triage/recordvideo/" + '{{access_id}}' + "/";
                 var xhr = new XMLHttpRequest();
                 var fd = new FormData();
