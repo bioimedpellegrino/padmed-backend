@@ -170,6 +170,7 @@ async def get_studies_list(config=None, config_path=None):
     
 async def select_study(study_id, config, config_path):
     
+    config = load_config(config_path) if (not config or config == "" or config == {}) else config
     token = dfxapi.Settings.user_token if dfxapi.Settings.user_token else dfxapi.Settings.device_token
     headers = {"Authorization": f"Bearer {token}"}
     async with aiohttp.ClientSession(headers=headers, raise_for_status=True) as session:
@@ -179,3 +180,75 @@ async def select_study(study_id, config, config_path):
             return
         config["selected_study"] = study_id
         save_config(config, config_path)
+        
+async def get_measurements_list(config, status_id_filter=[], limit=10, profile_id="", partner_id=""):
+    
+    if not config or config == "" or config == {}:
+        return "Config dict must be passed!"
+    
+    token = dfxapi.Settings.user_token if dfxapi.Settings.user_token else dfxapi.Settings.device_token
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    async with aiohttp.ClientSession(headers=headers, raise_for_status=True) as session:
+        _, measurements = await dfxapi.Measurements.list(session,
+                                                            limit=limit,
+                                                            user_profile_id=profile_id,
+                                                            partner_id=partner_id)
+    # Filter sections
+    measurements_filtered = list(filter(lambda measurement: measurement['StatusID'] in status_id_filter, measurements)) if status_id_filter else measurements
+    return measurements_filtered
+
+async def retrieve_sdk_config(config, config_file, sdk_id):
+    if not config or config == "" or config == {}:
+        return "Config dict must be passed!"
+    
+    token = dfxapi.Settings.user_token if dfxapi.Settings.user_token else dfxapi.Settings.device_token
+    headers = {"Authorization": f"Bearer {token}"}
+    async with aiohttp.ClientSession(headers=headers) as session:
+        status, response = await dfxapi.Studies.retrieve_sdk_config_data(session, config["selected_study"], sdk_id,
+                                                                         config["study_cfg_hash"])
+        if status == 304:  # Our hash and data are already correct nothing to do
+            pass
+        elif status == 200:  # Got a new hash and data
+            config["study_cfg_hash"] = response["MD5Hash"]
+            config["study_cfg_data"] = response["ConfigFile"]
+            print(f"Retrieved new DFX SDK config data with md5: {config['study_cfg_hash']}")
+            save_config(config, config_file)
+        else:
+            raise RuntimeError(f"Could not retrieve DFX SDK config data for Study ID {config['selected_study']}. "
+                               "Please contact Nuralogix")
+
+        return base64.standard_b64decode(config["study_cfg_data"])
+    
+async def make_measure(config, video_path, demographics=None, start_time=2, end_time=20, rotation=None, fps=None, debug_study_cfg_file=None):
+    
+    # Prepare to make a measurement..
+    app = AppState()
+    try:
+        # Open the camera or video
+        imreader = VideoReader(video_path, start_time, end_time, rotation=rotation, fps=fps)
+
+        # Open the demographics file if provided
+        if demographics is not None:
+            with open(demographics, "r") as f:
+                app.demographics = json.load(f)
+
+        # Create a face tracker
+        tracker = DlibTracker()
+
+        # Create DFX SDK factory
+        factory = dfxsdk.Factory()
+        print("Created DFX Factory:", factory.getVersion())
+        sdk_id = factory.getSdkId()
+
+        # Get study config data..
+        if debug_study_cfg_file is None:
+            # ..from API required to initialize DFX SDK collector (or FAIL)
+            study_cfg_bytes = await retrieve_sdk_config(headers, config, args.config_file, sdk_id)
+        else:
+            # .. or from a file
+            with open(args.debug_study_cfg_file, 'rb') as f:
+                study_cfg_bytes = f.read()
+    except Exception as e:
+        print(e)
+        return
