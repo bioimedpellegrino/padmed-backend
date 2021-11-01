@@ -220,7 +220,7 @@ async def retrieve_sdk_config(config, config_file, sdk_id):
 
         return base64.standard_b64decode(config["study_cfg_data"])
     
-async def make_measure(config, config_path, video_path, demographics=None, start_time=2, end_time=20, rotation=None, fps=None, debug_study_cfg_file=None):
+async def make_measure(config, config_path, video_path, demographics=None, start_time=2, end_time=20, rotation=None, fps=None, debug_study_cfg_file=None, profile_id="", partner_id=""):
     
     token = dfxapi.Settings.user_token if dfxapi.Settings.user_token else dfxapi.Settings.device_token
     headers = {"Authorization": f"Bearer {token}"}
@@ -254,3 +254,229 @@ async def make_measure(config, config_path, video_path, demographics=None, start
     except Exception as e:
         print(e)
         return
+    
+    # Create DFX SDK collector (or FAIL)
+    if not factory.initializeStudy(study_cfg_bytes):
+        print(f"DFX factory creation failed: {factory.getLastErrorMessage()}")
+        return
+    factory.setMode("discrete")
+    collector = factory.createCollector()
+    if collector.getCollectorState() == dfxsdk.CollectorState.ERROR:
+        print(f"DFX collector creation failed: {collector.getLastErrorMessage()}")
+        return
+    
+    print("Created DFX Collector:")
+    chunk_duration_s = float(settings.CHUNK_DURATION)
+    frames_per_chunk = math.ceil(chunk_duration_s * imreader.fps)
+    app.number_chunks = math.ceil(imreader.frames_to_process / frames_per_chunk)
+    print(imreader.frames_to_process, frames_per_chunk, app.number_chunks)
+    app.begin_frame = imreader.start_frame
+    app.end_frame = imreader.stop_frame
+
+    # Set collector config
+    collector.setTargetFPS(imreader.fps)
+    collector.setChunkDurationSeconds(chunk_duration_s)
+    collector.setNumberChunks(app.number_chunks)
+    print(f"    mode: {factory.getMode()}")
+    print(f"    number chunks: {collector.getNumberChunks()}")
+    print(f"    chunk duration: {collector.getChunkDurationSeconds()}s")
+    for constraint in collector.getEnabledConstraints():
+        print(f"    enabled constraint: {constraint}")
+
+    # Set the demographics
+    if app.demographics is not None:
+        print("    Setting user demographics:")
+        for k, v in app.demographics.items():
+            collector.setProperty(f"{k}:1", str(v))  # The :1 is because we only care about one face in this project
+            print(f"       {k}: {v}")
+    
+    # Make a measurement
+    async with aiohttp.ClientSession(headers=headers, raise_for_status=True) as session:
+        # Create a measurement on the API and get the measurement ID
+        _, response = await dfxapi.Measurements.create(session,
+                                                    config["selected_study"],
+                                                    user_profile_id=profile_id,
+                                                    partner_id=partner_id)
+        app.measurement_id = response["ID"]
+        print(f"Created measurement {app.measurement_id}")
+
+        # Use the session to connect to the WebSocket
+        async with session.ws_connect(dfxapi.Settings.ws_url) as ws:
+            # Subscribe to results
+            results_request_id = generate_reqid()
+            await dfxapi.Measurements.ws_subscribe_to_results(ws, generate_reqid(), app.measurement_id,
+                                                            results_request_id)
+
+            # Queue to pass chunks between coroutines
+            chunk_queue = asyncio.Queue(app.number_chunks)
+
+            # When we receive the last chunk from the SDK, we can check for measurement completion
+            app.last_chunk_sent = False
+            
+            # Null render -> face tracker
+            renderer = NullRenderer()
+            
+            produce_chunks_coro = extract_from_imgs(
+                    chunk_queue,  # Chunks will be put into this queue
+                    imreader,  # Image reader
+                    tracker,  # Face tracker
+                    collector,  # DFX SDK collector needed to create chunks
+                    renderer,  # Rendering
+                    app)  # App
+
+            # Coroutine to get chunks from chunk_queue and send chunk using WebSocket
+            async def send_chunks():
+                while True:
+                    chunk = await chunk_queue.get()
+                    if chunk is None:
+                        chunk_queue.task_done()
+                        break
+
+                    # Determine action and request id
+                    action = determine_action(chunk.chunk_number, chunk.number_chunks)
+
+                    # Add data
+                    await dfxapi.Measurements.ws_add_data(ws, generate_reqid(), app.measurement_id, chunk.chunk_number,
+                                                          action, chunk.start_time_s, chunk.end_time_s,
+                                                          chunk.duration_s, chunk.metadata, chunk.payload_data)
+                    print(f"Sent chunk {chunk.chunk_number}")
+                    renderer.set_sent(chunk.chunk_number)
+
+                    # Update data needed to check for completion
+                    app.number_chunks_sent += 1
+                    app.last_chunk_sent = action == 'LAST::PROCESS'
+
+                    # Save chunk (for debugging purposes)
+                    if settings.DEEPAFFEX_DEBUG:
+                        DfxSdkHelpers.save_chunk(copy.copy(chunk), settings.DEEPAFFEX_DEBUG_SAVE_CHUNKS_FOLDER)
+                        print(f"Saved chunk {chunk.chunk_number} in '{settings.DEEPAFFEX_DEBUG_SAVE_CHUNKS_FOLDER}'")
+
+                    chunk_queue.task_done()
+
+                app.step = MeasurementStep.WAITING_RESULTS
+                print("Extraction complete, waiting for results")
+
+            # Coroutine to receive responses using the Websocket
+            async def receive_results():
+                num_results_received = 0
+                async for msg in ws:
+                    status, request_id, payload = dfxapi.Measurements.ws_decode(msg)
+                    if request_id == results_request_id:
+                        sdk_result = collector.decodeMeasurementResult(payload)
+                        print("sdk_result", sdk_result)
+                        result = DfxSdkHelpers.sdk_result_to_dict(sdk_result)
+                        print("result", result)
+                        renderer.set_results(result.copy())
+                        PP.print_sdk_result(result)
+                        num_results_received += 1
+                    # We are done if the last chunk is sent and number of results received equals number of chunks sent
+                    if app.last_chunk_sent and num_results_received == app.number_chunks_sent:
+                        await ws.close()
+                        break
+
+                app.step = MeasurementStep.COMPLETED
+                print("Measurement complete")
+
+            # Coroutine for rendering
+            async def render():
+                if type(renderer) == NullRenderer:
+                    return
+
+            # Wrap the coroutines in tasks, start them and wait till they finish
+            tasks = [
+                asyncio.create_task(produce_chunks_coro),
+                asyncio.create_task(send_chunks()),
+                asyncio.create_task(receive_results()),
+                asyncio.create_task(render())
+            ]
+            done, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_EXCEPTION)
+            for p in pending:  # If there were any pending coroutines, cancel them here...
+                p.cancel()
+            if len(pending) > 0:  # If we had pending coroutines, it means something went wrong in the 'done' ones
+                for d in done:
+                    e = d.exception()
+                    if e is not None and type(e) != asyncio.CancelledError:
+                        print(e, "ok")
+                print(f"Measurement {app.measurement_id} failed")
+            else:
+                config["last_measurement"] = app.measurement_id
+                save_config(config, config_path)
+                print(f"Measurement {app.measurement_id} completed")
+                print(f"Use 'python {os.path.basename(__file__)} measure get' to get comprehensive results")
+            
+                
+def generate_reqid():
+    return "".join(random.choices(string.ascii_letters, k=10))
+
+def determine_action(chunk_number, number_chunks):
+    action = 'CHUNK::PROCESS'
+    if chunk_number == 0 and number_chunks > 1:
+        action = 'FIRST::PROCESS'
+    elif chunk_number == number_chunks - 1:
+        action = 'LAST::PROCESS'
+    return action
+
+async def extract_from_imgs(chunk_queue, imreader, tracker, collector, renderer, app):
+    # Read frames from the image source, track faces and extract using collector
+    while True:
+        # Grab a frame
+        read, image, frame_number, frame_timestamp_ns = await imreader.read_next_frame()
+        if not read or image is None:
+            # Video ended, so grab what should be the last, possibly truncated chunk
+            collector.forceComplete()
+            chunk_data = collector.getChunkData()
+            if chunk_data is not None:
+                chunk = chunk_data.getChunkPayload()
+                await chunk_queue.put(chunk)
+                break
+
+        # Start the DFX SDK collection if we received a start command
+        if app.step == MeasurementStep.USER_STARTED:
+            collector.startCollection()
+            app.step = MeasurementStep.MEASURING
+            if app.is_camera:
+                app.begin_frame = frame_number
+                app.end_frame = frame_number + app.end_frame
+
+        # Track faces
+        tracked_faces = tracker.trackFaces(image, frame_number, frame_timestamp_ns / 1000000.0)
+
+        # Create a DFX VideoFrame, then a DFX Frame from the DFX VideoFrame and add DFX faces to it
+        dfx_video_frame = dfxsdk.VideoFrame(image, frame_number, frame_timestamp_ns,
+                                            dfxsdk.ChannelOrder.CHANNEL_ORDER_BGR)
+        dfx_frame = collector.createFrame(dfx_video_frame)
+        if len(tracked_faces) > 0:
+            tracked_face = next(iter(tracked_faces.values()))  # We only care about the first face in this demo
+            dfx_face = DfxSdkHelpers.dfx_face_from_json(collector, tracked_face)
+            dfx_frame.addFace(dfx_face)
+
+        if app.step == MeasurementStep.NOT_READY and len(tracked_faces) > 0:
+            app.step = MeasurementStep.USER_STARTED
+
+        # Extract bloodflow if the measurement has started
+        if app.step == MeasurementStep.MEASURING:
+            collector.defineRegions(dfx_frame)
+            result = collector.extractChannels(dfx_frame)
+
+            # Grab a chunk and check if we are finished
+            if result == dfxsdk.CollectorState.CHUNKREADY or result == dfxsdk.CollectorState.COMPLETED:
+                chunk_data = collector.getChunkData()
+                if chunk_data is not None:
+                    chunk = chunk_data.getChunkPayload()
+                    await chunk_queue.put(chunk)
+                if result == dfxsdk.CollectorState.COMPLETED:
+                    break
+
+        await renderer.put_nowait((image, (dfx_frame, frame_number, frame_timestamp_ns)))
+
+    # Stop the tracker
+    tracker.stop()
+
+    # Close the camera
+    imreader.close()
+
+    # Signal to send_chunks that we are done
+    await chunk_queue.put(None)
+
+    # Signal to render_queue that we are done
+    renderer.keep_render_last_frame()

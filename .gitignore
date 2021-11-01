@@ -9,6 +9,8 @@ collected_static
 !.gitkeep
 media/*
 !media/.gitkeep
+!media/tmp/.gitkeep
+!media/debug_chunks/.gitkeep
 
 .sass-cache/
 node_modules/
