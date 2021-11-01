@@ -24,6 +24,8 @@ from dfxutils.prettyprint import PrettyPrinter as PP
 from dfxutils.renderer import NullRenderer, Renderer
 from dfxutils.sdkhelpers import DfxSdkHelpers
 
+from .utils import save_config, load_config, generate_reqid, determine_action
+
 # Api method for device registration. Be careful with that (must be sure to store the device_token)
 async def register(config=None, license_key=None):
     """[summary]
@@ -93,55 +95,6 @@ async def login(config, email, password):
         else:
             print(f"Login failed {status}: {body}")
             return False
-# Save/Load the config.json file
-def save_config(config, config_file_path="./config.json"):
-    """[summary]
-
-    Args:
-        config [(dict)]: [Actual config dict to store]
-        config_file_path [(str), optional]: [description]. Defaults to "./config.json".
-    """
-    with open(config_file_path, "w") as c:
-        c.write(json.dumps(config, indent=4))
-        print(f"Config updated in {config_file_path}")
-        
-def load_config(config_file):
-    """[summary]
-
-    Args:
-        config_file [(srt)]: [config.json file path]
-
-    Returns:
-        (dict): [dict containing config.json]
-    """
-    config = {
-        "device_id": "",
-        "device_token": "",
-        "role_id": "",
-        "user_id": "",
-        "user_token": "",
-        "selected_study": "",
-        "last_measurement": "",
-        "study_cfg_hash": "",
-        "study_cfg_data": "",
-    }
-    if os.path.isfile(config_file):
-        with open(config_file, "r") as c:
-            read_config = json.loads(c.read())
-            config = {**config, **read_config}
-
-    dfxapi.Settings.device_id = config["device_id"]
-    dfxapi.Settings.device_token = config["device_token"]
-    dfxapi.Settings.role_id = config["role_id"]
-    dfxapi.Settings.role_id = config["role_id"]
-    dfxapi.Settings.user_token = config["user_token"]
-    if "rest_url" in config and config["rest_url"]:
-        dfxapi.Settings.rest_url = config["rest_url"]
-    if "ws_url" in config and config["ws_url"]:
-        dfxapi.Settings.ws_url = config["ws_url"]
-
-    return config
-
 
 async def get_studies_by_id(config=None, config_path=None, study_id=None):
     config = load_config(config_path) if not config else config
@@ -197,6 +150,23 @@ async def get_measurements_list(config, status_id_filter=[], limit=10, profile_i
     # Filter sections
     measurements_filtered = list(filter(lambda measurement: measurement['StatusID'] in status_id_filter, measurements)) if status_id_filter else measurements
     return measurements_filtered
+
+async def get_measurement(config, measurement_id=None, pretty_print=False):
+    if not config or config == "" or config == {}:
+        return "Config dict must be passed!"
+    
+    token = dfxapi.Settings.user_token if dfxapi.Settings.user_token else dfxapi.Settings.device_token
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    async with aiohttp.ClientSession(headers=headers, raise_for_status=True) as session:
+        measurement_id = config["last_measurement"] if measurement_id is None else measurement_id
+        if not measurement_id or measurement_id.isspace():
+            print("Please complete a measurement first or pass a measurement id")
+            return
+        _, results = await dfxapi.Measurements.retrieve(session, measurement_id)
+        if pretty_print:
+            PP.print_result(results)
+        return results
 
 async def retrieve_sdk_config(config, config_file, sdk_id):
     if not config or config == "" or config == {}:
@@ -403,18 +373,6 @@ async def make_measure(config, config_path, video_path, demographics=None, start
                 save_config(config, config_path)
                 print(f"Measurement {app.measurement_id} completed")
                 print(f"Use 'python {os.path.basename(__file__)} measure get' to get comprehensive results")
-            
-                
-def generate_reqid():
-    return "".join(random.choices(string.ascii_letters, k=10))
-
-def determine_action(chunk_number, number_chunks):
-    action = 'CHUNK::PROCESS'
-    if chunk_number == 0 and number_chunks > 1:
-        action = 'FIRST::PROCESS'
-    elif chunk_number == number_chunks - 1:
-        action = 'LAST::PROCESS'
-    return action
 
 async def extract_from_imgs(chunk_queue, imreader, tracker, collector, renderer, app):
     # Read frames from the image source, track faces and extract using collector

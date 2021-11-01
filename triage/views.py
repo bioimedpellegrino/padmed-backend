@@ -9,7 +9,7 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework import status
 
 from codicefiscale import codicefiscale
-from dfxapi.api import register_device #async
+from deepaffex.api import register_device, login, get_studies_by_id, get_studies_list, select_study, get_measurements_list, get_measurement, retrieve_sdk_config, make_measure #async
 import asyncio
 import datetime
 import os
@@ -128,13 +128,13 @@ class RecordVideoView(APIView):
 
         file_path = default_storage.save('tmp/' + "{}.webm".format(access_id), video)
 
-        file_name = generate_video_measure(file_path, access_id)
+        video = generate_video_measure(file_path, access_id)
         
         patient_video = PatientVideo()
         patient_video.triage_access = triage_access
-        patient_video.video = file_name
+        patient_video.video = video
         patient_video.save()
-        #TODO fix path in admin site!!!!!!!
+
         return Response({'patient_video_id': patient_video.pk }, status=status.HTTP_200_OK)
     
 class PatientResults(APIView):
