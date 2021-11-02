@@ -28,6 +28,9 @@ class TriageAccessAdmin(admin.ModelAdmin):
 class PatientVideoAdmin(admin.ModelAdmin):
     pass
 
+class PatientMeasureResultAdmin(admin.ModelAdmin):
+    pass
+
 admin.site.register(Patient, PatientAdmin)
 admin.site.register(Hospital, HospitalAdmin)
 admin.site.register(City, CityAdmin)
@@ -37,3 +40,4 @@ admin.site.register(TriageCode, TriageCodeAdmin)
 admin.site.register(TriageAccessReason, TriageAccessReasonAdmin)
 admin.site.register(TriageAccess, TriageAccessAdmin)
 admin.site.register(PatientVideo, PatientVideoAdmin)
+admin.site.register(PatientMeasureResult, PatientMeasureResultAdmin)

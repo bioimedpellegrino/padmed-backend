@@ -168,6 +168,28 @@ async def get_measurement(config, measurement_id=None, pretty_print=False):
             PP.print_result(results)
         return results
 
+async def get_study_types(config, status=''):
+    if not config or config == "" or config == {}:
+        return "Config dict must be passed!"
+    
+    token = dfxapi.Settings.user_token if dfxapi.Settings.user_token else dfxapi.Settings.device_token
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    async with aiohttp.ClientSession(headers=headers, raise_for_status=True) as session:
+        _, results = await dfxapi.Studies.types(session, status)
+        return results
+
+async def get_list_templates(config, status='ACTIVE', type_=''):
+    if not config or config == "" or config == {}:
+        return "Config dict must be passed!"
+    
+    token = dfxapi.Settings.user_token if dfxapi.Settings.user_token else dfxapi.Settings.device_token
+    headers = {"Authorization": f"Bearer {token}"}
+    
+    async with aiohttp.ClientSession(headers=headers, raise_for_status=True) as session:
+        _, results = await dfxapi.Studies.list_templates(session, status, type_=type_)
+        return results
+
 async def retrieve_sdk_config(config, config_file, sdk_id):
     if not config or config == "" or config == {}:
         return "Config dict must be passed!"
@@ -350,7 +372,7 @@ async def make_measure(config, config_path, video_path, demographics=None, start
             # Coroutine for rendering
             async def render():
                 if type(renderer) == NullRenderer:
-                    return
+                    return app.measurement_id
 
             # Wrap the coroutines in tasks, start them and wait till they finish
             tasks = [

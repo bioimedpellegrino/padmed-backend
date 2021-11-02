@@ -151,11 +151,12 @@ class PatientVideo(models.Model):
 class PatientMeasureResult(models.Model):
     
     id = models.AutoField(primary_key=True)
+    measurement_id = models.CharField(max_length=2000, blank=True, null=True, default="")
     patient_video = models.ForeignKey(PatientVideo, blank=True, null=True, on_delete=models.CASCADE)
     result = models.TextField(blank=True, null=True, default="{}")
     
     def __str__(self):
-        return "{} - {}".format(self.id, self.patient_video)
+        return "{} - {}".format(self.id, self.measurement_id)
     
     class Meta:
         verbose_name = "Esito misurazioni"
