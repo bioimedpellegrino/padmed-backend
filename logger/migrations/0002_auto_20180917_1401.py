@@ -8,11 +8,11 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('custom_logger', '0001_initial'),
+        ('logger', '0001_initial'),
     ]
 
     def setup_logs(apps, schema_editor):
-        LoggerMessage = apps.get_model("custom_logger", "LoggerMessage")
+        LoggerMessage = apps.get_model("logger", "LoggerMessage")
         LoggerMessage.objects.get_or_create(log_message_id=1,message='Error')
         LoggerMessage.objects.get_or_create(log_message_id=2,message='Login complete')
         LoggerMessage.objects.get_or_create(log_message_id=3,message='User is not active')

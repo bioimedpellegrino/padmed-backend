@@ -26,7 +26,7 @@ class CurrentUserMiddleware:
         
     def process_request(self, request):
         _user.value = request.user 
-        from custom_logger.utils import add_log
+        from logger.utils import add_log
         from ipware.ip import get_client_ip
         try:
             ip = get_client_ip(request)
@@ -37,7 +37,7 @@ class CurrentUserMiddleware:
 class ErrorMiddleware(MiddlewareMixin):
 
     def process_exception(self, request, exception):
-        from custom_logger.utils import add_log
+        from logger.utils import add_log
         from ipware.ip import get_client_ip
         import traceback, sys
         try:

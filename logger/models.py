@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.auth.models import User
-from custom_logger.middlewares import get_current_user
+from logger.middlewares import get_current_user
 
 LOGGER_LEVEL = (
         (1, 'DEBUG'),

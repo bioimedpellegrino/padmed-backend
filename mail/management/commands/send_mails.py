@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from custom_mail.utils import send_msgs
+from mail.utils import send_msgs
 
 
 class Command(BaseCommand):

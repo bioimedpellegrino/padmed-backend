@@ -4,7 +4,7 @@ from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import View
 from django.utils.decorators import method_decorator
-from custom_logger.utils import add_log
+from logger.utils import add_log
 from django.urls import reverse
 from .models import Mail
 from django.views.decorators.csrf import csrf_exempt
@@ -25,7 +25,7 @@ class RenderMailView(View):
     
 class SentMailListView(View):
 
-    template_name = 'custom_mail/sent_mail_list.html'
+    template_name = 'mail/sent_mail_list.html'
 
     def get(self, request, *args, **kwargs):
         if request.user.is_superuser is True:
@@ -41,7 +41,7 @@ class SentMailListView(View):
 
 class SentMailView(View):
 
-    template_name = 'custom_mail/sent_mail.html'
+    template_name = 'mail/sent_mail.html'
 
     def get(self, request, *args, **kwargs):
         mail_id = kwargs.get("id", None)

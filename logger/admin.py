@@ -1,6 +1,6 @@
 from builtins import str
 from django.contrib import admin
-from custom_logger.models import  Logger, LoggerMessage, WebRequest
+from logger.models import  Logger, LoggerMessage, WebRequest
 
 def custom_logger_delete(modeladmin, request, queryset):
     # for item in queryset.all():

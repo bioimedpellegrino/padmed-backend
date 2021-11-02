@@ -1,10 +1,10 @@
 from __future__ import print_function
 from builtins import str
 from django.core.mail import EmailMultiAlternatives, get_connection
-from custom_mail.models import Mail
+from mail.models import Mail
 from django.template.loader import render_to_string
 from django.utils import timezone
-from custom_logger.utils import add_log
+from logger.utils import add_log
 import json
 import sys
 from django.conf import settings

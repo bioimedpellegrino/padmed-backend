@@ -1,7 +1,7 @@
 import datetime
 from django.core.management.base import BaseCommand, CommandError
 from auditlog.models import LogEntry
-from custom_logger.models import Logger, WebRequest
+from logger.models import Logger, WebRequest
 
 class Command(BaseCommand):
     help = 'Deploy a specific entity by id'

@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('custom_mail', '0002_mail_uuid'),
+        ('mail', '0002_mail_uuid'),
     ]
 
     operations = [

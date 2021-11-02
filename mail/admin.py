@@ -1,6 +1,6 @@
 from django.contrib import admin
-from custom_mail.models import Mail
-from custom_mail.utils import _send
+from mail.models import Mail
+from mail.utils import _send
 from django.utils.html import format_html
 
 def send_selected(modeladmin, request, queryset):

@@ -9,7 +9,7 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('custom_mail', '0001_initial'),
+        ('mail', '0001_initial'),
     ]
 
     operations = [

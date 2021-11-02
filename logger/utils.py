@@ -1,4 +1,4 @@
-from custom_logger.models import Logger, LoggerMessage, WebRequest
+from logger.models import Logger, LoggerMessage, WebRequest
 from django.conf import settings
 import json
 

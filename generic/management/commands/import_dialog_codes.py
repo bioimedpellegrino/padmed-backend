@@ -6,7 +6,7 @@ import json
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from core.models import ConfigurationCountry
-from custom_logger.utils import add_log
+from logger.utils import add_log
 
 class Command(BaseCommand):
     help = 'Import Dialog Codes'
