@@ -10,12 +10,13 @@ from rest_framework import status
 
 from codicefiscale import codicefiscale
 from deepaffex.api import register_device, login, get_studies_by_id, get_studies_list, select_study, get_measurements_list, get_measurement, retrieve_sdk_config, make_measure #async
+from deepaffex.utils import save_config, load_config
 import asyncio
 import datetime
 import os
 
 from .forms import PatientForm
-from .models import Hospital, Patient, TriageCode, TriageAccessReason, TriageAccess, PatientVideo
+from .models import Hospital, Patient, TriageCode, TriageAccessReason, TriageAccess, PatientVideo, PatientMeasureResult
 from .utils import generate_video_measure
 
 class DecodeFiscalCodeView(APIView):
@@ -134,8 +135,18 @@ class RecordVideoView(APIView):
         patient_video.triage_access = triage_access
         patient_video.video = video
         patient_video.save()
-
-        return Response({'patient_video_id': patient_video.pk }, status=status.HTTP_200_OK)
+        
+        # Prepare results
+        p_measure_result = PatientMeasureResult()
+        p_measure_result.patient_video = patient_video
+        p_measure_result.save()
+        #Make the measure
+        video_path = os.path.join(settings.MEDIA_ROOT, video)
+        config_path = os.path.join(settings.CORE_DIR, "config.json")
+        config = load_config(config_path)
+        measurement_id = asyncio.run(make_measure(config=config, config_path=config_path, video_path=video_path))
+        
+        return Response({'patient_video_id': patient_video.pk, 'measurement_id': measurement_id }, status=status.HTTP_200_OK)
     
 class PatientResults(APIView):
     """
@@ -145,5 +156,5 @@ class PatientResults(APIView):
     
     def post(self, request, *args, **kwargs):
         
-        patient_video_id = kwargs.get('patient_video_id')
+        patient_video_id = kwargs.get('patient_video_id')#TODO FIX
         return render(request,'receptions-results.html', {'patient_video_id': ''})
