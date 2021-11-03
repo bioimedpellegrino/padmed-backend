@@ -106,6 +106,24 @@
         .then(() => data);
     }
 
+    async function getUserCameraID(){
+      let devices = await navigator.mediaDevices.enumerateDevices();   
+      devices = devices.filter(function(device){
+        return device.kind == 'videoinput';
+      })
+      if (devices.length == 0) return null;
+      else{
+        default_device = devices[0];
+        let rakinda_device = devices.filter(function(device){return device.label.includes("JSK USB2.0 Camera RGB")})[0];
+        if (rakinda_device){
+          return rakinda_device.deviceId;
+        } 
+        else {
+          return default_device.deviceId;
+        }
+      }
+    }
+
     function getCookie (name) {
       var cookieValue = null;
       if (document.cookie && document.cookie !== '') {
@@ -146,14 +164,13 @@
       return navigator.mediaDevices.enumerateDevices();
     }
 
-    const devId = "9dfa6272feb725b2a045a691505042966c49473be54fb4c03831af1936d32f3e";
-
     startButton.addEventListener("click", function() {
-        navigator.mediaDevices.getUserMedia({
-            video: {
-                deviceId: { exact: devId }
-              },
-            audio: false
+        getUserCameraID().then(devId => {
+          navigator.mediaDevices.getUserMedia({
+              video: {
+                  deviceId: { exact: devId }
+                },
+              audio: false
         }).then(stream => {
                 preview.srcObject = stream;
                 preview.captureStream = preview.captureStream || preview.mozCaptureStream;
@@ -195,7 +212,7 @@
                 xhr.send( fd );
               })
               .catch(console.log(log));
-        }, false);
+        }, false)});
 
         
 
