@@ -136,17 +136,21 @@ class RecordVideoView(APIView):
         patient_video.video = video
         patient_video.save()
         
-        # Prepare results
-        p_measure_result = PatientMeasureResult()
-        p_measure_result.patient_video = patient_video
-        p_measure_result.save()
         #Make the measure
         video_path = os.path.join(settings.MEDIA_ROOT, video)
         config_path = os.path.join(settings.CORE_DIR, "config.json")
         config = load_config(config_path)
         measurement_id = asyncio.run(make_measure(config=config, config_path=config_path, video_path=video_path))
+        # Save results
+        p_measure_result = PatientMeasureResult()
+        p_measure_result.patient_video = patient_video
+        p_measure_result.measurement_id = measurement_id
+        # Retrive comprehensive measurement informations
+        result = asyncio.run(get_measurement(config=config, measurement_id=measurement_id))
+        p_measure_result.result = result
+        p_measure_result.save()
         
-        return Response({'patient_video_id': patient_video.pk, 'measurement_id': measurement_id }, status=status.HTTP_200_OK)
+        return Response({'p_measure_result': p_measure_result.pk }, status=status.HTTP_200_OK)
     
 class PatientResults(APIView):
     """
@@ -156,5 +160,5 @@ class PatientResults(APIView):
     
     def post(self, request, *args, **kwargs):
         
-        patient_video_id = kwargs.get('patient_video_id')#TODO FIX
-        return render(request,'receptions-results.html', {'patient_video_id': ''})
+        p_measure_result = request.POST.get('p_measure_result')
+        return render(request,'receptions-results.html', {'p_measure_result': p_measure_result})

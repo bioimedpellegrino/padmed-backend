@@ -70,7 +70,7 @@
     let logElement = document.getElementById("log");
 
     let recordingTimeMS = 35000;
-    let patient_id;
+    let p_measure_result;
 
 
     function log(msg) {
@@ -171,8 +171,8 @@
 
                 xhr.onreadystatechange = function() {
                   if (xhr.readyState === 4) {
-                    patient_id = eval('('+xhr.response+')' );
-                    if(patient_id){
+                    p_measure_result = eval('('+xhr.response+')' );
+                    if(p_measure_result){
                       const form = document.createElement('form');
                       form.method = "post";
                       form.action = "{% url 'patient_results' %}";
@@ -183,8 +183,8 @@
                       form.appendChild(csfrtoken);
                       const hiddenField = document.createElement('input');
                       hiddenField.type = 'hidden';
-                      hiddenField.name = 'patient_video_id';
-                      hiddenField.value = patient_id['patient_video_id'];
+                      hiddenField.name = 'p_measure_result';
+                      hiddenField.value = p_measure_result['p_measure_result'];
                       form.appendChild(hiddenField);
                       document.body.appendChild(form);
                       form.submit();
