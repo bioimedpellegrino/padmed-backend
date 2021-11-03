@@ -71,12 +71,6 @@ class ReceptionsView(APIView):
             patient, created = Patient.objects.get_or_create(fiscal_code=fiscal_code_decoded['code'], user=user)
             hospital = Hospital.objects.all().first()
             
-            if created:
-                patient.birth_date = fiscal_code_decoded['birthdate']
-                patient.gender = fiscal_code_decoded['sex']
-                patient.birth_place = fiscal_code_decoded['birthplace']['name']
-                patient.save()
-            
             access = TriageAccess()
             access.patient = patient
             access.hospital = hospital
