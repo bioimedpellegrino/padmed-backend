@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'fontawesomefree',
     'app',
     'generic',
-    'triage' 
+    'triage',
+    'dashboards'
 ]
 
 MIDDLEWARE = [

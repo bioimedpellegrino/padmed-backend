@@ -34,7 +34,6 @@ class DecodeFiscalCodeView(APIView):
             codicefiscale.decode(request.data['fiscal_code']), 
             status=status.HTTP_200_OK)
         
-
 class TestDFXApiView(APIView):
     """[summary]
 
@@ -112,7 +111,6 @@ class ReceptionsReasonsView(APIView):
         
         return render(request, 'receptions-videomeasuring.html', {'access_id': access_id })
         
-
 class RecordVideoView(APIView):
     """
     Args:

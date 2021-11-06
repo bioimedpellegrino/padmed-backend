@@ -17,7 +17,7 @@ urlpatterns = [
     path("generic/", include("generic.urls")),
     path("triage/", include("triage.urls")),
     path("", include("app.urls")),             # UI Kits Html files - must be last one
-    
+    path("dashboards/",include("dashboards.urls")),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
