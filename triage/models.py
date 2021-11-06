@@ -146,25 +146,25 @@ class TriageAccess(models.Model):
     
     @classmethod
     def whites(cls,exclude=[],**kwargs):
-        whites = cls.objects.filter(triage_code=TriageCode.get_white())
-        whites = whites.filter(**kwargs)
+        objs = cls.objects.filter(triage_code=TriageCode.get_white())
+        objs = objs.filter(**kwargs)
         for exc in exclude:
-            whites = whites.exclude(**exc)
-        return whites
+            objs = objs.exclude(**exc)
+        return objs
     @classmethod
     def greens(cls,exclude=[],**kwargs):
-        whites = cls.objects.filter(triage_code=TriageCode.get_green())
-        whites = whites.filter(**kwargs)
+        objs = cls.objects.filter(triage_code=TriageCode.get_green())
+        objs = objs.filter(**kwargs)
         for exc in exclude:
-            whites = whites.exclude(**exc)
-        return whites
+            objs = objs.exclude(**exc)
+        return objs
     @classmethod
     def yellows(cls,exclude=[],**kwargs):
-        whites = cls.objects.filter(triage_code=TriageCode.get_yellow())
-        whites = whites.filter(**kwargs)
+        objs = cls.objects.filter(triage_code=TriageCode.get_yellow())
+        objs = objs.filter(**kwargs)
         for exc in exclude:
-            whites = whites.exclude(**exc)
-        return whites
+            objs = objs.exclude(**exc)
+        return objs
     
     class Meta:
         verbose_name = "Accesso"
