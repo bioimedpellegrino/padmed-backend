@@ -25,10 +25,13 @@ NATIONALITY = (
     ('foreign', 'foreign'),
 )
 
+WHITE = 'WHITE'
+GREEN = 'GREEN'
+YELLOW ='YELLOW'
 TRIAGE_CODES = (
-    ('WHITE', 'WHITE'),
-    ('GREEN', 'GREEN'),
-    ('YELLOW', 'YELLOW')
+    (WHITE, 'WHITE'),
+    (GREEN, 'GREEN'),
+    (YELLOW, 'YELLOW')
 )
         
 class Hospital(models.Model):
@@ -36,9 +39,9 @@ class Hospital(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(blank=True, null=True, max_length=512, default="")
     full_address = models.TextField(blank=True, null=True, default="")
-    city = models.ForeignKey(City, blank=True, null=True, on_delete=models.CASCADE, related_name="hospital_city")
-    province = models.ForeignKey(Province, blank=True, null=True, on_delete=models.CASCADE, related_name="hospital_province")
-    country = models.ForeignKey(Country, blank=True, null=True,on_delete=models.CASCADE, related_name="hospital_country")
+    city = models.ForeignKey(City, blank=True, null=True, on_delete=models.PROTECT, related_name="hospital_city")
+    province = models.ForeignKey(Province, blank=True, null=True, on_delete=models.PROTECT, related_name="hospital_province")
+    country = models.ForeignKey(Country, blank=True, null=True,on_delete=models.PROTECT, related_name="hospital_country")
     
     def __str__(self):
         return self.name
@@ -70,17 +73,17 @@ class Patient(models.Model):
     has_accept_privacy = models.BooleanField(default=False)
     lang = models.CharField(default='it', max_length=5)
     full_address = models.TextField(blank=True, null=True, default="")
-    residence_city = models.ForeignKey(City, blank=True, null=True, on_delete=models.CASCADE, related_name="residence_city")
+    residence_city = models.ForeignKey(City, blank=True, null=True, on_delete=models.PROTECT, related_name="residence_city")
     residence_city_code = models.CharField(blank=True, null=True, max_length=512, default="")
-    residence_province = models.ForeignKey(Province, blank=True, null=True, on_delete=models.CASCADE, related_name="residence_province")
+    residence_province = models.ForeignKey(Province, blank=True, null=True, on_delete=models.PROTECT, related_name="residence_province")
     residence_zip_code = models.CharField(blank=True, null=True, max_length=512, default="")
-    residence_country = models.ForeignKey(Country, blank=True, null=True,on_delete=models.CASCADE, related_name="residence_country")
-    domicile_city = models.ForeignKey(City, blank=True, null=True, on_delete=models.CASCADE, related_name="domicile_city")
+    residence_country = models.ForeignKey(Country, blank=True, null=True,on_delete=models.PROTECT, related_name="residence_country")
+    domicile_city = models.ForeignKey(City, blank=True, null=True, on_delete=models.PROTECT, related_name="domicile_city")
     domicile_city_code = models.CharField(blank=True, null=True, max_length=512, default="")
-    domicile_province = models.ForeignKey(Province, blank=True, null=True, on_delete=models.CASCADE, related_name="domicile_province")
+    domicile_province = models.ForeignKey(Province, blank=True, null=True, on_delete=models.PROTECT, related_name="domicile_province")
     domicile_zip_code = models.CharField(blank=True, null=True, max_length=512, default="")
-    domicile_country = models.ForeignKey(Country, blank=True, null=True,on_delete=models.CASCADE, related_name="domicile_country")
-    hospital = models.ForeignKey(Hospital, blank=True, null=True, on_delete=models.CASCADE)
+    domicile_country = models.ForeignKey(Country, blank=True, null=True,on_delete=models.PROTECT, related_name="domicile_country")
+    hospital = models.ForeignKey(Hospital, blank=True, null=True, on_delete=models.PROTECT)
     
     def __str__(self):
         return self.fiscal_code
@@ -101,13 +104,23 @@ class TriageCode(models.Model):
     class Meta:
         verbose_name = "Codice triage"
         verbose_name_plural = "Codici triage"
+    
+    @classmethod
+    def get_white(cls):
+        return cls.objects.get(code=WHITE)
+    @classmethod
+    def get_green(cls):
+        return cls.objects.get(code=GREEN)
+    @classmethod
+    def get_yellow(cls):
+        return cls.objects.get(code=YELLOW)
 
 class TriageAccessReason(models.Model):
     
     id = models.AutoField(primary_key=True)
     hospital = models.ForeignKey(Hospital, blank=True, null=True, on_delete=models.CASCADE)
     reason = models.CharField(blank=True, null=True, max_length=512, default="")
-    related_code = models.ForeignKey(TriageCode, blank=True, null=True, on_delete=models.CASCADE)
+    related_code = models.ForeignKey(TriageCode, blank=True, null=True, on_delete=models.PROTECT)
     
     def __str__(self):
         return self.reason
@@ -123,13 +136,35 @@ class TriageAccess(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     patient = models.ForeignKey(Patient, blank=True, null=True, related_name='accesses', on_delete=models.CASCADE)
     hospital = models.ForeignKey(Hospital, blank=True, null=True, related_name='accesses', on_delete=models.CASCADE)
-    triage_code = models.ForeignKey(TriageCode, blank=True, null=True, on_delete=models.CASCADE)
-    access_reason = models.ForeignKey(TriageAccessReason, blank=True, null=True, on_delete=models.CASCADE)
+    triage_code = models.ForeignKey(TriageCode, blank=True, null=True, on_delete=models.PROTECT)
+    access_reason = models.ForeignKey(TriageAccessReason, blank=True, null=True, on_delete=models.PROTECT)
     access_date = models.DateTimeField(blank=True, null=True)
+    exit_date = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return "{} - {}".format(self.id, self.patient)
-
+    
+    @classmethod
+    def whites(cls,exclude=[],**kwargs):
+        whites = cls.objects.filter(triage_code=TriageCode.get_white())
+        whites = whites.filter(**kwargs)
+        for exc in exclude:
+            whites = whites.exclude(**exc)
+        return whites
+    @classmethod
+    def greens(cls,exclude=[],**kwargs):
+        whites = cls.objects.filter(triage_code=TriageCode.get_green())
+        whites = whites.filter(**kwargs)
+        for exc in exclude:
+            whites = whites.exclude(**exc)
+        return whites
+    @classmethod
+    def yellows(cls,exclude=[],**kwargs):
+        whites = cls.objects.filter(triage_code=TriageCode.get_yellow())
+        whites = whites.filter(**kwargs)
+        for exc in exclude:
+            whites = whites.exclude(**exc)
+        return whites
     
     class Meta:
         verbose_name = "Accesso"
