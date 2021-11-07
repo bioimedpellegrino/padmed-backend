@@ -87,20 +87,42 @@
             </div>
           </div>
         </form>
-        
         <!-- Navigation -->
+        <ul class="navbar-nav">
+
 
         <ul class="navbar-nav">
-          {% for item in side_menu %}
-            <li class="nav-item">
-              <a class="nav-link {% if item.active %}active{% endif %}" href="{% url item.url %}"> 
-                <i class="{{ item.icon_classes }}"></i> 
-                {{ item.text }}
-              </a>
-            </li>
-          {% endfor %}
-        </ul>
+          <li class="nav-item">
+          <a class=" nav-link {% if 'index' in segment %} active {% endif %}" href="/"> <i class="ni ni-tv-2 text-primary"></i> Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if 'icons' in segment %} active {% endif %}" href="/icons.html">
+              <i class="ni ni-planet text-blue"></i> Icons
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if 'maps' in segment %} active {% endif %}" href="/maps.html">
+              <i class="ni ni-pin-3 text-orange"></i> Maps
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if 'profile' in segment %} active {% endif %}" href="/profile.html">
+              <i class="ni ni-single-02 text-yellow"></i> User profile
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if 'tables' in segment %} active {% endif %}" href="/tables.html">
+              <i class="ni ni-bullet-list-67 text-info"></i> Tables
+            </a>
+          </li>
 
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}">
+              <i class="ni ni-user-run text-red"></i> Logout
+            </a>
+          </li>
+        </ul>
         <!-- Divider -->
         <hr class="my-3">
         <!-- Heading -->
