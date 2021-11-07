@@ -18,10 +18,10 @@ def side_menu_context(current_url_name):
     
     url_name = "live_dash"
     item = {
-        "text":"Live Dash",
+        "text":"Live Dashboard",
         "url":url_name,
         "active":current_url_name==url_name,
-        "icon_classes":"ni ni-tv-2 text-primary",
+        "icon_classes":"ni ni-bullet-list-67 text-primary",
         "childs":None,
         }
     side_menu.append(item)    
@@ -31,7 +31,7 @@ def side_menu_context(current_url_name):
         "text":"Storico",
         "url":url_name,
         "active":current_url_name==url_name,
-        "icon_classes":"ni ni-bullet-list-67 text-info",
+        "icon_classes":"ni ni-tv-2 text-info",
         "childs":None,
         }
     side_menu.append(item)
