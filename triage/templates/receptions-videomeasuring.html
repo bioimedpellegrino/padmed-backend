@@ -70,7 +70,7 @@
     let logElement = document.getElementById("log");
 
     let recordingTimeMS = 35000;
-    let patient_id;
+    let p_measure_result;
 
 
     function log(msg) {
@@ -104,6 +104,24 @@
             recorded
         ])
         .then(() => data);
+    }
+
+    async function getUserCameraID(){
+      let devices = await navigator.mediaDevices.enumerateDevices();   
+      devices = devices.filter(function(device){
+        return device.kind == 'videoinput';
+      })
+      if (devices.length == 0) return null;
+      else{
+        default_device = devices[0];
+        let rakinda_device = devices.filter(function(device){return device.label.includes("JSK USB2.0 Camera RGB")})[0];
+        if (rakinda_device){
+          return rakinda_device.deviceId;
+        } 
+        else {
+          return default_device.deviceId;
+        }
+      }
     }
 
     function getCookie (name) {
@@ -146,14 +164,16 @@
       return navigator.mediaDevices.enumerateDevices();
     }
 
-    const devId = "9dfa6272feb725b2a045a691505042966c49473be54fb4c03831af1936d32f3e";
-
     startButton.addEventListener("click", function() {
-        navigator.mediaDevices.getUserMedia({
-            video: {
-                deviceId: { exact: devId }
-              },
-            audio: false
+        getUserCameraID().then(devId => {
+          navigator.mediaDevices.getUserMedia({
+              video: {
+                  deviceId: { exact: devId },
+                  height: { min: 720, max: 1280 },
+                  width: { min: 1080, max: 1920 },
+                  frameRate: { min: 15, ideal: 24, max: 30 },
+                },
+              audio: false
         }).then(stream => {
                 preview.srcObject = stream;
                 preview.captureStream = preview.captureStream || preview.mozCaptureStream;
@@ -171,8 +191,8 @@
 
                 xhr.onreadystatechange = function() {
                   if (xhr.readyState === 4) {
-                    patient_id = eval('('+xhr.response+')' );
-                    if(patient_id){
+                    p_measure_result = eval('('+xhr.response+')' );
+                    if(p_measure_result){
                       const form = document.createElement('form');
                       form.method = "post";
                       form.action = "{% url 'patient_results' %}";
@@ -183,8 +203,8 @@
                       form.appendChild(csfrtoken);
                       const hiddenField = document.createElement('input');
                       hiddenField.type = 'hidden';
-                      hiddenField.name = 'patient_video_id';
-                      hiddenField.value = patient_id['patient_video_id'];
+                      hiddenField.name = 'p_measure_result';
+                      hiddenField.value = p_measure_result['p_measure_result'];
                       form.appendChild(hiddenField);
                       document.body.appendChild(form);
                       form.submit();
@@ -195,7 +215,7 @@
                 xhr.send( fd );
               })
               .catch(console.log(log));
-        }, false);
+        }, false)});
 
         
 

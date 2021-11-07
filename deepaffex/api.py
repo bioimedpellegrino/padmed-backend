@@ -372,7 +372,7 @@ async def make_measure(config, config_path, video_path, demographics=None, start
             # Coroutine for rendering
             async def render():
                 if type(renderer) == NullRenderer:
-                    return app.measurement_id
+                    return
 
             # Wrap the coroutines in tasks, start them and wait till they finish
             tasks = [
@@ -395,6 +395,8 @@ async def make_measure(config, config_path, video_path, demographics=None, start
                 save_config(config, config_path)
                 print(f"Measurement {app.measurement_id} completed")
                 print(f"Use 'python {os.path.basename(__file__)} measure get' to get comprehensive results")
+            
+            return app.measurement_id
 
 async def extract_from_imgs(chunk_queue, imreader, tracker, collector, renderer, app):
     # Read frames from the image source, track faces and extract using collector

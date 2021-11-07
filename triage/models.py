@@ -64,7 +64,8 @@ class Patient(models.Model):
     middle_name = models.CharField(blank=True, null=True, max_length=512, default="")
     last_name = models.CharField(blank=True, null=True, max_length=512, default="")
     birth_date = models.DateField(blank=True, null=True)
-    birth_place = models.CharField(blank=True, null=True, max_length=512, default="")
+    birth_place_city = models.CharField(blank=True, null=True, max_length=512, default="")
+    birth_place_province = models.CharField(blank=True, null=True, max_length=2000, default="")
     note = models.TextField(blank=True, null=True, default="")
     gender = models.CharField(blank=True, null=True, max_length=1, choices=GENDER)
     phone = models.CharField(blank=True, null=True, max_length=512, default="")
@@ -87,6 +88,18 @@ class Patient(models.Model):
     
     def __str__(self):
         return self.fiscal_code
+    
+    def save(self, *args, **kwargs):
+        from codicefiscale import codicefiscale
+        if self.fiscal_code and codicefiscale.is_valid(self.fiscal_code):
+            decoded = codicefiscale.decode(self.fiscal_code)
+            self.birth_date = decoded['birthdate'] if not self.birth_date else self.birth_date
+            self.gender = decoded['sex'] if not self.gender else self.gender
+            self.birth_place_city = decoded['birthplace']['name'] if not self.birth_place_city else self.birth_place_city
+            self.birth_place_province = decoded['birthplace']['province'] if not self.birth_place_province else self.birth_place_province
+        super(Patient, self).save(*args, **kwargs)
+
+    
     
     class Meta:
         verbose_name = "Paziente"
