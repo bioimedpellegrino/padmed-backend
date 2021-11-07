@@ -107,7 +107,8 @@
     }
 
     async function getUserCameraID(){
-      let devices = await navigator.mediaDevices.enumerateDevices();   
+      let devices = await navigator.mediaDevices.enumerateDevices();
+      console.log("devices", devices);
       devices = devices.filter(function(device){
         return device.kind == 'videoinput';
       })
