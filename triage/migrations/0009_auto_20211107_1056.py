@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('generic', '0001_initial'),
-        ('triage', '0007_patientmeasureresult_measurement_id'),
+        ('triage', '0008_auto_20211103_1253'),
     ]
 
     operations = [
