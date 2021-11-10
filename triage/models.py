@@ -2,6 +2,7 @@ import datetime
 import json
 import os
 import base64
+import pytz
 
 from generic.models import City, Province, Country
 
@@ -157,6 +158,46 @@ class TriageAccess(models.Model):
     def __str__(self):
         return "{} - {}".format(self.id, self.patient)
     
+    @property
+    def is_white(self):
+        return self.triage_code == TriageCode.get_white()
+    @property
+    def set_white(self):
+        self.triage_code == TriageCode.get_white()
+        self.save()
+    @property
+    def is_green(self):
+        return self.triage_code == TriageCode.get_green()
+    @property
+    def set_green(self):
+        self.triage_code == TriageCode.get_green()
+        self.save()
+    @property
+    def is_yellow(self):
+        return self.triage_code == TriageCode.get_yellow()
+    @property
+    def set_yellow(self):
+        self.triage_code == TriageCode.get_yellow()
+        self.save()
+    
+    @property
+    def waiting_progress(self):
+        ## Qui si può mettere un sistema di calcolo del tempo medio (chesciato in qualche tabella e aggiornato di giorno in giorno)
+        ## per sostituire settings.INIT_MAX_WAITING_SECONDS e dare all'operatore una idea più realistica e utile del tempo di 
+        ## attesa 
+        seconds = self.whaiting_time
+        waiting_progress = float(seconds)/settings.INIT_MAX_WAITING_SECONDS
+        return int(waiting_progress)
+    @property
+    def waiting_time(self):
+        access_date = self.access_date
+        tz = pytz.timezone('Europe/Rome')
+        rome_now = datetime.datetime.now(tz)
+        waiting_time = rome_now - access_date
+        ## TODO: formatta waiting_time
+        return waiting_time
+        
+        
     @classmethod
     def whites(cls,exclude=[],**kwargs):
         objs = cls.objects.filter(triage_code=TriageCode.get_white())
@@ -177,6 +218,17 @@ class TriageAccess(models.Model):
         objs = objs.filter(**kwargs)
         for exc in exclude:
             objs = objs.exclude(**exc)
+        return objs
+    
+    @classmethod
+    def ordered_items(cls,exclude=[],**kwargs):
+        ## Implement here the ordering policy of the hospital ##
+        objs = cls.objects.all().order_by("created")
+        
+        objs = cls.objects.filter(**kwargs)
+        for exc in exclude:
+            objs = objs.exclude(**exc)
+        
         return objs
     
     class Meta:

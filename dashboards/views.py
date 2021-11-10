@@ -60,8 +60,12 @@ class LiveView(APIView):
             "positive_trend" : positive_trend,
         }
 
+        items = TriageAccess.ordered_items()
+        max_waiting_time = 100#get_max_waiting_time()
         return render(request, self.template_name, {
             "cards":cards,
+            "items":items,
+            "max_waiting_time":max_waiting_time,
             })
 
 class StoricoView(APIView):
