@@ -190,10 +190,11 @@ class TriageAccess(models.Model):
         return int(waiting_progress)
     @property
     def waiting_time(self):
+        from dateutil.relativedelta import relativedelta as rd
         access_date = self.access_date
         tz = pytz.timezone('Europe/Rome')
         rome_now = datetime.datetime.now(tz)
-        waiting_time = rome_now - access_date
+        waiting_time = rd(rome_now,access_date)
         ## TODO: formatta waiting_time
         return waiting_time
         

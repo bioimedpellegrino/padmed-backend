@@ -12,9 +12,12 @@ class LiveView(APIView):
     Args:
         APIView ([type]): [description]
     """
+    
     template_name = 'live_dash.html'
     
     def get(self, request, *args, **kwargs):
+        from .utils import get_max_waiting_time
+        
         now = timezone.now()
         one_hour_ago = now - relativedelta(hours=1)
 
@@ -61,11 +64,16 @@ class LiveView(APIView):
         }
 
         items = TriageAccess.ordered_items()
-        max_waiting_time = 100#get_max_waiting_time()
+        max_waiting_time = get_max_waiting_time()
+        max_waiting = max_waiting_time.hours*60 + max_waiting_time.minutes
+        for item in items:
+            item_waiting_time = item.waiting_time
+            item.waiting_cache = min(100*(item_waiting_time.days*24*60 + item_waiting_time.hours*60 + item_waiting_time.minutes)/max_waiting,100)
+            item.waiting_fmt_cache = "%sh:%smin"%(item_waiting_time.hours,item_waiting_time.minutes)
+            item.waiting_range_cache = min(int(item.waiting_cache/33.3),3)
         return render(request, self.template_name, {
             "cards":cards,
             "items":items,
-            "max_waiting_time":max_waiting_time,
             })
 
 class StoricoView(APIView):

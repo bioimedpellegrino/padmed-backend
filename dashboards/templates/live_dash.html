@@ -185,10 +185,17 @@
                       <td>
                         <div class="d-flex align-items-center">
                           <div>
-                            <span class="mr-2">{{item.waiting_time}}</span>
+                            
+                            <span class="mr-2">{{item.waiting_fmt_cache}}</span>
                             <div>
                               <div class="progress">
-                                <div class="progress-bar bg-warning" role="progressbar" aria-valuenow="{{item.waiting_time}}" aria-valuemin="0" aria-valuemax="{{max_waiting_time}}" style="width: 60%;"></div>
+                                {% if item.waiting_range_cache <= 1 %}
+                                  <div class="progress-bar bg-green" role="progressbar" aria-valuenow="{{item.waiting_cache}}" aria-valuemin="0" aria-valuemax="100" style="width: {{item.waiting_cache}}%;"></div>
+                                {% elif item.waiting_range_cache == 2 %}
+                                  <div class="progress-bar bg-yellow" role="progressbar" aria-valuenow="{{item.waiting_cache}}" aria-valuemin="0" aria-valuemax="100" style="width: {{item.waiting_cache}}%;"></div>
+                                {% elif item.waiting_range_cache >= 3 %}
+                                  <div class="progress-bar bg-warning" role="progressbar" aria-valuenow="{{item.waiting_cache}}" aria-valuemin="0" aria-valuemax="100" style="width: {{item.waiting_cache}}%;"></div>
+                                {% endif %}
                               </div>
                             </div>
                           </div>
