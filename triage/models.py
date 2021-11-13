@@ -3,6 +3,7 @@ import json
 import os
 import base64
 import pytz
+from functools import lru_cache
 
 from generic.models import City, Province, Country
 
@@ -262,3 +263,12 @@ class PatientMeasureResult(models.Model):
     class Meta:
         verbose_name = "Esito misurazioni"
         verbose_name_plural = "Esiti misurazioni"
+    
+    @lru_cache(maxsize=None)
+    def get_result(self):
+        import json
+        return json.loads(self.result)
+
+    @lru_cache(maxsize=None)
+    def get_hresult(self):
+        pass
