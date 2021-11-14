@@ -97,7 +97,7 @@ class StoricoView(APIView):
     Args:
         APIView ([type]): [description]
     """
-    template_name = 'index.html'
+    template_name = 'storico.html'
     
     def get(self, request, *args, **kwargs):
         
