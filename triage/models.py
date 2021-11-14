@@ -270,7 +270,6 @@ class PatientMeasureResult(models.Model):
     def get_result(self):
         import ast
         result = ast.literal_eval(self.result)
-        pprint(result)
         return result
 
     @property
@@ -283,6 +282,71 @@ class PatientMeasureResult(models.Model):
             "pressure":{"min":{},"max":{}},
             "temperature":{}
         }
+            
+        ## Temperature
+        # data = result["Results"]["HR_BPM"]["Data"]
+        # multiplier = result["Results"]["HR_BPM"]["Multiplier"]
+        # unit = result["SignalUnits"]["HR_BPM"]
+        hresult["temperature"]["mean"] = 42
+        hresult["temperature"]["stdev"] = 1
+        hresult["temperature"]["unit"] = "°C"
+        if hresult["temperature"]["mean"] < 27:
+            hresult["temperature"]["alarm"] = 3
+        elif hresult["temperature"]["mean"] < 33:
+            hresult["temperature"]["alarm"] = 2
+        elif hresult["temperature"]["mean"] < 35:
+            hresult["temperature"]["alarm"] = 1
+        elif hresult["temperature"]["mean"] < 37:
+            hresult["temperature"]["alarm"] = 0
+        elif hresult["temperature"]["mean"] < 40:
+            hresult["temperature"]["alarm"] = 1
+        elif hresult["temperature"]["mean"] < 41.1:
+            hresult["temperature"]["alarm"] = 2
+        elif hresult["temperature"]["mean"] >= 41.1:
+            hresult["temperature"]["alarm"] = 3
+            
+        ## Blood pressure
+        # data = result["Results"]["HR_BPM"]["Data"]
+        # multiplier = result["Results"]["HR_BPM"]["Multiplier"]
+        # unit = result["SignalUnits"]["HR_BPM"]
+        hresult["pressure"]["min"]["mean"] = 180
+        hresult["pressure"]["min"]["stdev"] = 3
+        hresult["pressure"]["min"]["unit"] = "mmHg"
+        hresult["pressure"]["max"]["mean"] = 120
+        hresult["pressure"]["max"]["stdev"] = 3
+        hresult["pressure"]["max"]["unit"] = "mmHg"
+        pmin = hresult["pressure"]["min"]["mean"]
+        pmax = hresult["pressure"]["max"]["mean"]
+        if pmin < 50:
+            min_alarm = 3
+        elif pmin < 60:
+            min_alarm = 2
+        elif pmin < 65:
+            min_alarm = 1
+        elif pmin < 85:
+            min_alarm = 0
+        elif pmin < 100:
+            min_alarm = 1
+        elif pmin < 120:
+            min_alarm = 2
+        elif pmin >= 120:
+            min_alarm = 3
+        if pmax < 70:
+            max_alarm = 3
+        elif pmax < 90:
+            max_alarm = 2
+        elif pmax < 100:
+            max_alarm = 1
+        elif pmax < 130:
+            max_alarm = 0
+        elif pmax < 160:
+            max_alarm = 1
+        elif pmax < 180:
+            max_alarm = 2
+        elif pmax >= 180:
+            max_alarm = 3
+        pmin = hresult["pressure"]["alarm"] = max(min_alarm,max_alarm)
+            
         ## Heart rate
         data = result["Results"]["HR_BPM"][0]["Data"]
         multiplier = result["Results"]["HR_BPM"][0]["Multiplier"]
@@ -304,54 +368,5 @@ class PatientMeasureResult(models.Model):
             hresult["heart_rate"]["alarm"] = 2
         elif hresult["heart_rate"]["mean"] >= 120:
             hresult["heart_rate"]["alarm"] = 3
-            
-        ## Blood pressure
-        # data = result["Results"]["HR_BPM"]["Data"]
-        # multiplier = result["Results"]["HR_BPM"]["Multiplier"]
-        # unit = result["SignalUnits"]["HR_BPM"]
-        hresult["pressure"]["min"]["mean"] = 80
-        hresult["pressure"]["min"]["stdev"] = 3
-        hresult["pressure"]["min"]["unit"] = "mmHg"
-        hresult["pressure"]["max"]["mean"] = 120
-        hresult["pressure"]["max"]["stdev"] = 3
-        hresult["pressure"]["max"]["unit"] = "mmHg"
-        pmin = hresult["pressure"]["min"]["mean"]
-        pmax = hresult["pressure"]["max"]["mean"]
-        if pmin < 50 or pmax < 70:
-            hresult["pressure"]["alarm"] = 3
-        elif pmin < 60 or pmax < 90:
-            hresult["pressure"]["alarm"] = 2
-        elif pmin < 65 or pmax < 100:
-            hresult["pressure"]["alarm"] = 1
-        elif pmin < 85 or pmax < 130:
-            hresult["pressure"]["alarm"] = 0
-        elif pmin < 100 or pmax < 160:
-            hresult["pressure"]["alarm"] = 1
-        elif pmin < 120 or pmax < 180:
-            hresult["pressure"]["alarm"] = 2
-        elif pmin >= 120 or pmax >= 180:
-            hresult["pressure"]["alarm"] = 3
-            
-        ## Temperature
-        # data = result["Results"]["HR_BPM"]["Data"]
-        # multiplier = result["Results"]["HR_BPM"]["Multiplier"]
-        # unit = result["SignalUnits"]["HR_BPM"]
-        hresult["temperature"]["mean"] = 37
-        hresult["temperature"]["stdev"] = 1
-        hresult["temperature"]["unit"] = "°C"
-        if hresult["temperature"]["mean"] < 27:
-            hresult["temperature"]["alarm"] = 3
-        elif hresult["temperature"]["mean"] < 33:
-            hresult["temperature"]["alarm"] = 2
-        elif hresult["temperature"]["mean"] < 35:
-            hresult["temperature"]["alarm"] = 1
-        elif hresult["temperature"]["mean"] < 37:
-            hresult["temperature"]["alarm"] = 0
-        elif hresult["temperature"]["mean"] < 40:
-            hresult["temperature"]["alarm"] = 1
-        elif hresult["temperature"]["mean"] < 41.1:
-            hresult["temperature"]["alarm"] = 2
-        elif hresult["temperature"]["mean"] >= 41.1:
-            hresult["temperature"]["alarm"] = 3
         
         return hresult
