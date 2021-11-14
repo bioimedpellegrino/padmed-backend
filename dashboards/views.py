@@ -74,8 +74,9 @@ class LiveView(APIView):
         for item in items:
             item_waiting_time = item.waiting_time
             item.waiting_cache = min(100*(item_waiting_time.days*24*60 + item_waiting_time.hours*60 + item_waiting_time.minutes)/max_waiting,100)
-            item.waiting_fmt_cache = "%sh:%smin"%(item_waiting_time.hours,item_waiting_time.minutes)
+            item.waiting_fmt_cache = "%sh:%smin"%(item_waiting_time.days*24+item_waiting_time.hours,item_waiting_time.minutes)
             item.waiting_range_cache = min(int(item.waiting_cache/33.3),3)
+            item.waiting_minutes_cache = item_waiting_time.days*24*60 + item_waiting_time.hours*60 + item_waiting_time.minutes
             
             item.hresults = None
             video = item.patientvideo_set.last()

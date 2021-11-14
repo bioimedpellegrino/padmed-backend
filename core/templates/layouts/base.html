@@ -24,7 +24,8 @@
   <link href="{% static 'fontawesomefree/css/all.min.css' %}" rel="stylesheet" type="text/css">
   <!-- CSS Files -->
   <link href="/static/assets/css/argon-dashboard.css?v=1.1.0" rel="stylesheet" />
-
+  <!-- Interactive tables (not downloaded) -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
   <!-- Specific CSS goes HERE -->
   {% block stylesheets %}{% endblock stylesheets %}
 
@@ -45,6 +46,10 @@
   {% include "includes/scripts.html" %}
 
   <!-- Specific JS goes HERE --> 
+  
+  <!-- Interactive tables (not downloaded) -->
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+
   {% block javascripts %}{% endblock javascripts %}
 
 </body>

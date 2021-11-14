@@ -172,14 +172,14 @@
                     <th scope="col">In attesa da</th>
                     <th scope="col">Temperatura ({{units.temperature}})</th>
                     <th scope="col">Pressione ({{units.pressure}})</th>
-                    <th scope="col">Battito cardiaco ({{units.heartrate}})</th>
+                    <th scope="col">Battito ({{units.heartrate}})</th>
                     <th scope="col"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {% for item in items %}
                     <tr>
-                      <td scope="row">
+                      <td scope="row" data-search="{%if item.is_white %}white{%elif item.is_green%}green{%elif item.is_yellow%}yellow{%endif%}" data-order="{%if item.is_white %}3{%elif item.is_green%}2{%elif item.is_yellow%}1{%endif%}">
                         <div class="media align-items-center">
                           {% if item.is_white %}
                             <div class="icon-sm bg-white rounded-circle border"></div>
@@ -190,6 +190,7 @@
                           {% endif %}
                         </div>
                       </td>
+
                       <td scope="row">
                         <div class="media align-items-center">
                           <div class="media-body">
@@ -198,11 +199,11 @@
                         </div>
                       </td>
 
-                      <td>
+                      <td scope="row">
                         {{item.access_reason.reason}}
                       </td>
 
-                      <td>
+                      <td scope="row" data-search="{{item.waiting_fmt_cache}}" data-order="{{item.waiting_minutes_cache}}">
                         <div class="d-flex align-items-center">
                           <div>
                             <span class="mr-2">{{item.waiting_fmt_cache}}</span>
@@ -221,7 +222,7 @@
                         </div>
                       </td>
 
-                      <td>
+                      <td scope="row" data-order="{{item.hresults.temperature.order}}">
                         <div class="media align-items-center">
                           {% if item.hresults.temperature.alarm == 0 %}
                             <div class="icon-sm text-green">
@@ -246,7 +247,7 @@
                         </div>
                       </td>
 
-                      <td>
+                      <td scope="row" data-order="{{item.hresults.pressure.order}}">
                         <div class="media align-items-center">
                           {% if item.hresults.pressure.alarm == 0 %}
                             <div class="icon-sm text-green">
@@ -277,7 +278,7 @@
                         </div>
                       </td>
 
-                      <td>
+                      <td scope="row" data-order="{{item.hresults.heart_rate.order}}">
                         <div class="media align-items-center">
                           {% if item.hresults.heart_rate.alarm == 0 %}
                             <div class="icon-sm text-green">
@@ -327,8 +328,6 @@
 
     </div>
     
-    {% comment %} <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script> {% endcomment %}
 
 {% endblock content %}
 
@@ -337,8 +336,38 @@
 
   <script>
     $(document).ready( function () {
-        $('#data_table').DataTable();
-    } );
+        $('#data_table').DataTable({
+            // "responsive": true,
+            "paging":   false,
+            "pageLength" : 10,
+            "aaSorting": [[0,"asc"],[3,"des"]],
+            "lengthChange": false,
+            "autoWidth": false,
+            "language": {
+              "sEmptyTable":     "Nessun dato presente nella tabella",
+              "sInfo":           "Vista da _START_ a _END_ di _TOTAL_ elementi",
+              "sInfoEmpty":      "Vista da 0 a 0 di 0 elementi",
+              "sInfoFiltered":   "(filtrati da _MAX_ elementi totali)",
+              "sInfoPostFix":    "",
+              "sInfoThousands":  ".",
+              "sLengthMenu":     "Visualizza _MENU_ elementi",
+              "sLoadingRecords": "Caricamento...",
+              "sProcessing":     "Elaborazione...",
+              "sSearch":         "Cerca:",
+              "sZeroRecords":    "La ricerca non ha portato alcun risultato.",
+              "oPaginate": {
+                "sFirst":      "Inizio",
+                "sPrevious":   "Precedente",
+                "sNext":       "Successivo",
+                "sLast":       "Fine"
+              },
+              "oAria": {
+                "sSortAscending":  ": attiva per ordinare la colonna in ordine crescente",
+                "sSortDescending": ": attiva per ordinare la colonna in ordine decrescente"
+              }
+            },
+          });
+      });
   </script>
 
 {% endblock javascripts %}

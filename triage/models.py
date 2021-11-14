@@ -275,6 +275,7 @@ class PatientMeasureResult(models.Model):
     @property
     @lru_cache(maxsize=None)
     def get_hresult(self):
+        from random import randrange
         import statistics
         result = self.get_result
         hresult = {
@@ -287,32 +288,39 @@ class PatientMeasureResult(models.Model):
         # data = result["Results"]["HR_BPM"]["Data"]
         # multiplier = result["Results"]["HR_BPM"]["Multiplier"]
         # unit = result["SignalUnits"]["HR_BPM"]
-        hresult["temperature"]["mean"] = 42
+        hresult["temperature"]["mean"] = randrange(27,42)
         hresult["temperature"]["stdev"] = 1
         hresult["temperature"]["unit"] = "°C"
         if hresult["temperature"]["mean"] < 27:
             hresult["temperature"]["alarm"] = 3
+            hresult["temperature"]["order"] = "%s%02d"%(0, hresult["temperature"]["mean"])
         elif hresult["temperature"]["mean"] < 33:
             hresult["temperature"]["alarm"] = 2
+            hresult["temperature"]["order"] = "%s%02d"%(1, hresult["temperature"]["mean"])
         elif hresult["temperature"]["mean"] < 35:
             hresult["temperature"]["alarm"] = 1
+            hresult["temperature"]["order"] = "%s%02d"%(2, hresult["temperature"]["mean"])
         elif hresult["temperature"]["mean"] < 37:
             hresult["temperature"]["alarm"] = 0
+            hresult["temperature"]["order"] = "%s%02d"%(3, 50-hresult["temperature"]["mean"])
         elif hresult["temperature"]["mean"] < 40:
             hresult["temperature"]["alarm"] = 1
+            hresult["temperature"]["order"] = "%s%02d"%(2, 50-hresult["temperature"]["mean"])
         elif hresult["temperature"]["mean"] < 41.1:
             hresult["temperature"]["alarm"] = 2
+            hresult["temperature"]["order"] = "%s%02d"%(1, 50-hresult["temperature"]["mean"])
         elif hresult["temperature"]["mean"] >= 41.1:
             hresult["temperature"]["alarm"] = 3
+            hresult["temperature"]["order"] = "%s%02d"%(0, 50-hresult["temperature"]["mean"])
             
         ## Blood pressure
         # data = result["Results"]["HR_BPM"]["Data"]
         # multiplier = result["Results"]["HR_BPM"]["Multiplier"]
         # unit = result["SignalUnits"]["HR_BPM"]
-        hresult["pressure"]["min"]["mean"] = 180
+        hresult["pressure"]["min"]["mean"] = randrange(40,200)
         hresult["pressure"]["min"]["stdev"] = 3
         hresult["pressure"]["min"]["unit"] = "mmHg"
-        hresult["pressure"]["max"]["mean"] = 120
+        hresult["pressure"]["max"]["mean"] = randrange(70,220)
         hresult["pressure"]["max"]["stdev"] = 3
         hresult["pressure"]["max"]["unit"] = "mmHg"
         pmin = hresult["pressure"]["min"]["mean"]
@@ -346,6 +354,7 @@ class PatientMeasureResult(models.Model):
         elif pmax >= 180:
             max_alarm = 3
         pmin = hresult["pressure"]["alarm"] = max(min_alarm,max_alarm)
+        hresult["pressure"]["order"] = "%s%03d%03d"%(3-hresult["pressure"]["alarm"],pmin,pmax)
             
         ## Heart rate
         data = result["Results"]["HR_BPM"][0]["Data"]
@@ -356,17 +365,24 @@ class PatientMeasureResult(models.Model):
         hresult["heart_rate"]["unit"] = unit
         if hresult["heart_rate"]["mean"] < 40:
             hresult["heart_rate"]["alarm"] = 3
+            hresult["heart_rate"]["order"] = "%s%03d"%(0, hresult["heart_rate"]["mean"])
         elif hresult["heart_rate"]["mean"] < 50:
             hresult["heart_rate"]["alarm"] = 2
+            hresult["heart_rate"]["order"] = "%s%03d"%(1, hresult["heart_rate"]["mean"])
         elif hresult["heart_rate"]["mean"] < 60:
             hresult["heart_rate"]["alarm"] = 1
+            hresult["heart_rate"]["order"] = "%s%03d"%(2, hresult["heart_rate"]["mean"])
         elif hresult["heart_rate"]["mean"] < 100:
             hresult["heart_rate"]["alarm"] = 0
+            hresult["heart_rate"]["order"] = "%s%03d"%(3, 130-hresult["heart_rate"]["mean"])
         elif hresult["heart_rate"]["mean"] < 110:
             hresult["heart_rate"]["alarm"] = 1
+            hresult["heart_rate"]["order"] = "%s%03d"%(2, 130-hresult["heart_rate"]["mean"])
         elif hresult["heart_rate"]["mean"] < 120:
             hresult["heart_rate"]["alarm"] = 2
+            hresult["heart_rate"]["order"] = "%s%03d"%(1, 130-hresult["heart_rate"]["mean"])
         elif hresult["heart_rate"]["mean"] >= 120:
             hresult["heart_rate"]["alarm"] = 3
+            hresult["heart_rate"]["order"] = "%s%03d"%(0, 130-hresult["heart_rate"]["mean"])
         
         return hresult
