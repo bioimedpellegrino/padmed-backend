@@ -16,6 +16,9 @@
     "engines": {
         "node": ">=10.0.0"
     },
-    "dependencies": {},
+    "dependencies": {
+        "datatables.net": "^1.11.3",
+        "datatables.net-dt": "^1.11.3"
+    },
     "devDependencies": {}
 }
