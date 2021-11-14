@@ -152,19 +152,20 @@
               <table class="table align-items-center table-flush">
                 <thead class="thead-light">
                   <tr>
+                    <th scope="col">Codice</th>
                     <th scope="col">Nome</th>
                     <th scope="col">Ragione</th>
                     <th scope="col">In attesa da</th>
-                    <th scope="col">Par 1</th>
-                    <th scope="col">Par 2</th>
-                    <th scope="col">Par 3</th>
+                    <th scope="col">Temperatura ({{units.temperature}})</th>
+                    <th scope="col">Pressione ({{units.pressure}})</th>
+                    <th scope="col">Battito cardiaco ({{units.heartrate}})</th>
                     <th scope="col"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {% for item in items %}
                     <tr>
-                      <th scope="row">
+                      <td scope="row">
                         <div class="media align-items-center">
                           {% if item.is_white %}
                             <div class="icon-sm bg-white rounded-circle border"></div>
@@ -173,19 +174,23 @@
                           {% elif item.is_yellow %}
                             <div class="icon-sm bg-yellow rounded-circle border"></div>
                           {% endif %}
-                          &nbsp;&nbsp;
+                        </div>
+                      </td>
+                      <td scope="row">
+                        <div class="media align-items-center">
                           <div class="media-body">
                             <span class="mb-0 text-sm">{{item.patient.last_name}} {{item.patient.first_name}}</span>
                           </div>
                         </div>
-                      </th>
+                      </td>
+
                       <td>
                         {{item.access_reason.reason}}
                       </td>
+
                       <td>
                         <div class="d-flex align-items-center">
                           <div>
-                            
                             <span class="mr-2">{{item.waiting_fmt_cache}}</span>
                             <div>
                               <div class="progress">
@@ -201,32 +206,88 @@
                           </div>
                         </div>
                       </td>
+
                       <td>
-                        <div class="avatar-group">
-                          <a href="#" class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Ryan Tompson">
-                            <img alt="Image placeholder" src="/static/assets/img/theme/team-1-800x800.jpg" class="rounded-circle">
-                          </a>
-                          <a href="#" class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Romina Hadid">
-                            <img alt="Image placeholder" src="/static/assets/img/theme/team-2-800x800.jpg" class="rounded-circle">
-                          </a>
-                          <a href="#" class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Alexander Smith">
-                            <img alt="Image placeholder" src="/static/assets/img/theme/team-3-800x800.jpg" class="rounded-circle">
-                          </a>
-                          <a href="#" class="avatar avatar-sm" data-toggle="tooltip" data-original-title="Jessica Doe">
-                            <img alt="Image placeholder" src="/static/assets/img/theme/team-4-800x800.jpg" class="rounded-circle">
-                          </a>
-                        </div>
-                      </td>
-                      <td>
-                        <div class="d-flex align-items-center">
-                          <span class="mr-2">60%</span>
-                          <div>
-                            <div class="progress">
-                              <div class="progress-bar bg-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;"></div>
+                        <div class="media align-items-center">
+                          {% if item.hresults.temperature.alarm == 0 %}
+                            <div class="icon-sm text-green">
+                              <i class="fas fa-thermometer-empty"></i>
                             </div>
+                          {% elif item.hresults.temperature.alarm == 1 %}
+                            <div class="icon-sm text-yellow">
+                              <i class="fas fa-thermometer-half"></i>
+                            </div>
+                          {% elif item.hresults.temperature.alarm == 2 %}
+                            <div class="icon-sm text-red">
+                              <i class="fas fa-thermometer-full"></i>
+                            </div>
+                          {% elif item.hresults.temperature.alarm == 3 %}
+                            <div class="icon-sm text-red">
+                              <i class="fas fa-thermometer-full"></i>
+                            </div>
+                          {% endif %}
+                          <div class="media-body">
+                            <span class="mr-2">{{item.hresults.temperature.mean}} {% if item.hresults.temperature.stdev %}&#177;{% endif %} {{item.hresults.temperature.stdev}}</span>
                           </div>
                         </div>
                       </td>
+
+                      <td>
+                        <div class="media align-items-center">
+                          {% if item.hresults.pressure.alarm == 0 %}
+                            <div class="icon-sm text-green">
+                              <i class="fas fa-stopwatch"></i>
+                            </div>
+                          {% elif item.hresults.pressure.alarm == 1 %}
+                            <div class="icon-sm text-yellow">
+                              <i class="fas fa-stopwatch"></i>
+                            </div>
+                          {% elif item.hresults.pressure.alarm == 2 %}
+                            <div class="icon-sm text-red">
+                              <i class="fas fa-stopwatch"></i>
+                            </div>
+                          {% elif item.hresults.pressure.alarm == 3 %}
+                            <div class="icon-sm text-red">
+                              <i class="fas fa-stopwatch"></i>
+                            </div>
+                          {% endif %}
+                          <div class="media-body">
+                            <span class="mr-2">
+                              {{item.hresults.pressure.min.mean}} {% if item.hresults.pressure.min.stdev %}&#177;{% endif %} {{item.hresults.pressure.min.stdev}}
+                            </span>
+                            /
+                            <span class="mr-2">
+                              {{item.hresults.pressure.max.mean}} {% if item.hresults.pressure.max.stdev %}&#177;{% endif %} {{item.hresults.pressure.max.stdev}}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td>
+                        <div class="media align-items-center">
+                          {% if item.hresults.heart_rate.alarm == 0 %}
+                            <div class="icon-sm text-green">
+                              <i class="fas fa-heartbeat"></i>
+                            </div>
+                          {% elif item.hresults.heart_rate.alarm == 1 %}
+                            <div class="icon-sm text-yellow">
+                              <i class="fas fa-heartbeat"></i>
+                            </div>
+                          {% elif item.hresults.heart_rate.alarm == 2 %}
+                            <div class="icon-sm text-red">
+                              <i class="fas fa-heartbeat"></i>
+                            </div>
+                          {% elif item.hresults.heart_rate.alarm == 3 %}
+                            <div class="icon-sm text-red">
+                              <i class="fas fa-heartbeat"></i>
+                            </div>
+                          {% endif %}
+                          <div class="media-body">
+                            <span class="mr-2">{{item.hresults.heart_rate.mean}} {% if item.hresults.heart_rate.stdev %}&#177;{% endif %} {{item.hresults.heart_rate.stdev}}</span>
+                          </div>
+                        </div>
+                      </td>
+
                       <td class="text-right">
                         <div class="dropdown">
                           <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

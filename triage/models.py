@@ -4,6 +4,7 @@ import os
 import base64
 import pytz
 from functools import lru_cache
+from pprint import pprint
 
 from generic.models import City, Province, Country
 
@@ -264,11 +265,93 @@ class PatientMeasureResult(models.Model):
         verbose_name = "Esito misurazioni"
         verbose_name_plural = "Esiti misurazioni"
     
+    @property
     @lru_cache(maxsize=None)
     def get_result(self):
-        import json
-        return json.loads(self.result)
+        import ast
+        result = ast.literal_eval(self.result)
+        pprint(result)
+        return result
 
+    @property
     @lru_cache(maxsize=None)
     def get_hresult(self):
-        pass
+        import statistics
+        result = self.get_result
+        hresult = {
+            "heart_rate":{},
+            "pressure":{"min":{},"max":{}},
+            "temperature":{}
+        }
+        ## Heart rate
+        data = result["Results"]["HR_BPM"][0]["Data"]
+        multiplier = result["Results"]["HR_BPM"][0]["Multiplier"]
+        unit = result["SignalUnits"]["HR_BPM"]
+        hresult["heart_rate"]["mean"] = round(statistics.fmean(data)/multiplier)
+        hresult["heart_rate"]["stdev"] = round(statistics.stdev(data)/multiplier) # TODO: add SDR information
+        hresult["heart_rate"]["unit"] = unit
+        if hresult["heart_rate"]["mean"] < 40:
+            hresult["heart_rate"]["alarm"] = 3
+        elif hresult["heart_rate"]["mean"] < 50:
+            hresult["heart_rate"]["alarm"] = 2
+        elif hresult["heart_rate"]["mean"] < 60:
+            hresult["heart_rate"]["alarm"] = 1
+        elif hresult["heart_rate"]["mean"] < 100:
+            hresult["heart_rate"]["alarm"] = 0
+        elif hresult["heart_rate"]["mean"] < 110:
+            hresult["heart_rate"]["alarm"] = 1
+        elif hresult["heart_rate"]["mean"] < 120:
+            hresult["heart_rate"]["alarm"] = 2
+        elif hresult["heart_rate"]["mean"] >= 120:
+            hresult["heart_rate"]["alarm"] = 3
+            
+        ## Blood pressure
+        # data = result["Results"]["HR_BPM"]["Data"]
+        # multiplier = result["Results"]["HR_BPM"]["Multiplier"]
+        # unit = result["SignalUnits"]["HR_BPM"]
+        hresult["pressure"]["min"]["mean"] = 80
+        hresult["pressure"]["min"]["stdev"] = 3
+        hresult["pressure"]["min"]["unit"] = "mmHg"
+        hresult["pressure"]["max"]["mean"] = 120
+        hresult["pressure"]["max"]["stdev"] = 3
+        hresult["pressure"]["max"]["unit"] = "mmHg"
+        pmin = hresult["pressure"]["min"]["mean"]
+        pmax = hresult["pressure"]["max"]["mean"]
+        if pmin < 50 or pmax < 70:
+            hresult["pressure"]["alarm"] = 3
+        elif pmin < 60 or pmax < 90:
+            hresult["pressure"]["alarm"] = 2
+        elif pmin < 65 or pmax < 100:
+            hresult["pressure"]["alarm"] = 1
+        elif pmin < 85 or pmax < 130:
+            hresult["pressure"]["alarm"] = 0
+        elif pmin < 100 or pmax < 160:
+            hresult["pressure"]["alarm"] = 1
+        elif pmin < 120 or pmax < 180:
+            hresult["pressure"]["alarm"] = 2
+        elif pmin >= 120 or pmax >= 180:
+            hresult["pressure"]["alarm"] = 3
+            
+        ## Temperature
+        # data = result["Results"]["HR_BPM"]["Data"]
+        # multiplier = result["Results"]["HR_BPM"]["Multiplier"]
+        # unit = result["SignalUnits"]["HR_BPM"]
+        hresult["temperature"]["mean"] = 37
+        hresult["temperature"]["stdev"] = 1
+        hresult["temperature"]["unit"] = "°C"
+        if hresult["temperature"]["mean"] < 27:
+            hresult["temperature"]["alarm"] = 3
+        elif hresult["temperature"]["mean"] < 33:
+            hresult["temperature"]["alarm"] = 2
+        elif hresult["temperature"]["mean"] < 35:
+            hresult["temperature"]["alarm"] = 1
+        elif hresult["temperature"]["mean"] < 37:
+            hresult["temperature"]["alarm"] = 0
+        elif hresult["temperature"]["mean"] < 40:
+            hresult["temperature"]["alarm"] = 1
+        elif hresult["temperature"]["mean"] < 41.1:
+            hresult["temperature"]["alarm"] = 2
+        elif hresult["temperature"]["mean"] >= 41.1:
+            hresult["temperature"]["alarm"] = 3
+        
+        return hresult
