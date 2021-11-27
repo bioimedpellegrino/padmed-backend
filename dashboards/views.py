@@ -1,8 +1,9 @@
 
 import datetime
 from dateutil.relativedelta import relativedelta
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.utils import timezone
+from django.http import JsonResponse, HttpResponseRedirect
 from rest_framework.views import APIView
 from triage.models import *
 
@@ -21,47 +22,7 @@ class LiveView(APIView):
         now = timezone.now()
         one_hour_ago = now - relativedelta(hours=1)
 
-        cards = dict()
-        cards["gialli"] = dict()
-        cards["verdi"] = dict()
-        cards["bianchi"] = dict()
-        cards["personale"] = dict()
-
-        value = TriageAccess.yellows(exit_date__isnull=True).count()
-        diff1h = -1 * TriageAccess.yellows(exit_date__gte=one_hour_ago,exit_date__lt=now).count()
-        positive_trend = diff1h >= 0
-        cards["gialli"] = {
-            "value" : value,
-            "diff1h": diff1h,
-            "positive_trend" : positive_trend,
-        }
-
-        value = TriageAccess.greens(exit_date__isnull=True).count()
-        diff1h = -1 * TriageAccess.greens(exit_date__gte=one_hour_ago,exit_date__lt=now).count()
-        positive_trend = diff1h >= 0
-        cards["verdi"] = {
-            "value" : value,
-            "diff1h": diff1h,
-            "positive_trend" : positive_trend,
-        }
-
-        value = TriageAccess.whites(exit_date__isnull=True).count()
-        diff1h = -1 * TriageAccess.whites(exit_date__gte=one_hour_ago,exit_date__lt=now).count()
-        positive_trend = diff1h >= 0
-        cards["bianchi"] = {
-            "value" : value,
-            "diff1h": diff1h,
-            "positive_trend" : positive_trend,
-        }
-
-        value = TriageAccess.whites(exit_date__isnull=True).count()
-        diff1h = -1 * TriageAccess.whites(exit_date__gte=one_hour_ago,exit_date__lt=now).count()
-        positive_trend = diff1h >= 0
-        cards["personale"] = {
-            "value" : "?",
-            "diff1h": diff1h,
-            "positive_trend" : positive_trend,
-        }
+        cards = GetStoricoData.get_storico_cards(one_hour_ago,now)
 
         units = {}
         units["temperature"] = "°C"
@@ -100,8 +61,40 @@ class StoricoView(APIView):
     template_name = 'storico.html'
     
     def get(self, request, *args, **kwargs):
+        from .utils import get_max_waiting_time
         
-        return render(request, self.template_name, {})
+        now = timezone.now()
+        one_hour_ago = now - relativedelta(hours=1)
+
+        cards = GetStoricoData.get_storico_cards(one_hour_ago,now)
+
+        units = {}
+        units["temperature"] = "°C"
+        units["pressure"] = "mmHg"
+        units["heartrate"] = "bpm"
+                
+        items = TriageAccess.ordered_items()
+        max_waiting_time = get_max_waiting_time()
+        max_waiting = max_waiting_time.hours*60 + max_waiting_time.minutes
+        for item in items:
+            item_waiting_time = item.waiting_time
+            item.waiting_cache = min(100*(item_waiting_time.days*24*60 + item_waiting_time.hours*60 + item_waiting_time.minutes)/max_waiting,100)
+            item.waiting_fmt_cache = "%sh:%smin"%(item_waiting_time.days*24+item_waiting_time.hours,item_waiting_time.minutes)
+            item.waiting_range_cache = min(int(item.waiting_cache/33.3),3)
+            item.waiting_minutes_cache = item_waiting_time.days*24*60 + item_waiting_time.hours*60 + item_waiting_time.minutes
+            
+            item.hresults = None
+            video = item.patientvideo_set.last()
+            if video:
+                measure = video.patientmeasureresult_set.last()
+                if measure:
+                    item.hresults = measure.get_hresult
+                    
+        return render(request, self.template_name, {
+            "cards":cards,
+            "items":items,
+            "units":units,
+            })
         
 class IconsView(APIView):
     """[summary]
@@ -138,4 +131,60 @@ class UserProfileView(APIView):
     def get(self, request, *args, **kwargs):
         
         return render(request, self.template_name, {})
+
+class GetStoricoData(APIView):
+    
+    def post(self, request, *args, **kwargs):
+        
+        cards = self.get_storico_cards()
+        
+        return JsonResponse({'cards': cards,}, safe=False)
+    
+    @classmethod
+    def get_storico_cards(start:datetime.datetime,end:datetime.datetime)->dict():
+        
+        cards = dict()
+        
+        cards["gialli"] = dict()
+        cards["verdi"] = dict()
+        cards["bianchi"] = dict()
+        cards["personale"] = dict()
+        
+        value = 0 #TriageAccess.whites(exit_date__isnull=True).count() #TODO
+        diff1h = -1 * 0 #TriageAccess.whites(exit_date__gte=start,exit_date__lt=end).count()
+        positive_trend = diff1h >= 0
+        cards["personale"] = {
+            "value" : "?",
+            "diff1h": diff1h,
+            "positive_trend" : positive_trend,
+        }
+
+        value = TriageAccess.yellows().count()
+        diff1h = -1 * TriageAccess.yellows(exit_date__gte=start,exit_date__lt=end).count()
+        positive_trend = diff1h >= 0
+        cards["gialli"] = {
+            "value" : value,
+            "diff1h": diff1h,
+            "positive_trend" : positive_trend,
+        }
+
+        value = TriageAccess.greens().count()
+        diff1h = -1 * TriageAccess.greens(exit_date__gte=start,exit_date__lt=end).count()
+        positive_trend = diff1h >= 0
+        cards["verdi"] = {
+            "value" : value,
+            "diff1h": diff1h,
+            "positive_trend" : positive_trend,
+        }
+
+        value = TriageAccess.whites().count()
+        diff1h = -1 * TriageAccess.whites(exit_date__gte=start,exit_date__lt=end).count()
+        positive_trend = diff1h >= 0
+        cards["bianchi"] = {
+            "value" : value,
+            "diff1h": diff1h,
+            "positive_trend" : positive_trend,
+        }
+        
+        return cards
     
