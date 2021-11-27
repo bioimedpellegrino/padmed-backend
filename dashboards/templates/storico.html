@@ -412,6 +412,16 @@
 <!-- Specific JS goes HERE --> 
 {% block javascripts %}
   <script>
+
+    function update_cards(cards) {
+      $("#bianchi-value").html(cards.bianchi.value);
+      $("#bianchi-diff").html(cards.bianchi.diff);
+      $("#verdi-value").html(cards.verdi.value);
+      $("#verdi-diff").html(cards.verdi.diff);
+      $("#gialli-value").html(cards.gialli.value);
+      $("#gialli-diff").html(cards.gialli.diff);
+    }
+
     function getFormData($form){
       var unindexed_array = $form.serializeArray();
       var indexed_array = {};
@@ -422,30 +432,7 @@
 
       return indexed_array;
     }
-
-    {% comment %} $('.datetimepicker').datetimepicker({
-      icons: {
-        time: "fa fa-clock-o",
-        date: "fa fa-calendar",
-        up: "fa fa-chevron-up",
-        down: "fa fa-chevron-down",
-        previous: 'fa fa-chevron-left',
-        next: 'fa fa-chevron-right',
-        today: 'fa fa-screenshot',
-        clear: 'fa fa-trash',
-        close: 'fa fa-remove'
-      }
-    }); {% endcomment %}
-    {% comment %} function add_datepicker(){
-        $(".datepicker").datepickerb({
-            format: 'dd/mm/yyyy', 
-            //startDate: new Date()  
-        }).on('changeDate', function(e){
-            $(this).datepickerb('hide');
-        });;
-        $(".datepicker").prop("autocomplete","off")
-    } {% endcomment %}
-
+    
     $(document).ready(function () {
 
       // ADDING AJAX DATE POST
@@ -467,7 +454,8 @@
           },
           success: function (data) {
             if (data.success) {
-              $('#date-form').html("Data posted...work in progress!")
+              update_cards(data.cards);
+
             } else {
               $('#date-form').html(data.form_html);
             }

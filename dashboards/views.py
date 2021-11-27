@@ -20,7 +20,7 @@ class LiveView(APIView):
     def get(self, request, *args, **kwargs):
         from .utils import get_max_waiting_time
         
-        now = timezone.now()
+        now = timezone.localtime()
         one_hour_ago = now - relativedelta(hours=1)
 
         cards = GetStoricoData.get_storico_cards(one_hour_ago,now)
@@ -65,17 +65,16 @@ class StoricoView(APIView):
         from .utils import get_max_waiting_time
         from .forms import DateRangeForm
         
-        now = timezone.now()
+        now = timezone.localtime() 
         one_day_ago = now - relativedelta(days=1)
-        
         form = DateRangeForm(
-            initial={
-                "start":one_day_ago,
-                "end":now,
+            initial={   ## TODO: doesn't work
+                "start":one_day_ago.date(),
+                "end":now.date(),
                 }
         )
         cards = GetStoricoData.get_storico_cards(one_day_ago,now)
-                
+        
         
                     
         return render(request, self.template_name, {
@@ -146,6 +145,10 @@ class GetStoricoData(APIView):
     @classmethod
     def get_storico_cards(cls,start:datetime.datetime,end:datetime.datetime)->dict():
         
+        diff_period = end - start
+        diff_start = start - diff_period
+        diff_end = start
+        
         cards = dict()
         
         cards["gialli"] = dict()
@@ -162,8 +165,8 @@ class GetStoricoData(APIView):
             "positive_trend" : positive_trend,
         }
 
-        value = TriageAccess.yellows().count()
-        diff = -1 * TriageAccess.yellows(exit_date__gte=start,exit_date__lt=end).count()
+        value = TriageAccess.yellows(access_date__gte=start,access_date__lte=end).count()
+        diff = -1 * TriageAccess.yellows(access_date__gte=diff_start,access_date__lt=diff_end).count()
         positive_trend = diff >= 0
         cards["gialli"] = {
             "value" : value,
@@ -171,8 +174,8 @@ class GetStoricoData(APIView):
             "positive_trend" : positive_trend,
         }
 
-        value = TriageAccess.greens().count()
-        diff = -1 * TriageAccess.greens(exit_date__gte=start,exit_date__lt=end).count()
+        value = TriageAccess.greens(access_date__gte=start,access_date__lte=end).count()
+        diff = -1 * TriageAccess.greens(access_date__gte=diff_start,access_date__lt=diff_end).count()
         positive_trend = diff >= 0
         cards["verdi"] = {
             "value" : value,
@@ -180,8 +183,8 @@ class GetStoricoData(APIView):
             "positive_trend" : positive_trend,
         }
 
-        value = TriageAccess.whites().count()
-        diff = -1 * TriageAccess.whites(exit_date__gte=start,exit_date__lt=end).count()
+        value = TriageAccess.whites(access_date__gte=start,access_date__lte=end).count()
+        diff = -1 * TriageAccess.whites(access_date__gte=diff_start,access_date__lt=diff_end).count()
         positive_trend = diff >= 0
         cards["bianchi"] = {
             "value" : value,
