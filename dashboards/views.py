@@ -137,17 +137,9 @@ class GetStoricoData(APIView):
             
             return JsonResponse({'success': True,"cards":cards})
         else:
-            ctx = {"form_errors":form.errors}
+            ctx = {}
             ctx.update(csrf(request))
             form_html = render_crispy_form(form, context=ctx)
-            
-            print("")
-            print("form_html",form_html)
-            print("")
-            
-            print("")
-            print("errors",form.errors)
-            print("")
             
             return JsonResponse({'success': False, 'form_html': form_html})
         

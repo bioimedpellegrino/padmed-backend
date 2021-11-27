@@ -4,13 +4,13 @@ from django.contrib.admin.widgets import AdminDateWidget
 
 class DateRangeForm(forms.Form):
     start = forms.DateField(
-        input_formats=["%d/%m/%Y",],
+        # input_formats=["%d/%m/%Y",],
         label="Data inizio",
         # widget=AdminDateWidget(),
     )
     
     end = forms.DateField(
-        input_formats=["%d/%m/%Y",],
+        # input_formats=["%d/%m/%Y",],
         label="Data fine",
         # widget=AdminDateWidget(),
     )
