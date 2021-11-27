@@ -1,18 +1,17 @@
+
+import datetime
+from dateutil.relativedelta import relativedelta
+from django.utils import timezone
 from django import forms
 from crispy_forms.helper import FormHelper
-from django.contrib.admin.widgets import AdminDateWidget
 
 class DateRangeForm(forms.Form):
     start = forms.DateField(
-        input_formats=["%d/%m/%Y",],
         label="Data inizio",
-        # widget=AdminDateWidget(),
     )
     
     end = forms.DateField(
-        input_formats=["%d/%m/%Y",],
         label="Data fine",
-        # widget=AdminDateWidget(),
     )
     
     helper = FormHelper()
