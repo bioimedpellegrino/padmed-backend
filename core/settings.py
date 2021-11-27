@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'app',
     'generic',
     'triage',
-    'dashboards'
+    'dashboards',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -184,3 +185,6 @@ DEEPAFFEX_DEBUG_SAVE_CHUNKS_FOLDER=env("DEEPAFFEX_DEBUG_SAVE_CHUNKS_FOLDER", cas
 
 ## CUSTOM SETTINGS VARIABLES FOR GRAPHS
 INIT_MAX_WAITING_SECONDS = env("INIT_MAX_WAITING_SECONDS", cast=float, default=2400)
+
+## CRISPY FORM SETTINGS 
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
