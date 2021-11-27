@@ -21,7 +21,7 @@
                 <div class="card-body">
                   <div class="row">
                     <div class="col">
-                      <form id="date-form" name="form" method='post'>
+                      <form id="date-form" name="date-form" method='post'>
                         {% crispy form %}
                         <input form="date-form" type="submit" class="btn btn-sm btn-info mr-4" value="Aggiorna">
                       </form>
@@ -55,7 +55,7 @@
                         <span id="bianchi-diff" class="text-success mr-2"><i class="fas fa-arrow-down"></i>{{ cards.bianchi.diff }}%</span>
                       {% endif %}
                     {% endif %}
-                    <span class="text-nowrap">Rispetto al precedente periodo</span>
+                    <span class="text-nowrap">Rispetto al periodo precedente</span>
                   </p>
                 </div>
               </div>
@@ -85,7 +85,7 @@
                         <span id="gialli-diff" class="text-success mr-2"><i class="fas fa-arrow-down"></i>{{ cards.gialli.diff }}%</span>
                       {% endif %}
                     {% endif %}
-                    <span class="text-nowrap">Rispetto al precedente periodo</span>
+                    <span class="text-nowrap">Rispetto al periodo precedente</span>
                   </p>
                 </div>
               </div>
@@ -115,7 +115,7 @@
                         <span id="verdi-diff" class="text-success mr-2"><i class="fas fa-arrow-down"></i>{{ cards.verdi.diff }}%</span>
                       {% endif %}
                     {% endif %}
-                    <span class="text-nowrap">Rispetto al precedente periodo</span>
+                    <span class="text-nowrap">Rispetto al periodo precedente</span>
                   </p>
                 </div>
               </div>
@@ -412,22 +412,65 @@
 <!-- Specific JS goes HERE --> 
 {% block javascripts %}
   <script>
+    function getFormData($form){
+      var unindexed_array = $form.serializeArray();
+      var indexed_array = {};
+
+      $.map(unindexed_array, function(n, i){
+          indexed_array[n['name']] = n['value'];
+      });
+
+      return indexed_array;
+    }
+
+    {% comment %} $('.datetimepicker').datetimepicker({
+      icons: {
+        time: "fa fa-clock-o",
+        date: "fa fa-calendar",
+        up: "fa fa-chevron-up",
+        down: "fa fa-chevron-down",
+        previous: 'fa fa-chevron-left',
+        next: 'fa fa-chevron-right',
+        today: 'fa fa-screenshot',
+        clear: 'fa fa-trash',
+        close: 'fa fa-remove'
+      }
+    }); {% endcomment %}
+    {% comment %} function add_datepicker(){
+        $(".datepicker").datepickerb({
+            format: 'dd/mm/yyyy', 
+            //startDate: new Date()  
+        }).on('changeDate', function(e){
+            $(this).datepickerb('hide');
+        });;
+        $(".datepicker").prop("autocomplete","off")
+    } {% endcomment %}
+
     $(document).ready(function () {
-      window.CSRF_TOKEN = "{{ csrf_token }}";
+
+      // ADDING AJAX DATE POST
+      //window.CSRF_TOKEN = "{{ csrf_token }}"; // Not necessary (crispy forms har already csrf in it)
+      // if you have problem with csrf see https://django-crispy-forms.readthedocs.io/en/latest/crispy_tag_forms.html#ajax-validation-recipe
+      // or https://stackoverflow.com/questions/19333098/403-forbidden-error-when-making-an-ajax-post-request-in-django-framework
       $("#date-form").submit(function (event) {
         event.preventDefault();
+        var formData = getFormData($("#date-form"));
         $.ajax({
           type: "POST",
           url: "{% url 'get_storico_data' %}",
           dataType: "json",
-          data: {
-            "csrfmiddlewaretoken": window.CSRF_TOKEN,
-            "form": $("#date-form").val() // from form
-          },
+          data: formData,
+          //{
+            //"csrfmiddlewaretoken": window.CSRF_TOKEN,
+          //},
           complete: function() {
           },
           success: function (data) {
-            $('#date-form').html("<h2>Contact Form Submitted!</h2>")
+            if (data.success) {
+              $('#date-form').html("Data posted...work in progress!")
+            } else {
+              $('#date-form').html(data.form_html);
+            }
           },
           error: function() {
             alert( "Un errore ha impedito la comunicazione con il server. I dati non saranno aggiornati." );

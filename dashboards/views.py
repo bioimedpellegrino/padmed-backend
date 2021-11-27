@@ -4,9 +4,10 @@ from dateutil.relativedelta import relativedelta
 from django.shortcuts import render,redirect
 from django.utils import timezone
 from django.http import JsonResponse, HttpResponseRedirect
+from django.template.context_processors import csrf
+from crispy_forms.utils import render_crispy_form
 from rest_framework.views import APIView
 from triage.models import *
-
 class LiveView(APIView):
     """[summary]
 
@@ -122,16 +123,33 @@ class GetStoricoData(APIView):
     
     def post(self, request, *args, **kwargs):
         from .forms import DateRangeForm
-        print("POST",request.POST)
+        
         form = DateRangeForm(
-            request.POST
+            request.POST or None
         )
         
+        ## Here it will need a timezone conversion https://stackoverflow.com/questions/18622007/runtimewarning-datetimefield-received-a-naive-datetime
+        form = DateRangeForm(request.POST or None)
+        
         if form.is_valid():
-            cards = self.get_storico_cards()
-            return JsonResponse({'cards': cards,'has_error':False,'form':None}, safe=False)
+            # You could actually save through AJAX and return a success code here
+            cards = self.get_storico_cards(form.cleaned_data["start"],form.cleaned_data["end"])
+            
+            return JsonResponse({'success': True,"cards":cards})
         else:
-            return JsonResponse({'cards': None,'has_error':True,'form':form}, safe=False)
+            ctx = {"form_errors":form.errors}
+            ctx.update(csrf(request))
+            form_html = render_crispy_form(form, context=ctx)
+            
+            print("")
+            print("form_html",form_html)
+            print("")
+            
+            print("")
+            print("errors",form.errors)
+            print("")
+            
+            return JsonResponse({'success': False, 'form_html': form_html})
         
     @classmethod
     def get_storico_cards(cls,start:datetime.datetime,end:datetime.datetime)->dict():
@@ -178,8 +196,6 @@ class GetStoricoData(APIView):
             "diff": diff,
             "positive_trend" : positive_trend,
         }
-        
-        print("SUBMITTED")
         
         return cards
     
