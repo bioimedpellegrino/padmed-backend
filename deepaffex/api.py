@@ -54,6 +54,7 @@ async def register(config=None, license_key=None):
             config["role_id"] = dfxapi.Settings.role_id
             config["user_token"] = dfxapi.Settings.user_token
             print(f"Register successful with new device id {config['device_id']}")
+            save_config(config)
             return config
         else:
             print(f"Register failed {status}: {body}")

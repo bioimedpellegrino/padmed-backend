@@ -257,6 +257,7 @@ class PatientMeasureResult(models.Model):
     measurement_id = models.CharField(max_length=2000, blank=True, null=True, default="")
     patient_video = models.ForeignKey(PatientVideo, blank=True, null=True, on_delete=models.CASCADE)
     result = models.TextField(blank=True, null=True, default="{}")
+    measure_short = models.TextField(blank=True, null=True, default="{}")
     
     def __str__(self):
         return "{} - {}".format(self.id, self.measurement_id)

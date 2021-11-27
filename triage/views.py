@@ -17,7 +17,7 @@ import os
 
 from .forms import PatientForm
 from .models import Hospital, Patient, TriageCode, TriageAccessReason, TriageAccess, PatientVideo, PatientMeasureResult
-from .utils import generate_video_measure
+from .utils import generate_video_measure, unpack_result_deepaffex
 
 class DecodeFiscalCodeView(APIView):
     """[summary]
@@ -140,6 +140,7 @@ class RecordVideoView(APIView):
         # Retrive comprehensive measurement informations
         result = asyncio.run(get_measurement(config=config, measurement_id=measurement_id))
         p_measure_result.result = result
+        p_measure_result.measure_short = unpack_result_deepaffex(result)
         p_measure_result.save()
         
         return Response({'p_measure_result': p_measure_result.pk }, status=status.HTTP_200_OK)
@@ -152,5 +153,6 @@ class PatientResults(APIView):
     
     def post(self, request, *args, **kwargs):
         
-        p_measure_result = request.POST.get('p_measure_result')
-        return render(request,'receptions-results.html', {'p_measure_result': p_measure_result})
+        patient_result = PatientMeasureResult.objects.get(pk=int(request.POST.get('p_measure_result')))
+        measure = eval(patient_result.measure_short)
+        return render(request,'receptions-results.html', {'measure': measure})
