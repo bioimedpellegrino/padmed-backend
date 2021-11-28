@@ -57,15 +57,7 @@
                           <tr>
                             <td>
                               <span id="gialli-value" class="h2 font-weight-bold mb-0">{{ cards.gialli.value }}</span>
-                              {% if cards.gialli.diff == 0 %}
-                                <span id="gialli-diff" class="text-success mr-2 pl-2">({{ cards.gialli.diff }})</span>
-                              {% else %}
-                                {% if cards.gialli.positive_trend %}
-                                  <span id="gialli-diff" class="text-warning mr-2 pl-2">(<i class="fas fa-arrow-down"></i>{{ cards.gialli.diff }})</span>
-                                {% else %}
-                                  <span id="gialli-diff" class="text-success mr-2 pl-2">(<i class="fas fa-arrow-up"></i>{{ cards.gialli.diff }})</span>
-                                {% endif %}
-                              {% endif %}
+                              <span id="gialli-diff" class="{{ cards.gialli.diff_class }} mr-2 pl-2">{{ cards.gialli.diff_formatted }}</span>
                             </td>
                           </tr>
                         </tbody>
@@ -86,15 +78,7 @@
                         </th>
                         <td>
                           <span id="gialli-value_1" class="h2 font-weight-bold">{{ cards.gialli.value_1 }}</span>
-                          {% if cards.gialli.diff_1 == 0 %}
-                            <span id="gialli-diff_1" class="text-success ml-2">({{ cards.gialli.diff_1 }})</span>
-                          {% else %}
-                            {% if cards.gialli.trend_1 %}
-                              <span id="gialli-diff_1" class="text-warning ml-2">(<i class="fas fa-arrow-down"></i>{{ cards.gialli.diff_1 }})</span>
-                            {% else %}
-                              <span id="gialli-diff_1" class="text-success ml-2">(<i class="fas fa-arrow-up"></i>{{ cards.gialli.diff_1 }})</span>
-                            {% endif %}
-                          {% endif %}
+                          <span id="gialli-diff_1" class="{{ cards.gialli.diff_1_class }} ml-2">{{ cards.gialli.diff_1_formatted }}</span>
                         </td>
                       </tr>
 
@@ -104,15 +88,7 @@
                         </th>
                         <td>
                           <span id="gialli-value_2" class="h2 font-weight-bold">{{ cards.gialli.value_2 }}</span>
-                          {% if cards.gialli.diff_2 == 0 %}
-                            <span id="gialli-diff_2" class="text-success ml-2">({{ cards.gialli.diff_2 }})</span>
-                          {% else %}
-                            {% if cards.gialli.trend_1hto2h %}
-                              <span id="gialli-diff_2" class="text-warning ml-2">(<i class="fas fa-arrow-down"></i>{{ cards.gialli.diff_2 }})</span>
-                            {% else %}
-                              <span id="gialli-diff_2" class="text-success ml-2">(<i class="fas fa-arrow-up"></i>{{ cards.gialli.diff_2 }})</span>
-                            {% endif %}
-                          {% endif %}
+                          <span id="gialli-diff_2" class="{{ cards.gialli.diff_2_class }} ml-2">{{ cards.gialli.diff_2_formatted }}</span>
                         </td>
                       </tr>
 
@@ -122,15 +98,7 @@
                         </th>
                         <td>
                           <span id="gialli-value_3" class="h2 font-weight-bold">{{ cards.gialli.value_3 }}</span>
-                          {% if cards.gialli.diff_3 == 0 %}
-                            <span id="gialli-diff_3" class="text-success ml-2">({{ cards.gialli.diff_3 }})</span>
-                          {% else %}
-                            {% if cards.gialli.trend_2hto3h %}
-                              <span id="gialli-diff_3" class="text-warning ml-2">(<i class="fas fa-arrow-down"></i>{{ cards.gialli.diff_3 }})</span>
-                            {% else %}
-                              <span id="gialli-diff_3" class="text-success ml-2">(<i class="fas fa-arrow-up"></i>{{ cards.gialli.diff_3 }})</span>
-                            {% endif %}
-                          {% endif %}
+                          <span id="gialli-diff_3" class="{{ cards.gialli.diff_3_class }} ml-2">{{ cards.gialli.diff_3_formatted }}</span>
                         </td>
                       </tr>
 
@@ -151,15 +119,7 @@
                           <tr>
                             <td>
                               <span id="verdi-value" class="h2 font-weight-bold mb-0">{{ cards.verdi.value }}</span>
-                              {% if cards.verdi.diff == 0 %}
-                                <span id="verdi-diff" class="text-success mr-2 pl-2">({{ cards.verdi.diff }})</span>
-                              {% else %}
-                                {% if cards.verdi.positive_trend %}
-                                  <span id="verdi-diff" class="text-warning mr-2 pl-2">(<i class="fas fa-arrow-down"></i>{{ cards.verdi.diff }})</span>
-                                {% else %}
-                                  <span id="verdi-diff" class="text-success mr-2 pl-2">(<i class="fas fa-arrow-up"></i>{{ cards.verdi.diff }})</span>
-                                {% endif %}
-                              {% endif %}
+                              <span id="verdi-diff" class="{{ cards.verdi.diff_class }} mr-2 pl-2">{{ cards.verdi.diff_formatted }}</span>
                             </td>
                           </tr>
                         </tbody>
@@ -180,15 +140,7 @@
                         </th>
                         <td>
                           <span id="verdi-value_1" class="h2 font-weight-bold">{{ cards.verdi.value_1 }}</span>
-                          {% if cards.verdi.diff_1 == 0 %}
-                            <span id="verdi-diff_1" class="text-success ml-2">({{ cards.verdi.diff_1 }})</span>
-                          {% else %}
-                            {% if cards.verdi.trend_1 %}
-                              <span id="verdi-diff_1" class="text-warning ml-2">(<i class="fas fa-arrow-down"></i>{{ cards.verdi.diff_1 }})</span>
-                            {% else %}
-                              <span id="verdi-diff_1" class="text-success ml-2">(<i class="fas fa-arrow-up"></i>{{ cards.verdi.diff_1 }})</span>
-                            {% endif %}
-                          {% endif %}
+                          <span id="verdi-diff_1" class="{{ cards.verdi.diff_1_class }} ml-2">{{ cards.verdi.diff_1_formatted }}</span>
                         </td>
                       </tr>
 
@@ -198,15 +150,7 @@
                         </th>
                         <td>
                           <span id="verdi-value_2" class="h2 font-weight-bold">{{ cards.verdi.value_2 }}</span>
-                          {% if cards.verdi.diff_2 == 0 %}
-                            <span id="verdi-diff_2" class="text-success ml-2">({{ cards.verdi.diff_2 }})</span>
-                          {% else %}
-                            {% if cards.verdi.trend_1hto2h %}
-                              <span id="verdi-diff_2" class="text-warning ml-2">(<i class="fas fa-arrow-down"></i>{{ cards.verdi.diff_2 }})</span>
-                            {% else %}
-                              <span id="verdi-diff_2" class="text-success ml-2">(<i class="fas fa-arrow-up"></i>{{ cards.verdi.diff_2 }})</span>
-                            {% endif %}
-                          {% endif %}
+                          <span id="verdi-diff_2" class="{{ cards.verdi.diff_2_class }} ml-2">{{ cards.verdi.diff_2_formatted }}</span>
                         </td>
                       </tr>
 
@@ -216,15 +160,7 @@
                         </th>
                         <td>
                           <span id="verdi-value_3" class="h2 font-weight-bold">{{ cards.verdi.value_3 }}</span>
-                          {% if cards.verdi.diff_3 == 0 %}
-                            <span id="verdi-diff_3" class="text-success ml-2">({{ cards.verdi.diff_3 }})</span>
-                          {% else %}
-                            {% if cards.verdi.trend_2hto3h %}
-                              <span id="verdi-diff_3" class="text-warning ml-2">(<i class="fas fa-arrow-down"></i>{{ cards.verdi.diff_3 }})</span>
-                            {% else %}
-                              <span id="verdi-diff_3" class="text-success ml-2">(<i class="fas fa-arrow-up"></i>{{ cards.verdi.diff_3 }})</span>
-                            {% endif %}
-                          {% endif %}
+                          <span id="verdi-diff_3" class="{{ cards.verdi.diff_3_class }} ml-2">{{ cards.verdi.diff_3_formatted }}</span>
                         </td>
                       </tr>
                     </tbody>
@@ -244,15 +180,7 @@
                           <tr>
                             <td>
                               <span id="bianchi-value" class="h2 font-weight-bold mb-0">{{ cards.bianchi.value }}</span>
-                              {% if cards.bianchi.diff == 0 %}
-                                <span id="bianchi-diff" class="text-success mr-2 pl-2">({{ cards.bianchi.diff }})</span>
-                              {% else %}
-                                {% if cards.bianchi.positive_trend %}
-                                  <span id="bianchi-diff" class="text-warning mr-2 pl-2">(<i class="fas fa-arrow-down"></i>{{ cards.bianchi.diff }})</span>
-                                {% else %}
-                                  <span id="bianchi-diff" class="text-success mr-2 pl-2">(<i class="fas fa-arrow-up"></i>{{ cards.bianchi.diff }})</span>
-                                {% endif %}
-                              {% endif %}
+                              <span id="bianchi-diff" class="{{ cards.bianchi.diff_class }} mr-2 pl-2">{{ cards.bianchi.diff_formatted }}</span>
                             </td>
                           </tr>
                         </tbody>
@@ -273,15 +201,7 @@
                         </th>
                         <td>
                           <span id="bianchi-value_1" class="h2 font-weight-bold">{{ cards.bianchi.value_1 }}</span>
-                          {% if cards.bianchi.diff_1 == 0 %}
-                            <span id="bianchi-diff_1" class="text-success ml-2">({{ cards.bianchi.diff_1 }})</span>
-                          {% else %}
-                            {% if cards.bianchi.trend_1 %}
-                              <span id="bianchi-diff_1" class="text-warning ml-2">(<i class="fas fa-arrow-down"></i>{{ cards.bianchi.diff_1 }})</span>
-                            {% else %}
-                              <span id="bianchi-diff_1" class="text-success ml-2">(<i class="fas fa-arrow-up"></i>{{ cards.bianchi.diff_1 }})</span>
-                            {% endif %}
-                          {% endif %}
+                          <span id="bianchi-diff_1" class="{{ cards.bianchi.diff_1_class }} ml-2">{{ cards.bianchi.diff_1_formatted }}</span>
                         </td>
                       </tr>
 
@@ -291,15 +211,7 @@
                         </th>
                         <td>
                           <span id="bianchi-value_2" class="h2 font-weight-bold">{{ cards.bianchi.value_2 }}</span>
-                          {% if cards.bianchi.diff_2 == 0 %}
-                            <span id="bianchi-diff_2" class="text-success ml-2">({{ cards.bianchi.diff_2 }})</span>
-                          {% else %}
-                            {% if cards.bianchi.trend_1hto2h %}
-                              <span id="bianchi-diff_2" class="text-warning ml-2">(<i class="fas fa-arrow-down"></i>{{ cards.bianchi.diff_2 }})</span>
-                            {% else %}
-                              <span id="bianchi-diff_2" class="text-success ml-2">(<i class="fas fa-arrow-up"></i>{{ cards.bianchi.diff_2 }})</span>
-                            {% endif %}
-                          {% endif %}
+                          <span id="bianchi-diff_2" class="{{ cards.bianchi.diff_2_class }} ml-2">{{ cards.bianchi.diff_2_formatted }}</span>
                         </td>
                       </tr>
 
@@ -309,15 +221,7 @@
                         </th>
                         <td>
                           <span id="bianchi-value_3" class="h2 font-weight-bold">{{ cards.bianchi.value_3 }}</span>
-                          {% if cards.bianchi.diff_3 == 0 %}
-                            <span id="bianchi-diff_3" class="text-success ml-2">({{ cards.bianchi.diff_3 }})</span>
-                          {% else %}
-                            {% if cards.bianchi.trend_2hto3h %}
-                              <span id="bianchi-diff_3" class="text-warning ml-2">(<i class="fas fa-arrow-down"></i>{{ cards.bianchi.diff_3 }})</span>
-                            {% else %}
-                              <span id="bianchi-diff_3" class="text-success ml-2">(<i class="fas fa-arrow-up"></i>{{ cards.bianchi.diff_3 }})</span>
-                            {% endif %}
-                          {% endif %}
+                          <span id="bianchi-diff_3" class="{{ cards.bianchi.diff_3_class }} ml-2">{{ cards.bianchi.diff_3_formatted }}</span>
                         </td>
                       </tr>
 
@@ -621,32 +525,48 @@
   <script>
 
     function update_cards(cards) {
-      $("#bianchi-value").html(cards.bianchi.value);
-      $("#bianchi-diff").html("("+cards.bianchi.diff+")");
-      $("#bianchi-value_1").html(cards.bianchi.value);
-      $("#bianchi-diff_1").html(cards.bianchi.diff);
-      $("#bianchi-value_2").html(cards.bianchi.value);
-      $("#bianchi-diff_2").html(cards.bianchi.diff);
-      $("#bianchi-value_3").html(cards.bianchi.value);
-      $("#bianchi-diff_3").html(cards.bianchi.diff);
+      $("#gialli-value").html(cards.gialli.value);
+      $("#gialli-diff").html(cards.gialli.diff_formatted);
+      $("#gialli-diff").removeClass(["text-warning","text-success"]).addClass(cards.gialli.diff_class);
+      $("#gialli-value_1").html(cards.gialli.value_1);
+      $("#gialli-diff_1").html(cards.gialli.diff_1_formatted);
+      $("#gialli-diff_1").removeClass(["text-warning","text-success"]).addClass(cards.gialli.diff_1_class);
+      $("#gialli-value_2").html(cards.gialli.value_2);
+      $("#gialli-diff_2").html(cards.gialli.diff_2_formatted);
+      $("#gialli-diff_2").removeClass(["text-warning","text-success"]).addClass(cards.gialli.diff_2_class);
+      $("#gialli-value_3").html(cards.gialli.value_3);
+      $("#gialli-diff_3").html(cards.gialli.diff_3_formatted);
+      $("#gialli-diff_3").removeClass(["text-warning","text-success"]).addClass(cards.gialli.diff_3_class);
 
       $("#verdi-value").html(cards.verdi.value);
-      $("#verdi-diff").html(cards.verdi.diff);
+      $("#verdi-diff").html(cards.verdi.diff_formatted);
+      $("#verdi-diff").removeClass(["text-warning","text-success"]).addClass(cards.verdi.diff_class);
       $("#verdi-value_1").html(cards.verdi.value_1);
-      $("#verdi-diff_1").html(cards.verdi.diff_1);
+      $("#verdi-diff_1").html(cards.verdi.diff_1_formatted);
+      $("#verdi-diff_1").removeClass(["text-warning","text-success"]).addClass(cards.verdi.diff_1_class);
       $("#verdi-value_2").html(cards.verdi.value_2);
-      $("#verdi-diff_2").html(cards.verdi.diff_2);
+      $("#verdi-diff_2").html(cards.verdi.diff_2_formatted);
+      $("#verdi-diff_2").removeClass(["text-warning","text-success"]).addClass(cards.verdi.diff_2_class);
       $("#verdi-value_3").html(cards.verdi.value_3);
-      $("#verdi-diff_3").html(cards.verdi.diff_3);
+      $("#verdi-diff_3").html(cards.verdi.diff_3_formatted);
+      $("#verdi-diff_3").removeClass(["text-warning","text-success"]).addClass(cards.verdi.diff_3_class);
 
-      $("#gialli-value").html(cards.gialli.value);
-      $("#gialli-diff").html(cards.gialli.diff);
-      $("#gialli-value_1").html(cards.gialli.value_1);
-      $("#gialli-diff_1").html(cards.gialli.diff_1);
-      $("#gialli-value_2").html(cards.gialli.value_2);
-      $("#gialli-diff_2").html(cards.gialli.diff_2);
-      $("#gialli-value_3").html(cards.gialli.value_3);
-      $("#gialli-diff_3").html(cards.gialli.diff_3);
+      $("#bianchi-value").html(cards.bianchi.value);
+      $("#bianchi-diff").html(cards.bianchi.diff_formatted);
+      $("#bianchi-diff").removeClass(["text-warning","text-success"]).addClass(cards.bianchi.diff_class);
+      $("#bianchi-value_1").html(cards.bianchi.value_1);
+      $("#bianchi-diff_1").html(cards.bianchi.diff_1_formatted);
+      $("#bianchi-diff_1").removeClass(["text-warning","text-success"]).addClass(cards.bianchi.diff_1_class);
+      $("#bianchi-value_2").html(cards.bianchi.value_2);
+      $("#bianchi-diff_2").html(cards.bianchi.diff_2_formatted);
+      $("#bianchi-diff_2").removeClass(["text-warning","text-success"]).addClass(cards.bianchi.diff_2_class);
+      $("#bianchi-value_3").html(cards.bianchi.value_3);
+      $("#bianchi-diff_3").html(cards.bianchi.diff_3_formatted);
+      $("#bianchi-diff_3").removeClass(["text-warning","text-success"]).addClass(cards.bianchi.diff_3_class);
+    }
+
+    function update_big_graph(big_graph){
+
     }
 
     function getFormData($form){
@@ -682,7 +602,7 @@
           success: function (data) {
             if (data.success) {
               update_cards(data.cards);
-
+              update_big_graph(data.big_graph);
             } else {
               $('#date-form').html(data.form_html);
             }

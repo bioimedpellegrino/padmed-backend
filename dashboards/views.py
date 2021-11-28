@@ -66,20 +66,22 @@ class StoricoView(APIView):
         from .forms import DateRangeForm
         
         now = timezone.localtime() 
-        one_day_ago = now - relativedelta(days=1)
+        one_day_ago = now - relativedelta(days=7)
         form = DateRangeForm(
-            initial={   ## TODO: doesn't work
-                "start":one_day_ago.date(),
-                "end":now.date(),
-                }
+            {   ## TODO: doesn't work
+            "start":one_day_ago.date().isoformat(),
+            "start_cache":one_day_ago.date().isoformat(),
+            "end":now.date().isoformat(),
+            "end_cache":now.date().isoformat(),
+            }
         )
         cards = GetStoricoData.get_storico_advanced_cards(one_day_ago,now)
-        
-        
+        big_graph = GetStoricoData.get_storico_big_graph(one_day_ago,now)
                     
         return render(request, self.template_name, {
             "cards":cards,
             "form":form,
+            "big_graph":big_graph,
             })
         
 class IconsView(APIView):
@@ -123,18 +125,27 @@ class GetStoricoData(APIView):
     def post(self, request, *args, **kwargs):
         from .forms import DateRangeForm
         
-        form = DateRangeForm(
-            request.POST or None
-        )
-        
         ## Here it will need a timezone conversion https://stackoverflow.com/questions/18622007/runtimewarning-datetimefield-received-a-naive-datetime
         form = DateRangeForm(request.POST or None)
         
         if form.is_valid():
             # You could actually save through AJAX and return a success code here
-            cards = self.get_storico_advanced_cards(form.cleaned_data["start"],form.cleaned_data["end"])
-            
-            return JsonResponse({'success': True,"cards":cards})
+            cards = self.get_storico_advanced_cards(
+                form.cleaned_data["start"],
+                form.cleaned_data["end"]
+                )
+            big_graph = self.get_storico_big_graph(
+                form.cleaned_data["start"],
+                form.cleaned_data["end"],
+                code = form.cleaned_data["code"],
+                from_hours = form.cleaned_data["from_hours"],
+                to_hours = form.cleaned_data["to_hours"],
+                )
+            return JsonResponse({
+                'success': True,
+                "cards":cards,
+                "big_graph":big_graph,
+                })
         else:
             ctx = {}
             ctx.update(csrf(request))
@@ -197,7 +208,7 @@ class GetStoricoData(APIView):
     @classmethod
     def get_storico_advanced_cards(cls,start:datetime.datetime,end:datetime.datetime)->dict():
         
-        def filter_for_exit_interval(value,diff,from_hours=None,to_hours=None):
+        def filter_for_exit_interval(value,last,from_hours=None,to_hours=None):
             from datetime import timedelta
             from django.db.models import F
             filter_dict = {}
@@ -207,12 +218,12 @@ class GetStoricoData(APIView):
                 filter_dict["exit_date__lt"] = F("access_date")+timedelta(hours=to_hours)
             
             value = value.filter(**filter_dict)
-            diff = diff.filter(**filter_dict)
-            return value, diff
+            last = last.filter(**filter_dict)
+            return value, last
         
-        diff_period = end - start
-        diff_start = start - diff_period
-        diff_end = start
+        last_period = end - start
+        last_start = start - last_period
+        last_end = start
         
         cards = dict()
         
@@ -221,38 +232,49 @@ class GetStoricoData(APIView):
             ("verdi","greens"),
             ("bianchi","whites"),
         ]
-
+        sign_format = {True:"+",False:""}
+        class_format = {True:"text-warning",False:"text-success"}
         for name,method_name in name_methods:
             method = getattr(TriageAccess,method_name)
             
             value = method(access_date__gte=start,access_date__lte=end)
-            diff = method(access_date__gte=diff_start,access_date__lt=diff_end)
+            last = method(access_date__gte=last_start,access_date__lt=last_end)
+            diff = value.count() - last.count()
             
-            
-            value_1,diff_1 = filter_for_exit_interval(value,diff,to_hours=2)
-            value_2,diff_2 = filter_for_exit_interval(value,diff,from_hours=2,to_hours=4)
-            value_3,diff_3 = filter_for_exit_interval(value,diff,from_hours=4)
+            value_1,last_1 = filter_for_exit_interval(value,last,to_hours=2)
+            diff_1 = value_1.count() - last_1.count()
+            value_2,last_2 = filter_for_exit_interval(value,last,from_hours=2,to_hours=4)
+            diff_2 = value_2.count() - last_2.count()
+            value_3,last_3 = filter_for_exit_interval(value,last,from_hours=4)
+            diff_3 = value_3.count() - last_3.count()
             
             cards[name] = {
                 "value" : value.count(),
-                "diff" : value.count() - diff.count(),
-                "trend" : value.count() - diff.count() >= 0,
+                "diff" : diff,
+                "diff_formatted" : "("+sign_format[diff>=0]+str(diff)+")",
+                "diff_class" : class_format[diff>=0],
                 
                 "value_1": value_1.count(),
-                "diff_1": value_1.count() - diff_1.count(),
-                "trend_1" : value_1.count() - diff_1.count() >= 0,
+                "diff_1": diff_1,
+                "diff_1_formatted" : "("+sign_format[diff_1>=0]+str(diff_1)+")",
+                "diff_1_class" : class_format[diff_1>=0],
                 "value_1_description" : "Meno di 2h",
                 
                 "value_2": value_2.count(),
-                "diff_2": value_2.count() - diff_2.count(),
-                "trend_2" : value_2.count() - diff_2.count() >= 0,
+                "diff_2": diff_2,
+                "diff_2_formatted" : "("+sign_format[diff_2>=0]+str(diff_2)+")",
+                "diff_2_class" : class_format[diff_2>=0],
                 "value_2_description" : "Tra 2h e 4h",
                 
                 "value_3": value_3.count(),
-                "diff_3": value_3.count() - diff_3.count(),
-                "trend_3" : value_3.count() - diff_3.count() >= 0,
+                "diff_3": diff_3,
+                "diff_3_formatted" : "("+sign_format[diff_3>=0]+str(diff_3)+")",
+                "diff_3_class" : class_format[diff_3>=0],
                 "value_3_description" : "Più di 4h",
             }
         
         return cards
     
+    @classmethod
+    def get_storico_big_graph(cls,start:datetime.datetime,end:datetime.datetime,code=None,from_hours=None,to_hours=None)->dict():
+        pass
