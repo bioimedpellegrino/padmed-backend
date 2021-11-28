@@ -5,6 +5,7 @@ import base64
 import pytz
 from functools import lru_cache
 from pprint import pprint
+from dateutil.relativedelta import relativedelta
 
 from generic.models import City, Province, Country
 
@@ -16,6 +17,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
 from django.db.models.signals import pre_save, post_init
+from django.db.models.query import QuerySet
 
 
 GENDER = (
@@ -161,21 +163,21 @@ class TriageAccess(models.Model):
         return "{} - {}".format(self.id, self.patient)
     
     @property
-    def is_white(self):
+    def is_white(self)->bool:
         return self.triage_code == TriageCode.get_white()
     @property
     def set_white(self):
         self.triage_code == TriageCode.get_white()
         self.save()
     @property
-    def is_green(self):
+    def is_green(self)->bool:
         return self.triage_code == TriageCode.get_green()
     @property
     def set_green(self):
         self.triage_code == TriageCode.get_green()
         self.save()
     @property
-    def is_yellow(self):
+    def is_yellow(self)->bool:
         return self.triage_code == TriageCode.get_yellow()
     @property
     def set_yellow(self):
@@ -183,7 +185,7 @@ class TriageAccess(models.Model):
         self.save()
     
     @property
-    def waiting_progress(self):
+    def waiting_progress(self)->int:
         ## Qui si può mettere un sistema di calcolo del tempo medio (chesciato in qualche tabella e aggiornato di giorno in giorno)
         ## per sostituire settings.INIT_MAX_WAITING_SECONDS e dare all'operatore una idea più realistica e utile del tempo di 
         ## attesa 
@@ -191,7 +193,7 @@ class TriageAccess(models.Model):
         waiting_progress = float(seconds)/settings.INIT_MAX_WAITING_SECONDS
         return int(waiting_progress)
     @property
-    def waiting_time(self):
+    def waiting_time(self)->relativedelta:
         from dateutil.relativedelta import relativedelta as rd
         access_date = self.access_date
         tz = pytz.timezone('Europe/Rome')
@@ -202,21 +204,21 @@ class TriageAccess(models.Model):
         
         
     @classmethod
-    def whites(cls,exclude=[],**kwargs):
+    def whites(cls,exclude=[],**kwargs)->QuerySet:
         objs = cls.objects.filter(triage_code=TriageCode.get_white())
         objs = objs.filter(**kwargs)
         for exc in exclude:
             objs = objs.exclude(**exc)
         return objs
     @classmethod
-    def greens(cls,exclude=[],**kwargs):
+    def greens(cls,exclude=[],**kwargs)->QuerySet:
         objs = cls.objects.filter(triage_code=TriageCode.get_green())
         objs = objs.filter(**kwargs)
         for exc in exclude:
             objs = objs.exclude(**exc)
         return objs
     @classmethod
-    def yellows(cls,exclude=[],**kwargs):
+    def yellows(cls,exclude=[],**kwargs)->QuerySet:
         objs = cls.objects.filter(triage_code=TriageCode.get_yellow())
         objs = objs.filter(**kwargs)
         for exc in exclude:
@@ -224,7 +226,7 @@ class TriageAccess(models.Model):
         return objs
     
     @classmethod
-    def ordered_items(cls,exclude=[],**kwargs):
+    def ordered_items(cls,exclude=[],**kwargs)->QuerySet:
         ## Implement here the ordering policy of the hospital ##
         objs = cls.objects.all().order_by("created")
         

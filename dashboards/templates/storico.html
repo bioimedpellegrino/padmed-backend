@@ -4,7 +4,22 @@
 {% block title %} Dashboard {% endblock title %}
 
 <!-- Specific CSS goes HERE -->
-{% block stylesheets %}{% endblock stylesheets %}
+{% block stylesheets %}
+  <style>
+    .table-condensed > thead > tr > th,
+    .table-condensed > tbody > tr > th,
+    .table-condensed > tfoot > tr > th,
+    .table-condensed > thead > tr > td,
+    .table-condensed > tbody > tr > td,
+    .table-condensed > tfoot > tr > td {
+      padding: 1px;
+    }
+
+    .table-hover > tbody > tr:hover {
+      cursor:pointer;
+    }
+  </style>
+{% endblock stylesheets %}
 
 {% block content %}
 
@@ -36,38 +51,25 @@
                 <div class="card-body">
                   <div class="row">
                     <div class="col">
-                      <h5 class="card-title text-uppercase text-muted mb-0">Codici Bianchi</h5>
-                      <span id="bianchi-value" class="h2 font-weight-bold mb-0">{{ cards.bianchi.value }}</span>
-                    </div>
-                    <div class="col-auto">
-                      <div class="icon icon-shape bg-white rounded-circle shadow">
-                        <i class="far fa-user"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <p class="mt-3 mb-0 text-muted text-sm">
-                    {% if cards.bianchi.diff == 0 %}
-                      <span id="bianchi-diff" class="text-success mr-2">{{ cards.bianchi.diff }}%</span>
-                    {% else %}
-                      {% if cards.bianchi.positive_trend %}
-                        <span id="bianchi-diff" class="text-warning mr-2"><i class="fas fa-arrow-up"></i>{{ cards.bianchi.diff }}%</span>
-                      {% else %}
-                        <span id="bianchi-diff" class="text-success mr-2"><i class="fas fa-arrow-down"></i>{{ cards.bianchi.diff }}%</span>
-                      {% endif %}
-                    {% endif %}
-                    <span class="text-nowrap">Rispetto al periodo precedente</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-xl-3 col-lg-6">
-              <div class="card card-stats mb-4 mb-xl-0">
-                <div class="card-body">
-                  <div class="row">
-                    <div class="col">
                       <h5 class="card-title text-uppercase text-muted mb-0">Codici Gialli</h5>
-                      <span id="gialli-value" class="h2 font-weight-bold mb-0">{{ cards.gialli.value }}</span>
+                      <table class="table table-borderless table-hover table-condensed mt-2">
+                        <tbody>
+                          <tr>
+                            <td>
+                              <span id="gialli-value" class="h2 font-weight-bold mb-0">{{ cards.gialli.value }}</span>
+                              {% if cards.gialli.diff == 0 %}
+                                <span id="gialli-diff" class="text-success mr-2 pl-2">({{ cards.gialli.diff }})</span>
+                              {% else %}
+                                {% if cards.gialli.positive_trend %}
+                                  <span id="gialli-diff" class="text-warning mr-2 pl-2">(<i class="fas fa-arrow-down"></i>{{ cards.gialli.diff }})</span>
+                                {% else %}
+                                  <span id="gialli-diff" class="text-success mr-2 pl-2">(<i class="fas fa-arrow-up"></i>{{ cards.gialli.diff }})</span>
+                                {% endif %}
+                              {% endif %}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
                     <div class="col-auto">
                       <div class="icon icon-shape bg-yellow text-white rounded-circle shadow">
@@ -75,18 +77,65 @@
                       </div>
                     </div>
                   </div>
-                  <p class="mt-3 mb-0 text-muted text-sm">
-                    {% if cards.gialli.diff == 0 %}
-                      <span id="gialli-diff" class="text-success mr-2">{{ cards.gialli.diff }}%</span>
-                    {% else %}
-                      {% if cards.gialli.positive_trend %}
-                        <span id="gialli-diff" class="text-warning mr-2"><i class="fas fa-arrow-up"></i>{{ cards.gialli.diff }}%</span>
-                      {% else %}
-                        <span id="gialli-diff" class="text-success mr-2"><i class="fas fa-arrow-down"></i>{{ cards.gialli.diff }}%</span>
-                      {% endif %}
-                    {% endif %}
-                    <span class="text-nowrap">Rispetto al periodo precedente</span>
-                  </p>
+                  <h5 class="card-title text-uppercase text-muted mt-2 mb-0">Permanenza</h5>
+                  <table class="table table-borderless table-hover table-condensed mt-2">
+                    <tbody>
+                      <tr>
+                        <th scope="row">
+                          <p class="text-muted">{{ cards.gialli.value_1_description }}</p>
+                        </th>
+                        <td>
+                          <span id="gialli-value_1" class="h2 font-weight-bold">{{ cards.gialli.value_1 }}</span>
+                          {% if cards.gialli.diff_1 == 0 %}
+                            <span id="gialli-diff_1" class="text-success ml-2">({{ cards.gialli.diff_1 }})</span>
+                          {% else %}
+                            {% if cards.gialli.trend_1 %}
+                              <span id="gialli-diff_1" class="text-warning ml-2">(<i class="fas fa-arrow-down"></i>{{ cards.gialli.diff_1 }})</span>
+                            {% else %}
+                              <span id="gialli-diff_1" class="text-success ml-2">(<i class="fas fa-arrow-up"></i>{{ cards.gialli.diff_1 }})</span>
+                            {% endif %}
+                          {% endif %}
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <th scope="row">
+                          <p class="text-muted">{{ cards.gialli.value_2_description }}</p>
+                        </th>
+                        <td>
+                          <span id="gialli-value_2" class="h2 font-weight-bold">{{ cards.gialli.value_2 }}</span>
+                          {% if cards.gialli.diff_2 == 0 %}
+                            <span id="gialli-diff_2" class="text-success ml-2">({{ cards.gialli.diff_2 }})</span>
+                          {% else %}
+                            {% if cards.gialli.trend_1hto2h %}
+                              <span id="gialli-diff_2" class="text-warning ml-2">(<i class="fas fa-arrow-down"></i>{{ cards.gialli.diff_2 }})</span>
+                            {% else %}
+                              <span id="gialli-diff_2" class="text-success ml-2">(<i class="fas fa-arrow-up"></i>{{ cards.gialli.diff_2 }})</span>
+                            {% endif %}
+                          {% endif %}
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <th scope="row">
+                          <p class="text-muted">{{ cards.gialli.value_3_description }}</p>
+                        </th>
+                        <td>
+                          <span id="gialli-value_3" class="h2 font-weight-bold">{{ cards.gialli.value_3 }}</span>
+                          {% if cards.gialli.diff_3 == 0 %}
+                            <span id="gialli-diff_3" class="text-success ml-2">({{ cards.gialli.diff_3 }})</span>
+                          {% else %}
+                            {% if cards.gialli.trend_2hto3h %}
+                              <span id="gialli-diff_3" class="text-warning ml-2">(<i class="fas fa-arrow-down"></i>{{ cards.gialli.diff_3 }})</span>
+                            {% else %}
+                              <span id="gialli-diff_3" class="text-success ml-2">(<i class="fas fa-arrow-up"></i>{{ cards.gialli.diff_3 }})</span>
+                            {% endif %}
+                          {% endif %}
+                        </td>
+                      </tr>
+
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
@@ -97,7 +146,24 @@
                   <div class="row">
                     <div class="col">
                       <h5 class="card-title text-uppercase text-muted mb-0">Codici Verdi</h5>
-                      <span id="verdi-value" class="h2 font-weight-bold mb-0">{{ cards.verdi.value }}</span>
+                      <table class="table table-borderless table-hover table-condensed mt-2">
+                        <tbody>
+                          <tr>
+                            <td>
+                              <span id="verdi-value" class="h2 font-weight-bold mb-0">{{ cards.verdi.value }}</span>
+                              {% if cards.verdi.diff == 0 %}
+                                <span id="verdi-diff" class="text-success mr-2 pl-2">({{ cards.verdi.diff }})</span>
+                              {% else %}
+                                {% if cards.verdi.positive_trend %}
+                                  <span id="verdi-diff" class="text-warning mr-2 pl-2">(<i class="fas fa-arrow-down"></i>{{ cards.verdi.diff }})</span>
+                                {% else %}
+                                  <span id="verdi-diff" class="text-success mr-2 pl-2">(<i class="fas fa-arrow-up"></i>{{ cards.verdi.diff }})</span>
+                                {% endif %}
+                              {% endif %}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
                     <div class="col-auto">
                       <div class="icon icon-shape bg-green text-white rounded-circle shadow">
@@ -105,21 +171,162 @@
                       </div>
                     </div>
                   </div>
-                  <p class="mt-3 mb-0 text-muted text-sm">
-                    {% if cards.verdi.diff == 0 %}
-                      <span id="verdi-diff" class="text-success mr-2">{{ cards.verdi.diff }}%</span>
-                    {% else %}
-                      {% if cards.verdi.positive_trend %}
-                        <span id="verdi-diff" class="text-warning mr-2"><i class="fas fa-arrow-up"></i>{{ cards.verdi.diff }}%</span>
-                      {% else %}
-                        <span id="verdi-diff" class="text-success mr-2"><i class="fas fa-arrow-down"></i>{{ cards.verdi.diff }}%</span>
-                      {% endif %}
-                    {% endif %}
-                    <span class="text-nowrap">Rispetto al periodo precedente</span>
-                  </p>
+                  <h5 class="card-title text-uppercase text-muted mt-2 mb-0">Permanenza</h5>
+                  <table class="table table-borderless table-hover table-condensed mt-2">
+                    <tbody>
+                      <tr>
+                        <th scope="row">
+                          <p class="text-muted">{{ cards.verdi.value_1_description }}</p>
+                        </th>
+                        <td>
+                          <span id="verdi-value_1" class="h2 font-weight-bold">{{ cards.verdi.value_1 }}</span>
+                          {% if cards.verdi.diff_1 == 0 %}
+                            <span id="verdi-diff_1" class="text-success ml-2">({{ cards.verdi.diff_1 }})</span>
+                          {% else %}
+                            {% if cards.verdi.trend_1 %}
+                              <span id="verdi-diff_1" class="text-warning ml-2">(<i class="fas fa-arrow-down"></i>{{ cards.verdi.diff_1 }})</span>
+                            {% else %}
+                              <span id="verdi-diff_1" class="text-success ml-2">(<i class="fas fa-arrow-up"></i>{{ cards.verdi.diff_1 }})</span>
+                            {% endif %}
+                          {% endif %}
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <th scope="row">
+                          <p class="text-muted">{{ cards.verdi.value_2_description }}</p>
+                        </th>
+                        <td>
+                          <span id="verdi-value_2" class="h2 font-weight-bold">{{ cards.verdi.value_2 }}</span>
+                          {% if cards.verdi.diff_2 == 0 %}
+                            <span id="verdi-diff_2" class="text-success ml-2">({{ cards.verdi.diff_2 }})</span>
+                          {% else %}
+                            {% if cards.verdi.trend_1hto2h %}
+                              <span id="verdi-diff_2" class="text-warning ml-2">(<i class="fas fa-arrow-down"></i>{{ cards.verdi.diff_2 }})</span>
+                            {% else %}
+                              <span id="verdi-diff_2" class="text-success ml-2">(<i class="fas fa-arrow-up"></i>{{ cards.verdi.diff_2 }})</span>
+                            {% endif %}
+                          {% endif %}
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <th scope="row">
+                          <p class="text-muted">{{ cards.verdi.value_3_description }}</p>
+                        </th>
+                        <td>
+                          <span id="verdi-value_3" class="h2 font-weight-bold">{{ cards.verdi.value_3 }}</span>
+                          {% if cards.verdi.diff_3 == 0 %}
+                            <span id="verdi-diff_3" class="text-success ml-2">({{ cards.verdi.diff_3 }})</span>
+                          {% else %}
+                            {% if cards.verdi.trend_2hto3h %}
+                              <span id="verdi-diff_3" class="text-warning ml-2">(<i class="fas fa-arrow-down"></i>{{ cards.verdi.diff_3 }})</span>
+                            {% else %}
+                              <span id="verdi-diff_3" class="text-success ml-2">(<i class="fas fa-arrow-up"></i>{{ cards.verdi.diff_3 }})</span>
+                            {% endif %}
+                          {% endif %}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
+
+            <div class="col-xl-3 col-lg-6">
+              <div class="card card-stats mb-4 mb-xl-0">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-0">Codici Bianchi</h5>
+                      <table class="table table-borderless table-hover table-condensed mt-2">
+                        <tbody>
+                          <tr>
+                            <td>
+                              <span id="bianchi-value" class="h2 font-weight-bold mb-0">{{ cards.bianchi.value }}</span>
+                              {% if cards.bianchi.diff == 0 %}
+                                <span id="bianchi-diff" class="text-success mr-2 pl-2">({{ cards.bianchi.diff }})</span>
+                              {% else %}
+                                {% if cards.bianchi.positive_trend %}
+                                  <span id="bianchi-diff" class="text-warning mr-2 pl-2">(<i class="fas fa-arrow-down"></i>{{ cards.bianchi.diff }})</span>
+                                {% else %}
+                                  <span id="bianchi-diff" class="text-success mr-2 pl-2">(<i class="fas fa-arrow-up"></i>{{ cards.bianchi.diff }})</span>
+                                {% endif %}
+                              {% endif %}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="col-auto">
+                      <div class="icon icon-shape bg-white rounded-circle shadow">
+                        <i class="far fa-user"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <h5 class="card-title text-uppercase text-muted mt-2 mb-0">Permanenza</h5>
+                  <table class="table table-borderless table-hover table-condensed mt-2">
+                    <tbody>
+                      <tr>
+                        <th scope="row">
+                          <p class="text-muted">{{ cards.bianchi.value_1_description }}</p>
+                        </th>
+                        <td>
+                          <span id="bianchi-value_1" class="h2 font-weight-bold">{{ cards.bianchi.value_1 }}</span>
+                          {% if cards.bianchi.diff_1 == 0 %}
+                            <span id="bianchi-diff_1" class="text-success ml-2">({{ cards.bianchi.diff_1 }})</span>
+                          {% else %}
+                            {% if cards.bianchi.trend_1 %}
+                              <span id="bianchi-diff_1" class="text-warning ml-2">(<i class="fas fa-arrow-down"></i>{{ cards.bianchi.diff_1 }})</span>
+                            {% else %}
+                              <span id="bianchi-diff_1" class="text-success ml-2">(<i class="fas fa-arrow-up"></i>{{ cards.bianchi.diff_1 }})</span>
+                            {% endif %}
+                          {% endif %}
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <th scope="row">
+                          <p class="text-muted">{{ cards.bianchi.value_2_description }}</p>
+                        </th>
+                        <td>
+                          <span id="bianchi-value_2" class="h2 font-weight-bold">{{ cards.bianchi.value_2 }}</span>
+                          {% if cards.bianchi.diff_2 == 0 %}
+                            <span id="bianchi-diff_2" class="text-success ml-2">({{ cards.bianchi.diff_2 }})</span>
+                          {% else %}
+                            {% if cards.bianchi.trend_1hto2h %}
+                              <span id="bianchi-diff_2" class="text-warning ml-2">(<i class="fas fa-arrow-down"></i>{{ cards.bianchi.diff_2 }})</span>
+                            {% else %}
+                              <span id="bianchi-diff_2" class="text-success ml-2">(<i class="fas fa-arrow-up"></i>{{ cards.bianchi.diff_2 }})</span>
+                            {% endif %}
+                          {% endif %}
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <th scope="row">
+                          <p class="text-muted">{{ cards.bianchi.value_3_description }}</p>
+                        </th>
+                        <td>
+                          <span id="bianchi-value_3" class="h2 font-weight-bold">{{ cards.bianchi.value_3 }}</span>
+                          {% if cards.bianchi.diff_3 == 0 %}
+                            <span id="bianchi-diff_3" class="text-success ml-2">({{ cards.bianchi.diff_3 }})</span>
+                          {% else %}
+                            {% if cards.bianchi.trend_2hto3h %}
+                              <span id="bianchi-diff_3" class="text-warning ml-2">(<i class="fas fa-arrow-down"></i>{{ cards.bianchi.diff_3 }})</span>
+                            {% else %}
+                              <span id="bianchi-diff_3" class="text-success ml-2">(<i class="fas fa-arrow-up"></i>{{ cards.bianchi.diff_3 }})</span>
+                            {% endif %}
+                          {% endif %}
+                        </td>
+                      </tr>
+
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            
           </div>
         </div>
       </div>
@@ -415,11 +622,31 @@
 
     function update_cards(cards) {
       $("#bianchi-value").html(cards.bianchi.value);
-      $("#bianchi-diff").html(cards.bianchi.diff);
+      $("#bianchi-diff").html("("+cards.bianchi.diff+")");
+      $("#bianchi-value_1").html(cards.bianchi.value);
+      $("#bianchi-diff_1").html(cards.bianchi.diff);
+      $("#bianchi-value_2").html(cards.bianchi.value);
+      $("#bianchi-diff_2").html(cards.bianchi.diff);
+      $("#bianchi-value_3").html(cards.bianchi.value);
+      $("#bianchi-diff_3").html(cards.bianchi.diff);
+
       $("#verdi-value").html(cards.verdi.value);
       $("#verdi-diff").html(cards.verdi.diff);
+      $("#verdi-value_1").html(cards.verdi.value_1);
+      $("#verdi-diff_1").html(cards.verdi.diff_1);
+      $("#verdi-value_2").html(cards.verdi.value_2);
+      $("#verdi-diff_2").html(cards.verdi.diff_2);
+      $("#verdi-value_3").html(cards.verdi.value_3);
+      $("#verdi-diff_3").html(cards.verdi.diff_3);
+
       $("#gialli-value").html(cards.gialli.value);
       $("#gialli-diff").html(cards.gialli.diff);
+      $("#gialli-value_1").html(cards.gialli.value_1);
+      $("#gialli-diff_1").html(cards.gialli.diff_1);
+      $("#gialli-value_2").html(cards.gialli.value_2);
+      $("#gialli-diff_2").html(cards.gialli.diff_2);
+      $("#gialli-value_3").html(cards.gialli.value_3);
+      $("#gialli-diff_3").html(cards.gialli.diff_3);
     }
 
     function getFormData($form){
@@ -432,7 +659,7 @@
 
       return indexed_array;
     }
-    
+
     $(document).ready(function () {
 
       // ADDING AJAX DATE POST

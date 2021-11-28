@@ -73,7 +73,7 @@ class StoricoView(APIView):
                 "end":now.date(),
                 }
         )
-        cards = GetStoricoData.get_storico_cards(one_day_ago,now)
+        cards = GetStoricoData.get_storico_advanced_cards(one_day_ago,now)
         
         
                     
@@ -132,7 +132,7 @@ class GetStoricoData(APIView):
         
         if form.is_valid():
             # You could actually save through AJAX and return a success code here
-            cards = self.get_storico_cards(form.cleaned_data["start"],form.cleaned_data["end"])
+            cards = self.get_storico_advanced_cards(form.cleaned_data["start"],form.cleaned_data["end"])
             
             return JsonResponse({'success': True,"cards":cards})
         else:
@@ -157,7 +157,7 @@ class GetStoricoData(APIView):
         cards["personale"] = dict()
         
         value = 0 #TriageAccess.whites(exit_date__isnull=True).count() #TODO
-        diff = -1 * 0 #TriageAccess.whites(exit_date__gte=start,exit_date__lt=end).count()
+        diff = value - 0 #TriageAccess.whites(exit_date__gte=start,exit_date__lt=end).count()
         positive_trend = diff >= 0
         cards["personale"] = {
             "value" : "?",
@@ -166,7 +166,7 @@ class GetStoricoData(APIView):
         }
 
         value = TriageAccess.yellows(access_date__gte=start,access_date__lte=end).count()
-        diff = -1 * TriageAccess.yellows(access_date__gte=diff_start,access_date__lt=diff_end).count()
+        diff = value - TriageAccess.yellows(access_date__gte=diff_start,access_date__lt=diff_end).count()
         positive_trend = diff >= 0
         cards["gialli"] = {
             "value" : value,
@@ -175,7 +175,7 @@ class GetStoricoData(APIView):
         }
 
         value = TriageAccess.greens(access_date__gte=start,access_date__lte=end).count()
-        diff = -1 * TriageAccess.greens(access_date__gte=diff_start,access_date__lt=diff_end).count()
+        diff = value - TriageAccess.greens(access_date__gte=diff_start,access_date__lt=diff_end).count()
         positive_trend = diff >= 0
         cards["verdi"] = {
             "value" : value,
@@ -184,13 +184,75 @@ class GetStoricoData(APIView):
         }
 
         value = TriageAccess.whites(access_date__gte=start,access_date__lte=end).count()
-        diff = -1 * TriageAccess.whites(access_date__gte=diff_start,access_date__lt=diff_end).count()
+        diff = value - TriageAccess.whites(access_date__gte=diff_start,access_date__lt=diff_end).count()
         positive_trend = diff >= 0
         cards["bianchi"] = {
             "value" : value,
             "diff": diff,
             "positive_trend" : positive_trend,
         }
+        
+        return cards
+
+    @classmethod
+    def get_storico_advanced_cards(cls,start:datetime.datetime,end:datetime.datetime)->dict():
+        
+        def filter_for_exit_interval(value,diff,from_hours=None,to_hours=None):
+            from datetime import timedelta
+            from django.db.models import F
+            filter_dict = {}
+            if from_hours:
+                filter_dict["exit_date__gte"] = F("access_date")+timedelta(hours=from_hours)
+            if to_hours:
+                filter_dict["exit_date__lt"] = F("access_date")+timedelta(hours=to_hours)
+            
+            value = value.filter(**filter_dict)
+            diff = diff.filter(**filter_dict)
+            return value, diff
+        
+        diff_period = end - start
+        diff_start = start - diff_period
+        diff_end = start
+        
+        cards = dict()
+        
+        name_methods = [
+            ("gialli","yellows"),
+            ("verdi","greens"),
+            ("bianchi","whites"),
+        ]
+
+        for name,method_name in name_methods:
+            method = getattr(TriageAccess,method_name)
+            
+            value = method(access_date__gte=start,access_date__lte=end)
+            diff = method(access_date__gte=diff_start,access_date__lt=diff_end)
+            
+            
+            value_1,diff_1 = filter_for_exit_interval(value,diff,to_hours=2)
+            value_2,diff_2 = filter_for_exit_interval(value,diff,from_hours=2,to_hours=4)
+            value_3,diff_3 = filter_for_exit_interval(value,diff,from_hours=4)
+            
+            cards[name] = {
+                "value" : value.count(),
+                "diff" : value.count() - diff.count(),
+                "trend" : value.count() - diff.count() >= 0,
+                
+                "value_1": value_1.count(),
+                "diff_1": value_1.count() - diff_1.count(),
+                "trend_1" : value_1.count() - diff_1.count() >= 0,
+                "value_1_description" : "Meno di 2h",
+                
+                "value_2": value_2.count(),
+                "diff_2": value_2.count() - diff_2.count(),
+                "trend_2" : value_2.count() - diff_2.count() >= 0,
+                "value_2_description" : "Tra 2h e 4h",
+                
+                "value_3": value_3.count(),
+                "diff_3": value_3.count() - diff_3.count(),
+                "trend_3" : value_3.count() - diff_3.count() >= 0,
+                "value_3_description" : "Più di 4h",
+            }
         
         return cards
     
