@@ -101,7 +101,6 @@
                           <span id="gialli-diff_3" class="{{ cards.gialli.diff_3_class }} ml-2">{{ cards.gialli.diff_3_formatted }}</span>
                         </td>
                       </tr>
-
                     </tbody>
                   </table>
                 </div>
@@ -245,20 +244,26 @@
               <div class="row align-items-center">
                 <div class="col">
                   <h6 class="text-uppercase text-light ls-1 mb-1">Overview</h6>
-                  <h2 class="text-white mb-0">Sales value</h2>
+                  <h2 class="text-white mb-0">Numero di pazienti</h2>
                 </div>
                 <div class="col">
                   <ul class="nav nav-pills justify-content-end">
-                    <li class="nav-item mr-2 mr-md-0" data-toggle="chart" data-target="#chart-sales" data-update='{"data":{"datasets":[{"data":[0, 20, 10, 30, 15, 40, 20, 60, 60]}]}}' data-prefix="$" data-suffix="k">
+                    <li class="nav-item mr-2 mr-md-0" data-toggle="chart" data-target="#chart-sales" data-update='{{big_graph.months_data}}' data-prefix="" data-suffix="">
                       <a href="#" class="nav-link py-2 px-3 active" data-toggle="tab">
-                        <span class="d-none d-md-block">Month</span>
+                        <span class="d-none d-md-block">Mesi</span>
                         <span class="d-md-none">M</span>
                       </a>
                     </li>
-                    <li class="nav-item" data-toggle="chart" data-target="#chart-sales" data-update='{"data":{"datasets":[{"data":[0, 20, 5, 25, 10, 30, 15, 40, 40]}]}}' data-prefix="$" data-suffix="k">
+                    <li class="nav-item" data-toggle="chart" data-target="#chart-sales" data-update='{{big_graph.weeks_data}}' data-prefix="" data-suffix="">
                       <a href="#" class="nav-link py-2 px-3" data-toggle="tab">
-                        <span class="d-none d-md-block">Week</span>
-                        <span class="d-md-none">W</span>
+                        <span class="d-none d-md-block">Settimane</span>
+                        <span class="d-md-none">S</span>
+                      </a>
+                    </li>
+                    <li class="nav-item" data-toggle="chart" data-target="#chart-sales" data-update='{{big_graph.days_data}}' data-prefix="" data-suffix="">
+                      <a href="#" class="nav-link py-2 px-3" data-toggle="tab">
+                        <span class="d-none d-md-block">Giorni</span>
+                        <span class="d-md-none">G</span>
                       </a>
                     </li>
                   </ul>
@@ -269,7 +274,7 @@
               <!-- Chart -->
               <div class="chart">
                 <!-- Chart wrapper -->
-                <canvas id="chart-sales" class="chart-canvas"></canvas>
+                <canvas id="chart-sales" class="chart-canvas" ></canvas>
               </div>
             </div>
           </div>
@@ -524,6 +529,20 @@
 {% block javascripts %}
   <script>
 
+
+    $(document).ready(function () {
+      set_submit_form()
+      update_big_graph({{big_graph.months_data|safe}})
+    });
+
+    function update_big_graph(big_graph){
+      var ctx = $('#chart-sales');
+      var chart = ctx.data("chart");
+      chart.data.labels = big_graph.data.labels;
+      chart.data.datasets = big_graph.data.datasets;
+      chart.update();
+    }
+
     function update_cards(cards) {
       $("#gialli-value").html(cards.gialli.value);
       $("#gialli-diff").html(cards.gialli.diff_formatted);
@@ -565,10 +584,6 @@
       $("#bianchi-diff_3").removeClass(["text-warning","text-success"]).addClass(cards.bianchi.diff_3_class);
     }
 
-    function update_big_graph(big_graph){
-
-    }
-
     function getFormData($form){
       var unindexed_array = $form.serializeArray();
       var indexed_array = {};
@@ -580,8 +595,7 @@
       return indexed_array;
     }
 
-    $(document).ready(function () {
-
+    function set_submit_form() {
       // ADDING AJAX DATE POST
       //window.CSRF_TOKEN = "{{ csrf_token }}"; // Not necessary (crispy forms har already csrf in it)
       // if you have problem with csrf see https://django-crispy-forms.readthedocs.io/en/latest/crispy_tag_forms.html#ajax-validation-recipe
@@ -613,6 +627,6 @@
         });
         return false;
       });
-    });
+    }
   </script>
 {% endblock javascripts %}

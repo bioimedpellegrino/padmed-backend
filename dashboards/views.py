@@ -277,4 +277,61 @@ class GetStoricoData(APIView):
     
     @classmethod
     def get_storico_big_graph(cls,start:datetime.datetime,end:datetime.datetime,code=None,from_hours=None,to_hours=None)->dict():
-        pass
+        import json
+        ## See https://www.chartjs.org/docs/latest/, https://www.chartjs.org/docs/latest/developers/updates.html, https://demos.creative-tim.com/argon-dashboard-pro-react/?_ga=2.191324073.2076643225.1638138645-576346499.1636196270#/documentation/charts
+        big_graph = {}
+        big_graph["months_data"] = {
+            "data":{
+                "labels":[
+                    "Gen",
+                    "Feb",
+                    "Mar",
+                    "Apr",
+                ],
+                "datasets":[
+                        {
+                            "label":"",
+                            "data":[
+                                5,10,15,20,
+                            ]
+                        }
+                    ]
+                },
+            }
+        # big_graph["months_data"] = json.dumps(big_graph["months_data"])
+        
+        big_graph["weeks_data"] = {
+            "data":{
+                "datasets":[
+                        {
+                            "label":"",
+                            "data":[
+                                
+                            ]
+                        }
+                    ]
+                },
+                "labels":[
+                    
+                ]
+            }
+        big_graph["weeks_data"] = json.dumps(big_graph["weeks_data"])
+        
+        big_graph["days_data"] = {
+            "data":{
+                "datasets":[
+                        {
+                            "label":"",
+                            "data":[
+                                
+                            ]
+                        }
+                    ]
+                },
+                "labels":[
+                    
+                ]
+            }
+        big_graph["days_data"] = json.dumps(big_graph["days_data"])
+        
+        return big_graph
