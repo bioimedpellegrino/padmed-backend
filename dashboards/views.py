@@ -278,7 +278,17 @@ class GetStoricoData(APIView):
     @classmethod
     def get_storico_big_graph(cls,start:datetime.datetime,end:datetime.datetime,code=None,from_hours=None,to_hours=None)->dict():
         import json
+        from .utils import timesteps_builder
         ## See https://www.chartjs.org/docs/latest/, https://www.chartjs.org/docs/latest/developers/updates.html, https://demos.creative-tim.com/argon-dashboard-pro-react/?_ga=2.191324073.2076643225.1638138645-576346499.1636196270#/documentation/charts
+        print("start",start)
+        print("end",end)
+        print("code",code)
+        print("from_hours",from_hours)
+        print("to_hours",to_hours)
+        timesteps_months = timesteps_builder(start,end,"m")
+        timesteps_weeks = timesteps_builder(start,end,"w")
+        timesteps_days = timesteps_builder(start,end,"d")
+        
         big_graph = {}
         big_graph["months_data"] = {
             "data":{

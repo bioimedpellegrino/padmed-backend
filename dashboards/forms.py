@@ -18,8 +18,7 @@ class DateRangeForm(forms.Form):
     )
     
     ## Hidden inputs
-    code = forms.ModelChoiceField(
-        queryset=TriageCode.objects.all(),
+    code = forms.CharField(
         widget=forms.HiddenInput(),
         required=False,
         )
