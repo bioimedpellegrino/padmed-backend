@@ -18,6 +18,14 @@
     .table-hover > tbody > tr:hover {
       cursor:pointer;
     }
+
+    .div-hover > div.row {
+      background: #fff;
+    }
+    .div-hover > div.row:hover {
+      background: #f5f5f5;
+      cursor:pointer;
+    }
   </style>
 {% endblock stylesheets %}
 
@@ -70,39 +78,38 @@
                     </div>
                   </div>
                   <h5 class="card-title text-uppercase text-muted mt-2 mb-0">Permanenza</h5>
-                  <table class="table table-borderless table-hover table-condensed mt-2">
-                    <tbody>
-                      <tr>
-                        <th scope="row">
-                          <p class="text-muted">{{ cards.gialli.value_1_description }}</p>
-                        </th>
-                        <td>
-                          <span id="gialli-value_1" class="h2 font-weight-bold">{{ cards.gialli.value_1 }}</span>
-                          <span id="gialli-diff_1" class="{{ cards.gialli.diff_1_class }} ml-2">{{ cards.gialli.diff_1_formatted }}</span>
-                        </td>
-                      </tr>
 
-                      <tr>
-                        <th scope="row">
-                          <p class="text-muted">{{ cards.gialli.value_2_description }}</p>
-                        </th>
-                        <td>
-                          <span id="gialli-value_2" class="h2 font-weight-bold">{{ cards.gialli.value_2 }}</span>
-                          <span id="gialli-diff_2" class="{{ cards.gialli.diff_2_class }} ml-2">{{ cards.gialli.diff_2_formatted }}</span>
-                        </td>
-                      </tr>
+                  <div class="div-hover">
+                    <div class="row">
+                      <div class="col-xl-6 col-lg-6 hoverDiv">
+                        <p class="text-muted">{{ cards.gialli.value_1_description }}</p>
+                      </div>
+                      <div class="col-xl-6 col-lg-6 hoverDiv">
+                        <span id="gialli-value_1" class="h2 font-weight-bold">{{ cards.gialli.value_1 }}</span>
+                        <span id="gialli-diff_1" class="{{ cards.gialli.diff_1_class }} ml-2">{{ cards.gialli.diff_1_formatted }}</span>
+                      </div>
+                    </div>
 
-                      <tr>
-                        <th scope="row">
-                          <p class="text-muted">{{ cards.gialli.value_3_description }}</p>
-                        </th>
-                        <td>
-                          <span id="gialli-value_3" class="h2 font-weight-bold">{{ cards.gialli.value_3 }}</span>
-                          <span id="gialli-diff_3" class="{{ cards.gialli.diff_3_class }} ml-2">{{ cards.gialli.diff_3_formatted }}</span>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                    <div class="row">
+                      <div class="col-xl-6 col-lg-6 hoverDiv">
+                        <p class="text-muted">{{ cards.gialli.value_2_description }}</p>
+                      </div>
+                      <div class="col-xl-6 col-lg-6 hoverDiv">
+                        <span id="gialli-value_2" class="h2 font-weight-bold">{{ cards.gialli.value_2 }}</span>
+                        <span id="gialli-diff_2" class="{{ cards.gialli.diff_2_class }} ml-2">{{ cards.gialli.diff_2_formatted }}</span>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-xl-6 col-lg-6 hoverDiv">
+                        <p class="text-muted">{{ cards.gialli.value_3_description }}</p>
+                      </div>
+                      <div class="col-xl-6 col-lg-6 hoverDiv">
+                        <span id="gialli-value_3" class="h2 font-weight-bold">{{ cards.gialli.value_3 }}</span>
+                        <span id="gialli-diff_3" class="{{ cards.gialli.diff_3_class }} ml-2">{{ cards.gialli.diff_3_formatted }}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -131,39 +138,35 @@
                     </div>
                   </div>
                   <h5 class="card-title text-uppercase text-muted mt-2 mb-0">Permanenza</h5>
-                  <table class="table table-borderless table-hover table-condensed mt-2">
-                    <tbody>
-                      <tr>
-                        <th scope="row">
-                          <p class="text-muted">{{ cards.verdi.value_1_description }}</p>
-                        </th>
-                        <td>
-                          <span id="verdi-value_1" class="h2 font-weight-bold">{{ cards.verdi.value_1 }}</span>
-                          <span id="verdi-diff_1" class="{{ cards.verdi.diff_1_class }} ml-2">{{ cards.verdi.diff_1_formatted }}</span>
-                        </td>
-                      </tr>
-
-                      <tr>
-                        <th scope="row">
-                          <p class="text-muted">{{ cards.verdi.value_2_description }}</p>
-                        </th>
-                        <td>
-                          <span id="verdi-value_2" class="h2 font-weight-bold">{{ cards.verdi.value_2 }}</span>
-                          <span id="verdi-diff_2" class="{{ cards.verdi.diff_2_class }} ml-2">{{ cards.verdi.diff_2_formatted }}</span>
-                        </td>
-                      </tr>
-
-                      <tr>
-                        <th scope="row">
-                          <p class="text-muted">{{ cards.verdi.value_3_description }}</p>
-                        </th>
-                        <td>
-                          <span id="verdi-value_3" class="h2 font-weight-bold">{{ cards.verdi.value_3 }}</span>
-                          <span id="verdi-diff_3" class="{{ cards.verdi.diff_3_class }} ml-2">{{ cards.verdi.diff_3_formatted }}</span>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  <div class="div-hover">
+                    <div class="row">
+                      <div class="col-xl-6 col-lg-6 hoverDiv">
+                        <p class="text-muted">{{ cards.verdi.value_1_description }}</p>
+                      </div>
+                      <div class="col-xl-6 col-lg-6 hoverDiv">
+                        <span id="verdi-value_1" class="h2 font-weight-bold">{{ cards.verdi.value_1 }}</span>
+                        <span id="verdi-diff_1" class="{{ cards.verdi.diff_1_class }} ml-2">{{ cards.verdi.diff_1_formatted }}</span>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-6 col-lg-6 hoverDiv">
+                        <p class="text-muted">{{ cards.verdi.value_2_description }}</p>
+                      </div>
+                      <div class="col-xl-6 col-lg-6 hoverDiv">
+                        <span id="verdi-value_2" class="h2 font-weight-bold">{{ cards.verdi.value_2 }}</span>
+                        <span id="verdi-diff_2" class="{{ cards.verdi.diff_2_class }} ml-2">{{ cards.verdi.diff_2_formatted }}</span>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-6 col-lg-6 hoverDiv">
+                        <p class="text-muted">{{ cards.verdi.value_3_description }}</p>
+                      </div>
+                      <div class="col-xl-6 col-lg-6 hoverDiv">
+                        <span id="verdi-value_3" class="h2 font-weight-bold">{{ cards.verdi.value_3 }}</span>
+                        <span id="verdi-diff_3" class="{{ cards.verdi.diff_3_class }} ml-2">{{ cards.verdi.diff_3_formatted }}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -192,44 +195,38 @@
                     </div>
                   </div>
                   <h5 class="card-title text-uppercase text-muted mt-2 mb-0">Permanenza</h5>
-                  <table class="table table-borderless table-hover table-condensed mt-2">
-                    <tbody>
-                      <tr>
-                        <th scope="row">
-                          <p class="text-muted">{{ cards.bianchi.value_1_description }}</p>
-                        </th>
-                        <td>
-                          <span id="bianchi-value_1" class="h2 font-weight-bold">{{ cards.bianchi.value_1 }}</span>
-                          <span id="bianchi-diff_1" class="{{ cards.bianchi.diff_1_class }} ml-2">{{ cards.bianchi.diff_1_formatted }}</span>
-                        </td>
-                      </tr>
-
-                      <tr>
-                        <th scope="row">
-                          <p class="text-muted">{{ cards.bianchi.value_2_description }}</p>
-                        </th>
-                        <td>
-                          <span id="bianchi-value_2" class="h2 font-weight-bold">{{ cards.bianchi.value_2 }}</span>
-                          <span id="bianchi-diff_2" class="{{ cards.bianchi.diff_2_class }} ml-2">{{ cards.bianchi.diff_2_formatted }}</span>
-                        </td>
-                      </tr>
-
-                      <tr>
-                        <th scope="row">
-                          <p class="text-muted">{{ cards.bianchi.value_3_description }}</p>
-                        </th>
-                        <td>
-                          <span id="bianchi-value_3" class="h2 font-weight-bold">{{ cards.bianchi.value_3 }}</span>
-                          <span id="bianchi-diff_3" class="{{ cards.bianchi.diff_3_class }} ml-2">{{ cards.bianchi.diff_3_formatted }}</span>
-                        </td>
-                      </tr>
-
-                    </tbody>
-                  </table>
+                  <div class="div-hover">
+                    <div class="row">
+                      <div class="col-xl-6 col-lg-6 hoverDiv">
+                        <p class="text-muted">{{ cards.bianchi.value_1_description }}</p>
+                      </div>
+                      <div class="col-xl-6 col-lg-6 hoverDiv">
+                        <span id="bianchi-value_1" class="h2 font-weight-bold">{{ cards.bianchi.value_1 }}</span>
+                        <span id="bianchi-diff_1" class="{{ cards.bianchi.diff_1_class }} ml-2">{{ cards.bianchi.diff_1_formatted }}</span>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-6 col-lg-6 hoverDiv">
+                        <p class="text-muted">{{ cards.bianchi.value_2_description }}</p>
+                      </div>
+                      <div class="col-xl-6 col-lg-6 hoverDiv">
+                        <span id="bianchi-value_2" class="h2 font-weight-bold">{{ cards.bianchi.value_2 }}</span>
+                        <span id="bianchi-diff_2" class="{{ cards.bianchi.diff_2_class }} ml-2">{{ cards.bianchi.diff_2_formatted }}</span>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-6 col-lg-6 hoverDiv">
+                        <p class="text-muted">{{ cards.bianchi.value_3_description }}</p>
+                      </div>
+                      <div class="col-xl-6 col-lg-6 hoverDiv">
+                        <span id="bianchi-value_3" class="h2 font-weight-bold">{{ cards.bianchi.value_3 }}</span>
+                        <span id="bianchi-diff_3" class="{{ cards.bianchi.diff_3_class }} ml-2">{{ cards.bianchi.diff_3_formatted }}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-            
           </div>
         </div>
       </div>
@@ -532,7 +529,7 @@
 
     $(document).ready(function () {
       set_submit_form()
-      update_big_graph({{big_graph.months_data|safe}})
+      // update_big_graph({{big_graph.months_data|safe}})
     });
 
     function update_big_graph(big_graph){
@@ -628,5 +625,13 @@
         return false;
       });
     }
+
+    $(document).ready(function(){
+      $(".hoverDiv").hover(function(){
+          $(this).css("background", $(".table tbody tr:hover").css("background-color"));
+      }, function(){
+          $(this).css("background", $(".table tbody tr").css("background-color"));
+      });
+    });
   </script>
 {% endblock javascripts %}
