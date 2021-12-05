@@ -1,0 +1,57 @@
+{% extends 'layouts/base-triage.html' %}
+
+{% block title %} Receptions {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<button id="scanButton">Scan</button>
+<button id="writeButton">Scan</button>
+<p id="output"></p>
+
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+<script>
+scanButton.addEventListener("click", async () => {
+    console.log("User clicked scan button");
+    document.getElementById("output").innerHTML += "User clicked scan button <br>";
+
+    try {
+      const ndef = new NDEFReader();
+      await ndef.scan();
+      document.getElementById("output").innerHTML += "> Scan started <br>";
+      console.log("> Scan started");
+  
+      ndef.addEventListener("readingerror", () => {
+        document.getElementById("output").innerHTML += "Argh! Cannot read data from the NFC tag. Try another one? <br>";
+        console.log("Argh! Cannot read data from the NFC tag. Try another one?");
+      });
+  
+      ndef.addEventListener("reading", ({ message, serialNumber }) => {
+        document.getElementById("output").innerHTML += `> Serial Number: ${serialNumber} <br>`;
+        document.getElementById("output").innerHTML += `> Records: (${message.records.length}) <br>`;
+        console.log(`> Serial Number: ${serialNumber}`);
+        console.log(`> Records: (${message.records.length})`);
+      });
+    } catch (error) {
+        document.getElementById("output").innerHTML += "Argh! " + error + "<br>";
+        console.log("Argh! " + error);
+    }
+  });
+  
+  writeButton.addEventListener("click", async () => {
+    console.log("User clicked write button");
+  
+    try {
+      const ndef = new NDEFReader();
+      await ndef.write("Hello world!");
+      console.log("> Message written");
+    } catch (error) {
+        console.log("Argh! " + error);
+    }
+  });
+</script>
+{% endblock javascripts %}
+{% endblock content %}

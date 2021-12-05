@@ -156,3 +156,12 @@ class PatientResults(APIView):
         patient_result = PatientMeasureResult.objects.get(pk=int(request.POST.get('p_measure_result')))
         measure = eval(patient_result.measure_short)
         return render(request,'receptions-results.html', {'measure': measure})
+
+class TestNFC(APIView):
+    """[summary]
+
+    Args:
+        APIView ([type]): [description]
+    """
+    def get(self, request, *args, **kwargs):
+        return render(request,'testnfc.html',)
