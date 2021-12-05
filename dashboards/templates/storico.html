@@ -245,19 +245,19 @@
                 </div>
                 <div class="col">
                   <ul class="nav nav-pills justify-content-end">
-                    <li class="nav-item mr-2 mr-md-0" data-toggle="chart" data-target="#chart-sales" data-update='{{big_graph.months_data}}' data-prefix="" data-suffix="">
+                    <li id="id_months_data_container" class="nav-item mr-2 mr-md-0" data-toggle="chart" data-target="#chart-sales" data-update='{{big_graph.months_data}}' data-prefix="" data-suffix="">
                       <a href="#" class="nav-link py-2 px-3 active" data-toggle="tab">
                         <span class="d-none d-md-block">Mesi</span>
                         <span class="d-md-none">M</span>
                       </a>
                     </li>
-                    <li class="nav-item" data-toggle="chart" data-target="#chart-sales" data-update='{{big_graph.weeks_data}}' data-prefix="" data-suffix="">
+                    <li id="id_weeks_data_container" class="nav-item" data-toggle="chart" data-target="#chart-sales" data-update='{{big_graph.weeks_data}}' data-prefix="" data-suffix="">
                       <a href="#" class="nav-link py-2 px-3" data-toggle="tab">
                         <span class="d-none d-md-block">Settimane</span>
                         <span class="d-md-none">S</span>
                       </a>
                     </li>
-                    <li class="nav-item" data-toggle="chart" data-target="#chart-sales" data-update='{{big_graph.days_data}}' data-prefix="" data-suffix="">
+                    <li id="id_days_data_container" class="nav-item" data-toggle="chart" data-target="#chart-sales" data-update='{{big_graph.days_data}}' data-prefix="" data-suffix="">
                       <a href="#" class="nav-link py-2 px-3" data-toggle="tab">
                         <span class="d-none d-md-block">Giorni</span>
                         <span class="d-md-none">G</span>
@@ -530,15 +530,64 @@
       set_submit_form();
       define_clickable();
       define_hidden_input_behaviour();
-      update_big_graph({{big_graph.months_data|safe}});
+      define_buttons_big_graph();
+      update_big_graph({{big_graph|safe}});
     });
 
+    function define_buttons_big_graph(){
+      $("#id_months_data_container a").click(function (){
+        var ctx = $('#chart-sales');
+        var chart = ctx.data("chart");
+        var time_data = $("#id_months_data_container").attr("data-update");
+        time_data = JSON.parse(time_data);
+        chart.data.labels = [""];
+        chart.data.datasets = [{
+            "label":"",
+            "data":[1]
+        }];
+        chart.update();
+        // chart.data.labels = time_data.data.labels;
+        // chart.data.datasets = time_data.data.datasets;
+        // chart.update();
+      });
+      $("#id_weeks_data_container a").click(function (){
+        var ctx = $('#chart-sales');
+        var chart = ctx.data("chart");
+        var time_data = $("#id_weeks_data_container").attr("data-update");
+        time_data = JSON.parse(time_data);
+        chart.data.labels = [];
+        chart.data.datasets = [];
+        chart.update();
+        chart.data.labels = time_data.data.labels;
+        chart.data.datasets = time_data.data.datasets;
+        chart.update();
+      });
+      $("#id_days_data_container a").click(function (){
+        var ctx = $('#chart-sales');
+        var chart = ctx.data("chart");
+        var time_data = $("#id_days_data_container").attr("data-update");
+        time_data = JSON.parse(time_data);
+        chart.data.labels = [];
+        chart.data.datasets = [];
+        chart.update();
+        chart.data.labels = time_data.data.labels;
+        chart.data.datasets = time_data.data.datasets;
+        chart.update();
+      });
+    }
+
     function update_big_graph(big_graph){
-      var ctx = $('#chart-sales');
-      var chart = ctx.data("chart");
-      chart.data.labels = big_graph.data.labels;
-      chart.data.datasets = big_graph.data.datasets;
-      chart.update();
+      $("#id_months_data_container").attr("data-update",JSON.stringify(big_graph.months_data));
+      $("#id_weeks_data_container").attr("data-update",JSON.stringify(big_graph.weeks_data));
+      $("#id_days_data_container").attr("data-update",JSON.stringify(big_graph.days_data));
+
+      if ($("#id_months_data_container a").hasClass("active")){
+        $("#id_months_data_container a").click();
+      } else if ($("#id_weeks_data_container a").hasClass("active")){
+        $("#id_weeks_data_container a").click();
+      } else if ($("#id_days_data_container a").hasClass("active")){
+        $("#id_days_data_container a").click();
+      }
     }
 
     function update_cards(cards) {

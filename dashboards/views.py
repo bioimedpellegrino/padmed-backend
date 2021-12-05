@@ -307,7 +307,7 @@ class GetStoricoData(APIView):
             data = method(access_date__gte=start_date,access_date__lte=end_date)
             data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
             datas.append(data.count())
-        
+        print(labels)
         
         big_graph["months_data"] = {
             "data":{
@@ -320,42 +320,47 @@ class GetStoricoData(APIView):
                     ]
                 },
             }
-        big_graph["months_data"] = json.dumps(big_graph["months_data"])
         
         ## SETTIMANE ##
+        
+        labels = []
+        datas = []
+        for i in range(len(timesteps_months)-1):
+            start_date = timesteps_months[i]
+            end_date = timesteps_months[i+1]
+            ## Build label
+            labels.append(start_date.strftime("%B")[:3])
+            if start_date.month == 1:
+                labels[-1] += " %s"%start_date.year
+            ## Build data
+            data = method(access_date__gte=start_date,access_date__lte=end_date)
+            data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
+            datas.append(data.count())
+            
         big_graph["weeks_data"] = {
             "data":{
+                "labels":labels,
                 "datasets":[
                         {
                             "label":"",
-                            "data":[
-                                
-                            ]
+                            "data":datas
                         }
                     ]
                 },
-                "labels":[
-                    
-                ]
             }
-        big_graph["weeks_data"] = json.dumps(big_graph["weeks_data"])
         
         ## GIORNI ##
+        
         big_graph["days_data"] = {
             "data":{
+                "labels":labels,
                 "datasets":[
                         {
                             "label":"",
-                            "data":[
-                                
-                            ]
+                            "data":datas
                         }
                     ]
                 },
-                "labels":[
-                    
-                ]
             }
-        big_graph["days_data"] = json.dumps(big_graph["days_data"])
         
         return big_graph
