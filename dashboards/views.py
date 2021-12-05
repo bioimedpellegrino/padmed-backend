@@ -66,7 +66,7 @@ class StoricoView(APIView):
         from .forms import DateRangeForm
         
         now = timezone.localtime() 
-        one_day_ago = now - relativedelta(days=7)
+        one_day_ago = now - relativedelta(days=30)
         form = DateRangeForm(
             {   ## TODO: doesn't work
             "start":one_day_ago.date().isoformat(),
@@ -207,20 +207,7 @@ class GetStoricoData(APIView):
 
     @classmethod
     def get_storico_advanced_cards(cls,start:datetime.datetime,end:datetime.datetime)->dict():
-        
-        def filter_for_exit_interval(value,last,from_hours=None,to_hours=None):
-            from datetime import timedelta
-            from django.db.models import F
-            filter_dict = {}
-            if from_hours:
-                filter_dict["exit_date__gte"] = F("access_date")+timedelta(hours=from_hours)
-            if to_hours:
-                filter_dict["exit_date__lt"] = F("access_date")+timedelta(hours=to_hours)
-            
-            value = value.filter(**filter_dict)
-            last = last.filter(**filter_dict)
-            return value, last
-        
+                
         last_period = end - start
         last_start = start - last_period
         last_end = start
@@ -241,11 +228,11 @@ class GetStoricoData(APIView):
             last = method(access_date__gte=last_start,access_date__lt=last_end)
             diff = value.count() - last.count()
             
-            value_1,last_1 = filter_for_exit_interval(value,last,to_hours=2)
+            value_1,last_1 = TriageAccess.filter_for_exit_interval(value,last,to_hours=2)
             diff_1 = value_1.count() - last_1.count()
-            value_2,last_2 = filter_for_exit_interval(value,last,from_hours=2,to_hours=4)
+            value_2,last_2 = TriageAccess.filter_for_exit_interval(value,last,from_hours=2,to_hours=4)
             diff_2 = value_2.count() - last_2.count()
-            value_3,last_3 = filter_for_exit_interval(value,last,from_hours=4)
+            value_3,last_3 = TriageAccess.filter_for_exit_interval(value,last,from_hours=4)
             diff_3 = value_3.count() - last_3.count()
             
             cards[name] = {
@@ -276,40 +263,66 @@ class GetStoricoData(APIView):
         return cards
     
     @classmethod
-    def get_storico_big_graph(cls,start:datetime.datetime,end:datetime.datetime,code=None,from_hours=None,to_hours=None)->dict():
+    def get_storico_big_graph(cls,start:datetime.date,end:datetime.date,code=None,from_hours=None,to_hours=None)->dict():
         import json
         from .utils import timesteps_builder
-        ## See https://www.chartjs.org/docs/latest/, https://www.chartjs.org/docs/latest/developers/updates.html, https://demos.creative-tim.com/argon-dashboard-pro-react/?_ga=2.191324073.2076643225.1638138645-576346499.1636196270#/documentation/charts
+        ## See https://www.chartjs.org/docs/latest/, 
+        # https://www.chartjs.org/docs/latest/developers/updates.html, 
+        # https://demos.creative-tim.com/argon-dashboard-pro-react/?_ga=2.191324073.2076643225.1638138645-576346499.1636196270#/documentation/charts
+        
+        print("")
         print("start",start)
         print("end",end)
         print("code",code)
         print("from_hours",from_hours)
         print("to_hours",to_hours)
+        print("")
+        
+        name_methods = {
+            "yellow":"yellows",
+            "green":"greens",
+            "white":"whites",
+            None:"filter",
+        }
+        method = getattr(TriageAccess,name_methods[code])
+        
         timesteps_months = timesteps_builder(start,end,"m")
         timesteps_weeks = timesteps_builder(start,end,"w")
         timesteps_days = timesteps_builder(start,end,"d")
         
         big_graph = {}
+        
+        ## MESI ##
+        
+        labels = []
+        datas = []
+        for i in range(len(timesteps_months)-1):
+            start_date = timesteps_months[i]
+            end_date = timesteps_months[i+1]
+            ## Build label
+            labels.append(start_date.strftime("%B")[:3])
+            if start_date.month == 1:
+                labels[-1] += " %s"%start_date.year
+            ## Build data
+            data = method(access_date__gte=start_date,access_date__lte=end_date)
+            data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
+            datas.append(data.count())
+        
+        
         big_graph["months_data"] = {
             "data":{
-                "labels":[
-                    "Gen",
-                    "Feb",
-                    "Mar",
-                    "Apr",
-                ],
+                "labels":labels,
                 "datasets":[
                         {
                             "label":"",
-                            "data":[
-                                5,10,15,20,
-                            ]
+                            "data":datas
                         }
                     ]
                 },
             }
-        # big_graph["months_data"] = json.dumps(big_graph["months_data"])
+        big_graph["months_data"] = json.dumps(big_graph["months_data"])
         
+        ## SETTIMANE ##
         big_graph["weeks_data"] = {
             "data":{
                 "datasets":[
@@ -327,6 +340,7 @@ class GetStoricoData(APIView):
             }
         big_graph["weeks_data"] = json.dumps(big_graph["weeks_data"])
         
+        ## GIORNI ##
         big_graph["days_data"] = {
             "data":{
                 "datasets":[

@@ -1,4 +1,3 @@
-
 def get_max_waiting_time():
     """This function returns the max waiting time.
     """
