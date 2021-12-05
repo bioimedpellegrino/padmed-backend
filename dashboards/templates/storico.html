@@ -62,7 +62,7 @@
                       <h5 class="card-title text-uppercase text-muted mb-0">Codici Gialli</h5>
                       <table class="table table-borderless table-hover table-condensed mt-2">
                         <tbody>
-                          <tr>
+                          <tr id="id_y_all" class="clickable-1">
                             <td>
                               <span id="gialli-value" class="h2 font-weight-bold mb-0">{{ cards.gialli.value }}</span>
                               <span id="gialli-diff" class="{{ cards.gialli.diff_class }} mr-2 pl-2">{{ cards.gialli.diff_formatted }}</span>
@@ -80,7 +80,7 @@
                   <h5 class="card-title text-uppercase text-muted mt-2 mb-0">Permanenza</h5>
 
                   <div class="div-hover">
-                    <div class="row">
+                    <div id="id_y_0_2" class="row clickable-1">
                       <div class="col-xl-6 col-lg-6 hoverDiv">
                         <p class="text-muted">{{ cards.gialli.value_1_description }}</p>
                       </div>
@@ -90,7 +90,7 @@
                       </div>
                     </div>
 
-                    <div class="row">
+                    <div id="id_y_2_4" class="row clickable-1">
                       <div class="col-xl-6 col-lg-6 hoverDiv">
                         <p class="text-muted">{{ cards.gialli.value_2_description }}</p>
                       </div>
@@ -100,7 +100,7 @@
                       </div>
                     </div>
 
-                    <div class="row">
+                    <div id="id_y_4__" class="row clickable-1">
                       <div class="col-xl-6 col-lg-6 hoverDiv">
                         <p class="text-muted">{{ cards.gialli.value_3_description }}</p>
                       </div>
@@ -122,7 +122,7 @@
                       <h5 class="card-title text-uppercase text-muted mb-0">Codici Verdi</h5>
                       <table class="table table-borderless table-hover table-condensed mt-2">
                         <tbody>
-                          <tr>
+                          <tr id="id_g_all" class="clickable-1">
                             <td>
                               <span id="verdi-value" class="h2 font-weight-bold mb-0">{{ cards.verdi.value }}</span>
                               <span id="verdi-diff" class="{{ cards.verdi.diff_class }} mr-2 pl-2">{{ cards.verdi.diff_formatted }}</span>
@@ -139,7 +139,7 @@
                   </div>
                   <h5 class="card-title text-uppercase text-muted mt-2 mb-0">Permanenza</h5>
                   <div class="div-hover">
-                    <div class="row">
+                    <div id="id_g_0_2" class="row clickable-1">
                       <div class="col-xl-6 col-lg-6 hoverDiv">
                         <p class="text-muted">{{ cards.verdi.value_1_description }}</p>
                       </div>
@@ -148,7 +148,7 @@
                         <span id="verdi-diff_1" class="{{ cards.verdi.diff_1_class }} ml-2">{{ cards.verdi.diff_1_formatted }}</span>
                       </div>
                     </div>
-                    <div class="row">
+                    <div id="id_g_2_4" class="row clickable-1">
                       <div class="col-xl-6 col-lg-6 hoverDiv">
                         <p class="text-muted">{{ cards.verdi.value_2_description }}</p>
                       </div>
@@ -157,7 +157,7 @@
                         <span id="verdi-diff_2" class="{{ cards.verdi.diff_2_class }} ml-2">{{ cards.verdi.diff_2_formatted }}</span>
                       </div>
                     </div>
-                    <div class="row">
+                    <div id="id_g_4__" class="row clickable-1">
                       <div class="col-xl-6 col-lg-6 hoverDiv">
                         <p class="text-muted">{{ cards.verdi.value_3_description }}</p>
                       </div>
@@ -179,7 +179,7 @@
                       <h5 class="card-title text-uppercase text-muted mb-0">Codici Bianchi</h5>
                       <table class="table table-borderless table-hover table-condensed mt-2">
                         <tbody>
-                          <tr>
+                          <tr id="id_w_all" class="clickable-1">
                             <td>
                               <span id="bianchi-value" class="h2 font-weight-bold mb-0">{{ cards.bianchi.value }}</span>
                               <span id="bianchi-diff" class="{{ cards.bianchi.diff_class }} mr-2 pl-2">{{ cards.bianchi.diff_formatted }}</span>
@@ -196,7 +196,7 @@
                   </div>
                   <h5 class="card-title text-uppercase text-muted mt-2 mb-0">Permanenza</h5>
                   <div class="div-hover">
-                    <div class="row">
+                    <div id="id_w_0_2" class="row clickable-1">
                       <div class="col-xl-6 col-lg-6 hoverDiv">
                         <p class="text-muted">{{ cards.bianchi.value_1_description }}</p>
                       </div>
@@ -205,7 +205,7 @@
                         <span id="bianchi-diff_1" class="{{ cards.bianchi.diff_1_class }} ml-2">{{ cards.bianchi.diff_1_formatted }}</span>
                       </div>
                     </div>
-                    <div class="row">
+                    <div id="id_w_2_4" class="row clickable-1">
                       <div class="col-xl-6 col-lg-6 hoverDiv">
                         <p class="text-muted">{{ cards.bianchi.value_2_description }}</p>
                       </div>
@@ -214,7 +214,7 @@
                         <span id="bianchi-diff_2" class="{{ cards.bianchi.diff_2_class }} ml-2">{{ cards.bianchi.diff_2_formatted }}</span>
                       </div>
                     </div>
-                    <div class="row">
+                    <div id="id_w_4__" class="row clickable-1">
                       <div class="col-xl-6 col-lg-6 hoverDiv">
                         <p class="text-muted">{{ cards.bianchi.value_3_description }}</p>
                       </div>
@@ -526,10 +526,11 @@
 {% block javascripts %}
   <script>
 
-
     $(document).ready(function () {
-      set_submit_form()
-      // update_big_graph({{big_graph.months_data|safe}})
+      set_submit_form();
+      define_clickable();
+      define_hidden_input_behaviour();
+      // update_big_graph({{big_graph.months_data|safe}});
     });
 
     function update_big_graph(big_graph){
@@ -626,12 +627,37 @@
       });
     }
 
-    $(document).ready(function(){
-      $(".hoverDiv").hover(function(){
-          $(this).css("background", $(".table tbody tr:hover").css("background-color"));
-      }, function(){
-          $(this).css("background", $(".table tbody tr").css("background-color"));
+    function define_clickable(){
+      $('.clickable-1').click(function() {
+          var class_to_add = "border border-primary";
+          $('.clickable-1').removeClass(class_to_add);
+          $(this).addClass(class_to_add);
       });
-    });
+    }
+
+    function define_hidden_input_behaviour(){
+      var dict_to_fields = {
+        "#id_y_all": ["yellow","",""],
+        "#id_y_0_2": ["yellow","0","2"],
+        "#id_y_2_4": ["yellow","2","4"],
+        "#id_y_4__": ["yellow","4",""],
+        "#id_g_all": ["green","",""],
+        "#id_g_0_2": ["green","0","2"],
+        "#id_g_2_4": ["green","2","4"],
+        "#id_g_4__": ["green","4",""],
+        "#id_w_all": ["white","",""],
+        "#id_w_0_2": ["white","0","2"],
+        "#id_w_2_4": ["white","2","4"],
+        "#id_w_4__": ["white","4",""],
+      }
+      $.each(dict_to_fields,function(index,value){ 
+        $(index).click(function() {
+          $('#id_code').val(value[0]);
+          $('#id_from_hours').val(value[1]);
+          $('#id_to_hours').val(value[2]);
+        });
+      });
+    }
+
   </script>
 {% endblock javascripts %}
