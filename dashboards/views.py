@@ -77,11 +77,12 @@ class StoricoView(APIView):
         )
         cards = GetStoricoData.get_storico_advanced_cards(one_day_ago,now)
         big_graph = GetStoricoData.get_storico_big_graph(one_day_ago,now)
-                    
+        bar_graph = GetStoricoData.get_storico_bar_graph(one_day_ago,now)            
         return render(request, self.template_name, {
             "cards":cards,
             "form":form,
             "big_graph":big_graph,
+            "bar_graph":bar_graph,
             })
         
 class IconsView(APIView):
@@ -141,10 +142,18 @@ class GetStoricoData(APIView):
                 from_hours = form.cleaned_data["from_hours"],
                 to_hours = form.cleaned_data["to_hours"],
                 )
+            bar_graph = self.get_storico_bar_graph(
+                form.cleaned_data["start"],
+                form.cleaned_data["end"],
+                code = form.cleaned_data["code"],
+                from_hours = form.cleaned_data["from_hours"],
+                to_hours = form.cleaned_data["to_hours"],
+                )
             return JsonResponse({
                 'success': True,
                 "cards":cards,
                 "big_graph":big_graph,
+                "bar_graph":bar_graph,
                 })
         else:
             ctx = {}
@@ -299,7 +308,6 @@ class GetStoricoData(APIView):
             data = method(access_date__gte=start_date,access_date__lte=end_date)
             data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
             datas.append(data.count())
-        print(labels)
         
         big_graph["months_data"] = {
             "data":{
@@ -374,3 +382,35 @@ class GetStoricoData(APIView):
             }
         
         return big_graph
+    
+    @classmethod
+    def get_storico_bar_graph(cls,start:datetime.date,end:datetime.date,code=None,from_hours=None,to_hours=None):
+        from django.db.models import Count
+        
+        name_methods = {
+            "yellow":"yellows",
+            "green":"greens",
+            "white":"whites",
+            None:"filter",
+        }
+        method = getattr(TriageAccess,name_methods[code])
+        
+        data = method(access_date__gte=start,access_date__lte=end)
+        data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
+        data = data.values('access_reason__reason').annotate(total=Count('access_reason')).order_by("access_reason__reason")
+        
+        labels = [reason["access_reason__reason"] for reason in data]
+        datas = [reason["total"] for reason in data]
+        
+        data ={
+            "data":{
+                "labels":labels,
+                "datasets":[
+                        {
+                            "label":"",
+                            "data":datas
+                        }
+                    ]
+                },
+            }
+        return data

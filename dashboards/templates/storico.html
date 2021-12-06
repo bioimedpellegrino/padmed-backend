@@ -244,8 +244,8 @@
             <div class="card-header bg-transparent">
               <div class="row align-items-center">
                 <div class="col">
-                  <h6 class="text-uppercase text-light ls-1 mb-1">Overview</h6>
-                  <h2 class="text-white mb-0">Numero di pazienti</h2>
+                  <h6 class="text-uppercase text-light ls-1 mb-1"></h6>
+                  <h2 class="text-white mb-0">Numero di accessi</h2>
                 </div>
                 <div class="col">
                   <ul class="nav nav-pills justify-content-end">
@@ -285,15 +285,15 @@
             <div class="card-header bg-transparent">
               <div class="row align-items-center">
                 <div class="col">
-                  <h6 class="text-uppercase text-muted ls-1 mb-1">Performance</h6>
-                  <h2 class="mb-0">Total orders</h2>
+                  <h6 class="text-uppercase text-muted ls-1 mb-1"></h6>
+                  <h2 class="mb-0">Motivi di accesso</h2>
                 </div>
               </div>
             </div>
             <div class="card-body">
               <!-- Chart -->
-              <div class="chart">
-                <canvas id="chart-orders" class="chart-canvas"></canvas>
+              <div class="chart2">
+                <canvas id="chart-orders2" class="chart-canvas"></canvas>
               </div>
             </div>
           </div>
@@ -534,57 +534,49 @@
       set_submit_form();
       define_clickable();
       define_hidden_input_behaviour();
-      // Big Chart functions //
-      build_the_chart();
-      define_buttons_big_graph();
-      update_big_graph({{big_graph|safe}});
+      // Funciton Charts funncitons //
+      build_funciton_chart();
+      define_buttons_function_chart();
+      update_function_chart({{big_graph|safe}});
+      // Bar chart functions //
+      build_bar_chart();
+      update_bar_chart({{bar_graph|safe}});
 
     });
 
-    function define_buttons_big_graph(){
-      $("#id_months_data_container a").click(function (event){
+    function set_submit_form() {
+      // ADDING AJAX DATE POST
+      //window.CSRF_TOKEN = "{{ csrf_token }}"; // Not necessary (crispy forms har already csrf in it)
+      // if you have problem with csrf see https://django-crispy-forms.readthedocs.io/en/latest/crispy_tag_forms.html#ajax-validation-recipe
+      // or https://stackoverflow.com/questions/19333098/403-forbidden-error-when-making-an-ajax-post-request-in-django-framework
+      $("#date-form").submit(function (event) {
         event.preventDefault();
-        var ctx = $('#chart-sales2');
-        var chart = ctx.data("chart");
-        var time_data = $("#id_months_data_container").attr("data-update");
-        time_data = JSON.parse(time_data);
-        chart.data.labels = time_data.data.labels;
-        chart.data.datasets = time_data.data.datasets; 
-        chart.update();
+        var formData = getFormData($("#date-form"));
+        $.ajax({
+          type: "POST",
+          url: "{% url 'get_storico_data' %}",
+          dataType: "json",
+          data: formData,
+          //{
+            //"csrfmiddlewaretoken": window.CSRF_TOKEN,
+          //},
+          complete: function() {
+          },
+          success: function (data) {
+            if (data.success) {
+              update_cards(data.cards);
+              update_function_chart(data.big_graph);
+              update_bar_chart(data.bar_graph);
+            } else {
+              $('#date-form').html(data.form_html);
+            }
+          },
+          error: function() {
+            alert( "Un errore ha impedito la comunicazione con il server. I dati non saranno aggiornati." );
+          }
+        });
+        return false;
       });
-      $("#id_weeks_data_container a").click(function (event){
-        event.preventDefault();
-        var ctx = $('#chart-sales2');
-        var chart = ctx.data("chart");
-        var time_data = $("#id_weeks_data_container").attr("data-update");
-        time_data = JSON.parse(time_data);
-        chart.data.labels = time_data.data.labels;
-        chart.data.datasets = time_data.data.datasets;
-        chart.update();
-      });
-      $("#id_days_data_container a").click(function (event){
-        event.preventDefault();
-        var ctx = $('#chart-sales2');
-        var chart = ctx.data("chart");
-        var time_data = $("#id_days_data_container").attr("data-update");
-        time_data = JSON.parse(time_data);
-        chart.data.labels = time_data.data.labels;
-        chart.data.datasets = time_data.data.datasets;
-        chart.update();
-      });
-    }
-
-    function update_big_graph(big_graph){
-      $("#id_months_data_container").attr("data-update",JSON.stringify(big_graph.months_data));
-      $("#id_weeks_data_container").attr("data-update",JSON.stringify(big_graph.weeks_data));
-      $("#id_days_data_container").attr("data-update",JSON.stringify(big_graph.days_data));
-      if ($("#id_months_data_container a").hasClass("active")){
-        $("#id_months_data_container a").click();
-      } else if ($("#id_weeks_data_container a").hasClass("active")){
-        $("#id_weeks_data_container a").click();
-      } else if ($("#id_days_data_container a").hasClass("active")){
-        $("#id_days_data_container a").click();
-      }
     }
 
     function update_cards(cards) {
@@ -631,46 +623,10 @@
     function getFormData($form){
       var unindexed_array = $form.serializeArray();
       var indexed_array = {};
-
       $.map(unindexed_array, function(n, i){
           indexed_array[n['name']] = n['value'];
       });
-
       return indexed_array;
-    }
-
-    function set_submit_form() {
-      // ADDING AJAX DATE POST
-      //window.CSRF_TOKEN = "{{ csrf_token }}"; // Not necessary (crispy forms har already csrf in it)
-      // if you have problem with csrf see https://django-crispy-forms.readthedocs.io/en/latest/crispy_tag_forms.html#ajax-validation-recipe
-      // or https://stackoverflow.com/questions/19333098/403-forbidden-error-when-making-an-ajax-post-request-in-django-framework
-      $("#date-form").submit(function (event) {
-        event.preventDefault();
-        var formData = getFormData($("#date-form"));
-        $.ajax({
-          type: "POST",
-          url: "{% url 'get_storico_data' %}",
-          dataType: "json",
-          data: formData,
-          //{
-            //"csrfmiddlewaretoken": window.CSRF_TOKEN,
-          //},
-          complete: function() {
-          },
-          success: function (data) {
-            if (data.success) {
-              update_cards(data.cards);
-              update_big_graph(data.big_graph);
-            } else {
-              $('#date-form').html(data.form_html);
-            }
-          },
-          error: function() {
-            alert( "Un errore ha impedito la comunicazione con il server. I dati non saranno aggiornati." );
-          }
-        });
-        return false;
-      });
     }
 
     function define_clickable(){
@@ -717,8 +673,7 @@
       });
     }
 
-    
-    function build_the_chart(){
+    function build_funciton_chart(){
       // Get the canvas
         
       var $chart = $('#chart-sales2');
@@ -774,7 +729,114 @@
 
       $chart.data('chart', salesChart);
     }
-        
+
+    function define_buttons_function_chart(){
+      $("#id_months_data_container a").click(function (event){
+        event.preventDefault();
+        var ctx = $('#chart-sales2');
+        var chart = ctx.data("chart");
+        var time_data = $("#id_months_data_container").attr("data-update");
+        time_data = JSON.parse(time_data);
+        chart.data.labels = time_data.data.labels;
+        chart.data.datasets = time_data.data.datasets; 
+        chart.update();
+      });
+      $("#id_weeks_data_container a").click(function (event){
+        event.preventDefault();
+        var ctx = $('#chart-sales2');
+        var chart = ctx.data("chart");
+        var time_data = $("#id_weeks_data_container").attr("data-update");
+        time_data = JSON.parse(time_data);
+        chart.data.labels = time_data.data.labels;
+        chart.data.datasets = time_data.data.datasets;
+        chart.update();
+      });
+      $("#id_days_data_container a").click(function (event){
+        event.preventDefault();
+        var ctx = $('#chart-sales2');
+        var chart = ctx.data("chart");
+        var time_data = $("#id_days_data_container").attr("data-update");
+        time_data = JSON.parse(time_data);
+        chart.data.labels = time_data.data.labels;
+        chart.data.datasets = time_data.data.datasets;
+        chart.update();
+      });
+    }
+
+    function update_function_chart(data){
+      $("#id_months_data_container").attr("data-update",JSON.stringify(data.months_data));
+      $("#id_weeks_data_container").attr("data-update",JSON.stringify(data.weeks_data));
+      $("#id_days_data_container").attr("data-update",JSON.stringify(data.days_data));
+      if ($("#id_months_data_container a").hasClass("active")){
+        $("#id_months_data_container a").click();
+      } else if ($("#id_weeks_data_container a").hasClass("active")){
+        $("#id_weeks_data_container a").click();
+      } else if ($("#id_days_data_container a").hasClass("active")){
+        $("#id_days_data_container a").click();
+      }
+    }
+    
+    function build_bar_chart(){
+      var $chart = $('#chart-orders2');
+
+      var ordersChart = new Chart($chart, {
+        type: 'bar',
+        options: {
+          scales: {
+            yAxes: [{
+              gridLines: {
+                lineWidth: 1,
+                color: '#dfe2e6',
+                zeroLineColor: '#dfe2e6'
+              },
+              ticks: {
+                callback: function(value) {
+                  if (!(value % 1)) {
+                    //return '$' + value + 'k'
+                    return value
+                  }
+                }
+              }
+            }]
+          },
+          tooltips: {
+            callbacks: {
+              label: function(item, data) {
+                var label = data.datasets[item.datasetIndex].label || '';
+                var yLabel = item.yLabel;
+                var content = '';
+  
+                if (data.datasets.length > 1) {
+                  content += '<span class="popover-body-label mr-auto">' + label + '</span>';
+                }
+  
+                content += '<span class="popover-body-value">' + yLabel + '</span>';
+  
+                return content;
+              }
+            }
+          }
+        },
+        data: {
+          labels: [],
+          datasets: [{
+            label: '',
+            data: []
+          }]
+        }
+      });
+  
+      // Save to jQuery object
+      $chart.data('chart', ordersChart);
+    }
+
+    function update_bar_chart(bar_data){
+      var ctx = $('#chart-orders2');
+      var chart = ctx.data("chart");
+      chart.data.labels = bar_data.data.labels;
+      chart.data.datasets = bar_data.data.datasets; 
+      chart.update();
+    }
       
   </script>
 {% endblock javascripts %}
