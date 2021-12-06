@@ -30,7 +30,7 @@ class LiveView(APIView):
         units["pressure"] = "mmHg"
         units["heartrate"] = "bpm"
                 
-        items = TriageAccess.ordered_items()
+        items = TriageAccess.ordered_items(exit_date__isnull=True)
         max_waiting_time = get_max_waiting_time()
         max_waiting = max_waiting_time.hours*60 + max_waiting_time.minutes
         for item in items:
@@ -77,12 +77,14 @@ class StoricoView(APIView):
         )
         cards = GetStoricoData.get_storico_advanced_cards(one_day_ago,now)
         big_graph = GetStoricoData.get_storico_big_graph(one_day_ago,now)
-        bar_graph = GetStoricoData.get_storico_bar_graph(one_day_ago,now)            
+        bar_graph = GetStoricoData.get_storico_bar_graph(one_day_ago,now)
+        storico_table = GetStoricoData.get_storico_table(one_day_ago,now)
         return render(request, self.template_name, {
             "cards":cards,
             "form":form,
             "big_graph":big_graph,
             "bar_graph":bar_graph,
+            "storico_table":storico_table,
             })
         
 class IconsView(APIView):
@@ -149,11 +151,19 @@ class GetStoricoData(APIView):
                 from_hours = form.cleaned_data["from_hours"],
                 to_hours = form.cleaned_data["to_hours"],
                 )
+            storico_table = self.get_storico_table(
+                form.cleaned_data["start"],
+                form.cleaned_data["end"],
+                code = form.cleaned_data["code"],
+                from_hours = form.cleaned_data["from_hours"],
+                to_hours = form.cleaned_data["to_hours"],
+                )
             return JsonResponse({
                 'success': True,
                 "cards":cards,
                 "big_graph":big_graph,
                 "bar_graph":bar_graph,
+                "storico_table":storico_table,
                 })
         else:
             ctx = {}
@@ -294,7 +304,6 @@ class GetStoricoData(APIView):
         big_graph = {}
         
         ## MESI ##
-        
         labels = []
         datas = []
         for i in range(len(timesteps_months)-1):
@@ -322,7 +331,6 @@ class GetStoricoData(APIView):
             }
         
         ## SETTIMANE ##
-        
         labels = []
         datas = []
         last_year = None
@@ -352,7 +360,6 @@ class GetStoricoData(APIView):
             }
         
         ## GIORNI ##
-        
         labels = []
         datas = [] 
         last_year = None
@@ -414,3 +421,39 @@ class GetStoricoData(APIView):
                 },
             }
         return data
+    
+    @classmethod
+    def get_storico_table(cls,start:datetime.date,end:datetime.date,code=None,from_hours=None,to_hours=None):
+        from django.template.loader import render_to_string
+        import re
+        
+        name_methods = {
+            "yellow":"yellows",
+            "green":"greens",
+            "white":"whites",
+            None:"filter",
+        }
+        method = getattr(TriageAccess,name_methods[code])
+
+        units = {}
+        units["temperature"] = "°C"
+        units["pressure"] = "mmHg"
+        units["heartrate"] = "bpm"
+                
+        data = method(access_date__gte=start,access_date__lte=end)
+        data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
+        data = data.order_by("access_date")
+        for item in data:
+            item.hresults = None
+            video = item.patientvideo_set.last()
+            if video:
+                measure = video.patientmeasureresult_set.last()
+                if measure:
+                    item.hresults = measure.get_hresult
+        
+        table = render_to_string("includes/storico_table.html",{
+            "items":data,
+            "units":units,            
+        })
+        table = re.sub(r'\s*\n\s*', ' ', table).strip()
+        return str(table)

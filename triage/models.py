@@ -231,7 +231,7 @@ class TriageAccess(models.Model):
     @classmethod
     def ordered_items(cls,exclude=[],**kwargs)->QuerySet:
         ## Implement here the ordering policy of the hospital ##
-        objs = cls.objects.all().order_by("created")
+        objs = cls.objects.all().order_by("access_date")
         
         objs = cls.objects.filter(**kwargs)
         for exc in exclude:
