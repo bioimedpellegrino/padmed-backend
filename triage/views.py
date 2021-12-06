@@ -164,4 +164,5 @@ class TestNFC(APIView):
         APIView ([type]): [description]
     """
     def get(self, request, *args, **kwargs):
-        return render(request,'testnfc.html',)
+        
+        return render(request,'testnfc.html')
