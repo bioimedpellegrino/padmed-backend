@@ -330,7 +330,7 @@
       build_bar_chart();
       update_bar_chart({{bar_graph|safe}});
       // Responsive table
-      build_active_responsive_table();
+      // build_active_responsive_table();
       update_active_responsive_table('{{storico_table|safe}}');
     });
 
@@ -632,8 +632,9 @@
     }
     
     function build_active_responsive_table(){
-      $('#data_table').DataTable({
+      var data_table = $('#data_table').DataTable({
           // "responsive": true,
+          "destroy": true,
           "paging":   true,
           "pageLength" : 20,
           "aaSorting": [[0,"asc"],[3,"des"]],
@@ -666,6 +667,7 @@
     }
 
     function update_active_responsive_table(table){
+      $("#id_table_container").empty()
       $("#id_table_container").append(table);
       build_active_responsive_table();
     }
