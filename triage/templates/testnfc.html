@@ -54,12 +54,16 @@ scanButton.addEventListener("click", async () => {
     }
   });
 
+  navigator.usb.requestDevice({filters:[]}).then(function(device){
+    document.getElementById("devices").innerHTML += devices;
+    console.log(device);
+ });
 
   navigator.usb.getDevices()
   .then(devices => {
     console.log("Total devices: " + devices.length);
     devices.forEach(device => {
-      document.getElementById("output").innerHTML += "Product name: " + device.productName + ", serial number " + device.serialNumber;
+      document.getElementById("devices").innerHTML += "Product name: " + device.productName + ", serial number " + device.serialNumber;
       console.log("Product name: " + device.productName + ", serial number " + device.serialNumber);
     });
   });
