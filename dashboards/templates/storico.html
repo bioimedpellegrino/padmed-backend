@@ -36,9 +36,9 @@
 {% block content %}
 
     <!-- Header -->
-    <div class="header bg-gradient-primary pb-8 pt-5 pt-md-8">
-      <div class="container-fluid">
-        <div class="header-body">
+    <div class="header bg-gradient-primary outer-space pb-8 pt-5 pt-md-8">
+      <div class="container-fluid outer-space">
+        <div class="header-body outer-space">
 
           <!-- Card stats -->
           <div class="row">
@@ -236,7 +236,7 @@
       </div>
     </div>
 
-    <div class="container-fluid mt--7">
+    <div class="container-fluid mt--7 outer-space">
 
       <div class="row">
         <div class="col-xl-8 mb-5 mb-xl-0">
@@ -674,10 +674,15 @@
     }
 
     function define_clickable(){
+      var class_to_add = "border border-primary";
       $('.clickable-1').click(function() {
-          var class_to_add = "border border-primary";
           $('.clickable-1').removeClass(class_to_add);
           $(this).addClass(class_to_add);
+      });
+      $(document).click(function (event) {
+        if ($(event.target).hasClass('outer-space')){
+          $('.clickable-1').removeClass(class_to_add);
+        }
       });
     }
 
@@ -702,6 +707,13 @@
           $('#id_from_hours').val(value[1]);
           $('#id_to_hours').val(value[2]);
         });
+      });
+      $(document).click(function (event) {
+        if ($(event.target).hasClass('outer-space')){
+          $('#id_code').val(null);
+          $('#id_from_hours').val(null);
+          $('#id_to_hours').val(null);
+        }
       });
     }
 
@@ -762,8 +774,7 @@
 
       $chart.data('chart', salesChart);
     }
-    
-    
+        
       
   </script>
 {% endblock javascripts %}
