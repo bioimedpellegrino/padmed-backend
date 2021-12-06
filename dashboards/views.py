@@ -270,14 +270,6 @@ class GetStoricoData(APIView):
         # https://www.chartjs.org/docs/latest/developers/updates.html, 
         # https://demos.creative-tim.com/argon-dashboard-pro-react/?_ga=2.191324073.2076643225.1638138645-576346499.1636196270#/documentation/charts
         
-        print("")
-        print("start",start)
-        print("end",end)
-        print("code",code)
-        print("from_hours",from_hours)
-        print("to_hours",to_hours)
-        print("")
-        
         name_methods = {
             "yellow":"yellows",
             "green":"greens",
@@ -325,13 +317,15 @@ class GetStoricoData(APIView):
         
         labels = []
         datas = []
-        for i in range(len(timesteps_months)-1):
-            start_date = timesteps_months[i]
-            end_date = timesteps_months[i+1]
+        last_year = None
+        for i in range(len(timesteps_weeks)-1):
+            start_date = timesteps_weeks[i]
+            end_date = timesteps_weeks[i+1]
             ## Build label
-            labels.append(start_date.strftime("%B")[:3])
-            if start_date.month == 1:
-                labels[-1] += " %s"%start_date.year
+            labels.append(start_date.strftime("%d/%m"))
+            if start_date.year != last_year:
+                labels[-1] += start_date.strftime("/%Y")
+                last_year = start_date.year
             ## Build data
             data = method(access_date__gte=start_date,access_date__lte=end_date)
             data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
@@ -350,6 +344,22 @@ class GetStoricoData(APIView):
             }
         
         ## GIORNI ##
+        
+        labels = []
+        datas = [] 
+        last_year = None
+        for i in range(len(timesteps_days)-1):
+            start_date = timesteps_days[i]
+            end_date = timesteps_days[i+1]
+            ## Build label
+            labels.append(start_date.strftime("%d/%m"))
+            if start_date.year != last_year:
+                labels[-1] += start_date.strftime("/%Y")
+                last_year = start_date.year
+            ## Build data
+            data = method(access_date__gte=start_date,access_date__lte=end_date)
+            data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
+            datas.append(data.count())
         
         big_graph["days_data"] = {
             "data":{
