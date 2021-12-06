@@ -26,6 +26,10 @@
       background: #f5f5f5;
       cursor:pointer;
     }
+    .chart2 {
+      position: relative;
+      height: 350px;
+    }
   </style>
 {% endblock stylesheets %}
 
@@ -245,19 +249,19 @@
                 </div>
                 <div class="col">
                   <ul class="nav nav-pills justify-content-end">
-                    <li id="id_months_data_container" class="nav-item mr-2 mr-md-0" data-toggle="chart" data-target="#chart-sales" data-update='{{big_graph.months_data}}' data-prefix="" data-suffix="">
+                    <li id="id_months_data_container" class="nav-item mr-2 mr-md-0" data-toggle="chart2" data-target="#chart-sales2" data-update='' data-prefix="" data-suffix="">
                       <a href="#" class="nav-link py-2 px-3 active" data-toggle="tab">
                         <span class="d-none d-md-block">Mesi</span>
                         <span class="d-md-none">M</span>
                       </a>
                     </li>
-                    <li id="id_weeks_data_container" class="nav-item" data-toggle="chart" data-target="#chart-sales" data-update='{{big_graph.weeks_data}}' data-prefix="" data-suffix="">
+                    <li id="id_weeks_data_container" class="nav-item" data-toggle="chart2" data-target="#chart-sales2" data-update='' data-prefix="" data-suffix="">
                       <a href="#" class="nav-link py-2 px-3" data-toggle="tab">
                         <span class="d-none d-md-block">Settimane</span>
                         <span class="d-md-none">S</span>
                       </a>
                     </li>
-                    <li id="id_days_data_container" class="nav-item" data-toggle="chart" data-target="#chart-sales" data-update='{{big_graph.days_data}}' data-prefix="" data-suffix="">
+                    <li id="id_days_data_container" class="nav-item" data-toggle="chart2" data-target="#chart-sales2" data-update='' data-prefix="" data-suffix="">
                       <a href="#" class="nav-link py-2 px-3" data-toggle="tab">
                         <span class="d-none d-md-block">Giorni</span>
                         <span class="d-md-none">G</span>
@@ -269,9 +273,9 @@
             </div>
             <div class="card-body">
               <!-- Chart -->
-              <div class="chart">
+              <div class="chart2">
                 <!-- Chart wrapper -->
-                <canvas id="chart-sales" class="chart-canvas" ></canvas>
+                <canvas id="chart-sales2" class="chart-canvas" ></canvas>
               </div>
             </div>
           </div>
@@ -530,46 +534,41 @@
       set_submit_form();
       define_clickable();
       define_hidden_input_behaviour();
+      // Big Chart functions //
+      build_the_chart();
       define_buttons_big_graph();
       update_big_graph({{big_graph|safe}});
+
     });
 
     function define_buttons_big_graph(){
-      $("#id_months_data_container a").click(function (){
-        var ctx = $('#chart-sales');
+      $("#id_months_data_container a").click(function (event){
+        event.preventDefault();
+        console.log("sdasdasda")
+        var ctx = $('#chart-sales2');
         var chart = ctx.data("chart");
         var time_data = $("#id_months_data_container").attr("data-update");
         time_data = JSON.parse(time_data);
-        chart.data.labels = [""];
-        chart.data.datasets = [{
-            "label":"",
-            "data":[1]
-        }];
+        chart.data.labels = time_data.data.labels;
+        chart.data.datasets = time_data.data.datasets; 
         chart.update();
-        // chart.data.labels = time_data.data.labels;
-        // chart.data.datasets = time_data.data.datasets;
-        // chart.update();
       });
-      $("#id_weeks_data_container a").click(function (){
-        var ctx = $('#chart-sales');
+      $("#id_weeks_data_container a").click(function (event){
+        event.preventDefault();
+        var ctx = $('#chart-sales2');
         var chart = ctx.data("chart");
         var time_data = $("#id_weeks_data_container").attr("data-update");
         time_data = JSON.parse(time_data);
-        chart.data.labels = [];
-        chart.data.datasets = [];
-        chart.update();
         chart.data.labels = time_data.data.labels;
         chart.data.datasets = time_data.data.datasets;
         chart.update();
       });
-      $("#id_days_data_container a").click(function (){
-        var ctx = $('#chart-sales');
+      $("#id_days_data_container a").click(function (event){
+        event.preventDefault();
+        var ctx = $('#chart-sales2');
         var chart = ctx.data("chart");
         var time_data = $("#id_days_data_container").attr("data-update");
         time_data = JSON.parse(time_data);
-        chart.data.labels = [];
-        chart.data.datasets = [];
-        chart.update();
         chart.data.labels = time_data.data.labels;
         chart.data.datasets = time_data.data.datasets;
         chart.update();
@@ -580,7 +579,6 @@
       $("#id_months_data_container").attr("data-update",JSON.stringify(big_graph.months_data));
       $("#id_weeks_data_container").attr("data-update",JSON.stringify(big_graph.weeks_data));
       $("#id_days_data_container").attr("data-update",JSON.stringify(big_graph.days_data));
-
       if ($("#id_months_data_container a").hasClass("active")){
         $("#id_months_data_container a").click();
       } else if ($("#id_weeks_data_container a").hasClass("active")){
@@ -708,5 +706,65 @@
       });
     }
 
+    
+    function build_the_chart(){
+      // Get the canvas
+        
+      var $chart = $('#chart-sales2');
+
+      // Define the graph
+
+      var salesChart = new Chart($chart, {
+        type: 'line',
+        options: {
+          scales: {
+            yAxes: [{
+              gridLines: {
+                lineWidth: 1,
+                color: Charts.colors.gray[900],
+                zeroLineColor: Charts.colors.gray[900]
+              },
+              ticks: {
+                callback: function(value) {
+                  if (!(value % 2)) {
+                    return value;
+                  }
+                }
+              }
+            }]
+          },
+          tooltips: {
+            callbacks: {
+              label: function(item, data) {
+                var label = data.datasets[item.datasetIndex].label || '';
+                var yLabel = item.yLabel;
+                var content = '';
+
+                if (data.datasets.length > 1) {
+                  content += '<span class="popover-body-label mr-auto">' + label + '</span>';
+                }
+
+                content += '<span class="popover-body-value">$' + yLabel + 'k</span>';
+                return content;
+              }
+            }
+          }
+        },
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Performance',
+            data: []
+          }]
+        }
+      });
+
+      // Save to jQuery object
+
+      $chart.data('chart', salesChart);
+    }
+    
+    
+      
   </script>
 {% endblock javascripts %}

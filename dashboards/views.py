@@ -66,7 +66,7 @@ class StoricoView(APIView):
         from .forms import DateRangeForm
         
         now = timezone.localtime() 
-        one_day_ago = now - relativedelta(days=30)
+        one_day_ago = now - relativedelta(days=250)
         form = DateRangeForm(
             {   ## TODO: doesn't work
             "start":one_day_ago.date().isoformat(),
