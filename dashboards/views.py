@@ -440,7 +440,7 @@ class GetStoricoData(APIView):
         units["pressure"] = "mmHg"
         units["heartrate"] = "bpm"
                 
-        data = method(access_date__gte=start,access_date__lte=end)
+        data = method(access_date__gte=start,access_date__lte=end,exit_date__isnull=False)
         data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
         data = data.order_by("access_date")
         for item in data:
