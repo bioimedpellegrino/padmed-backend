@@ -9,7 +9,7 @@
         <th scope="col">Codice</th>
         <th scope="col">Nome</th>
         <th scope="col">Ragione</th>
-        <th scope="col">In attesa da</th>
+        <th scope="col">Data accesso</th>
         <th scope="col">Temperatura ({{units.temperature}})</th>
         <th scope="col">Pressione ({{units.pressure}})</th>
         <th scope="col">Battito ({{units.heartrate}})</th>
@@ -43,22 +43,9 @@
             {{item.access_reason.reason}}
           </td>
 
-          <td scope="row" data-search="{{item.waiting_fmt_cache}}" data-order="{{item.waiting_minutes_cache}}">
+          <td scope="row" data-search="{{item.access_date_cache}}" data-order="{{item.access_date_order_cache}}">
             <div class="d-flex align-items-center">
-              <div>
-                <span class="mr-2">{{item.waiting_fmt_cache}}</span>
-                <div>
-                  <div class="progress">
-                    {% if item.waiting_range_cache <= 1 %}
-                      <div class="progress-bar bg-green" role="progressbar" aria-valuenow="{{item.waiting_cache}}" aria-valuemin="0" aria-valuemax="100" style="width: {{item.waiting_cache}}%;"></div>
-                    {% elif item.waiting_range_cache == 2 %}
-                      <div class="progress-bar bg-yellow" role="progressbar" aria-valuenow="{{item.waiting_cache}}" aria-valuemin="0" aria-valuemax="100" style="width: {{item.waiting_cache}}%;"></div>
-                    {% elif item.waiting_range_cache >= 3 %}
-                      <div class="progress-bar bg-warning" role="progressbar" aria-valuenow="{{item.waiting_cache}}" aria-valuemin="0" aria-valuemax="100" style="width: {{item.waiting_cache}}%;"></div>
-                    {% endif %}
-                  </div>
-                </div>
-              </div>
+              <span class="mr-2">{{item.access_date_cache}}</span>
             </div>
           </td>
 

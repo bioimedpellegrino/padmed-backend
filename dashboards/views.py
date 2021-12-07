@@ -444,6 +444,8 @@ class GetStoricoData(APIView):
         data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
         data = data.order_by("access_date")
         for item in data:
+            item.access_date_cache = item.access_date.strftime("%d/%m/%Y %H:%M")
+            item.access_date_order_cache = int(item.access_date.strftime("%Y%m%d%H%M"))
             item.hresults = None
             video = item.patientvideo_set.last()
             if video:
