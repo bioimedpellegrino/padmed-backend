@@ -1,6 +1,7 @@
 
 import datetime
 from dateutil.relativedelta import relativedelta
+from django.forms import widgets
 from django.forms.widgets import HiddenInput
 from django.utils import timezone
 from django import forms
@@ -66,15 +67,50 @@ class DateRangeForm(forms.Form):
         if not data:
             data = None
         return data
+
+class AppUserEditForm(forms.ModelForm):
     
-    # def start_hours(self):
-    #     data = self.cleaned_data.get('start', '')
-    #     if data:
-    #         data = data.date()
-    #     return data
+    class Meta(object):
+        from app.models import AppUser
+        model = AppUser
+        fields = ['username','first_name','last_name','email','theme','_dashboard_options']
+        widgets = {
+            "_dashboard_options":forms.HiddenInput(),
+        }
+    ## Crispy forms helper for formatting staff
+    helper = FormHelper()    
     
-    # def end_hours(self):
-    #     data = self.cleaned_data.get('end', '')
-    #     if data:
-    #         data = data.date()
-    #     return data
+    # TODO: aggiungere Indicatori, Default incremento sulle cards, Default intervallo storico
+    
+    def __init__(self, *args, **kwargs):
+        from crispy_forms.layout import Layout, Fieldset,HTML,Div
+        super().__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            if isinstance(visible.field,forms.DateField):
+                visible.field.widget.input_type = "date"
+                
+        self.helper.layout = Layout(
+            HTML(
+            """
+                <h6 class="heading-small text-muted mb-4">Informazioni utente</h6>
+            """
+            ),
+            Div(
+                'username',
+                'first_name',
+                'last_name',
+                'email',
+                css_class="pl-lg-4"
+            ),
+            HTML(
+            """
+                <hr class="my-4" />
+                <h6 class="heading-small text-muted mb-4">Impostazioni di visualizzazione</h6>
+            """   
+            ),
+            Div(
+                'theme',
+                '_dashboard_options',
+                css_class="pl-lg-4"
+            )
+        )
