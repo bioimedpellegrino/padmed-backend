@@ -18,7 +18,9 @@
     },
     "dependencies": {
         "datatables.net": "^1.11.3",
-        "datatables.net-dt": "^1.11.3"
+        "datatables.net-dt": "^1.11.3",
+        "electron-pos-printer": "^1.2.4",
+        "printer": "^0.4.0"
     },
     "devDependencies": {}
 }

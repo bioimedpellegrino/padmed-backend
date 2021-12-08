@@ -4,12 +4,18 @@
 
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}{% endblock stylesheets %}
-
 {% block content %}
 <button id="scanButton">Scan</button>
 <button id="writeButton">Scan</button>
 <p id="output"></p>
+<p id="devices"></p>
 
+<h1>
+  print me
+  </h1>
+  <button onclick="window.print();">
+  Print Me
+  </button>
 
 <!-- Specific JS goes HERE --> 
 {% block javascripts %}
@@ -40,6 +46,8 @@ scanButton.addEventListener("click", async () => {
         console.log("Argh! " + error);
     }
   });
+
+  
   
   writeButton.addEventListener("click", async () => {
     console.log("User clicked write button");
@@ -51,6 +59,20 @@ scanButton.addEventListener("click", async () => {
     } catch (error) {
         console.log("Argh! " + error);
     }
+  });
+
+  navigator.usb.requestDevice({filters:[]}).then(function(device){
+    document.getElementById("devices").innerHTML += devices;
+    console.log(device);
+ });
+
+  navigator.usb.getDevices()
+  .then(devices => {
+    console.log("Total devices: " + devices.length);
+    devices.forEach(device => {
+      document.getElementById("devices").innerHTML += "Product name: " + device.productName + ", serial number " + device.serialNumber;
+      console.log("Product name: " + device.productName + ", serial number " + device.serialNumber);
+    });
   });
 </script>
 {% endblock javascripts %}
