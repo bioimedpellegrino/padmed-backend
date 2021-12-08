@@ -224,17 +224,36 @@ class TriageAccess(models.Model):
         for exc in exclude:
             objs = objs.exclude(**exc)
         return objs
+    @classmethod
+    def filter(cls,*args,**kwargs):
+        return cls.objects.filter(*args,**kwargs)
     
     @classmethod
     def ordered_items(cls,exclude=[],**kwargs)->QuerySet:
         ## Implement here the ordering policy of the hospital ##
-        objs = cls.objects.all().order_by("created")
+        objs = cls.objects.all().order_by("access_date")
         
         objs = cls.objects.filter(**kwargs)
         for exc in exclude:
             objs = objs.exclude(**exc)
         
         return objs
+    
+    @classmethod
+    def filter_for_exit_interval(cls,value,last=None,from_hours=None,to_hours=None):
+        from datetime import timedelta
+        from django.db.models import F
+        filter_dict = {}
+        if from_hours:
+            filter_dict["exit_date__gte"] = F("access_date")+timedelta(hours=from_hours)
+        if to_hours:
+            filter_dict["exit_date__lt"] = F("access_date")+timedelta(hours=to_hours)
+        
+        value = value.filter(**filter_dict)
+        if last is not None:
+            last = last.filter(**filter_dict)
+            return value, last
+        return value
     
     class Meta:
         verbose_name = "Accesso"

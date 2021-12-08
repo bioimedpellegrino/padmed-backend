@@ -30,7 +30,7 @@ class LiveView(APIView):
         units["pressure"] = "mmHg"
         units["heartrate"] = "bpm"
                 
-        items = TriageAccess.ordered_items()
+        items = TriageAccess.ordered_items(exit_date__isnull=True)
         max_waiting_time = get_max_waiting_time()
         max_waiting = max_waiting_time.hours*60 + max_waiting_time.minutes
         for item in items:
@@ -66,7 +66,7 @@ class StoricoView(APIView):
         from .forms import DateRangeForm
         
         now = timezone.localtime() 
-        one_day_ago = now - relativedelta(days=7)
+        one_day_ago = now - relativedelta(days=250)
         form = DateRangeForm(
             {   ## TODO: doesn't work
             "start":one_day_ago.date().isoformat(),
@@ -77,11 +77,14 @@ class StoricoView(APIView):
         )
         cards = GetStoricoData.get_storico_advanced_cards(one_day_ago,now)
         big_graph = GetStoricoData.get_storico_big_graph(one_day_ago,now)
-                    
+        bar_graph = GetStoricoData.get_storico_bar_graph(one_day_ago,now)
+        storico_table = GetStoricoData.get_storico_table(one_day_ago,now)
         return render(request, self.template_name, {
             "cards":cards,
             "form":form,
             "big_graph":big_graph,
+            "bar_graph":bar_graph,
+            "storico_table":storico_table,
             })
         
 class IconsView(APIView):
@@ -141,10 +144,26 @@ class GetStoricoData(APIView):
                 from_hours = form.cleaned_data["from_hours"],
                 to_hours = form.cleaned_data["to_hours"],
                 )
+            bar_graph = self.get_storico_bar_graph(
+                form.cleaned_data["start"],
+                form.cleaned_data["end"],
+                code = form.cleaned_data["code"],
+                from_hours = form.cleaned_data["from_hours"],
+                to_hours = form.cleaned_data["to_hours"],
+                )
+            storico_table = self.get_storico_table(
+                form.cleaned_data["start"],
+                form.cleaned_data["end"],
+                code = form.cleaned_data["code"],
+                from_hours = form.cleaned_data["from_hours"],
+                to_hours = form.cleaned_data["to_hours"],
+                )
             return JsonResponse({
                 'success': True,
                 "cards":cards,
                 "big_graph":big_graph,
+                "bar_graph":bar_graph,
+                "storico_table":storico_table,
                 })
         else:
             ctx = {}
@@ -207,20 +226,7 @@ class GetStoricoData(APIView):
 
     @classmethod
     def get_storico_advanced_cards(cls,start:datetime.datetime,end:datetime.datetime)->dict():
-        
-        def filter_for_exit_interval(value,last,from_hours=None,to_hours=None):
-            from datetime import timedelta
-            from django.db.models import F
-            filter_dict = {}
-            if from_hours:
-                filter_dict["exit_date__gte"] = F("access_date")+timedelta(hours=from_hours)
-            if to_hours:
-                filter_dict["exit_date__lt"] = F("access_date")+timedelta(hours=to_hours)
-            
-            value = value.filter(**filter_dict)
-            last = last.filter(**filter_dict)
-            return value, last
-        
+                
         last_period = end - start
         last_start = start - last_period
         last_end = start
@@ -241,11 +247,11 @@ class GetStoricoData(APIView):
             last = method(access_date__gte=last_start,access_date__lt=last_end)
             diff = value.count() - last.count()
             
-            value_1,last_1 = filter_for_exit_interval(value,last,to_hours=2)
+            value_1,last_1 = TriageAccess.filter_for_exit_interval(value,last,to_hours=2)
             diff_1 = value_1.count() - last_1.count()
-            value_2,last_2 = filter_for_exit_interval(value,last,from_hours=2,to_hours=4)
+            value_2,last_2 = TriageAccess.filter_for_exit_interval(value,last,from_hours=2,to_hours=4)
             diff_2 = value_2.count() - last_2.count()
-            value_3,last_3 = filter_for_exit_interval(value,last,from_hours=4)
+            value_3,last_3 = TriageAccess.filter_for_exit_interval(value,last,from_hours=4)
             diff_3 = value_3.count() - last_3.count()
             
             cards[name] = {
@@ -276,62 +282,180 @@ class GetStoricoData(APIView):
         return cards
     
     @classmethod
-    def get_storico_big_graph(cls,start:datetime.datetime,end:datetime.datetime,code=None,from_hours=None,to_hours=None)->dict():
+    def get_storico_big_graph(cls,start:datetime.date,end:datetime.date,code=None,from_hours=None,to_hours=None)->dict():
         import json
-        ## See https://www.chartjs.org/docs/latest/, https://www.chartjs.org/docs/latest/developers/updates.html, https://demos.creative-tim.com/argon-dashboard-pro-react/?_ga=2.191324073.2076643225.1638138645-576346499.1636196270#/documentation/charts
+        from .utils import timesteps_builder
+        ## See https://www.chartjs.org/docs/latest/, 
+        # https://www.chartjs.org/docs/latest/developers/updates.html, 
+        # https://demos.creative-tim.com/argon-dashboard-pro-react/?_ga=2.191324073.2076643225.1638138645-576346499.1636196270#/documentation/charts
+        
+        name_methods = {
+            "yellow":"yellows",
+            "green":"greens",
+            "white":"whites",
+            None:"filter",
+        }
+        method = getattr(TriageAccess,name_methods[code])
+        
+        timesteps_months = timesteps_builder(start,end,"m")
+        timesteps_weeks = timesteps_builder(start,end,"w")
+        timesteps_days = timesteps_builder(start,end,"d")
+        
         big_graph = {}
+        
+        ## MESI ##
+        labels = []
+        datas = []
+        for i in range(len(timesteps_months)-1):
+            start_date = timesteps_months[i]
+            end_date = timesteps_months[i+1]
+            ## Build label
+            labels.append(start_date.strftime("%B")[:3])
+            if start_date.month == 1:
+                labels[-1] += " %s"%start_date.year
+            ## Build data
+            data = method(access_date__gte=start_date,access_date__lte=end_date)
+            data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
+            datas.append(data.count())
+        
         big_graph["months_data"] = {
             "data":{
-                "labels":[
-                    "Gen",
-                    "Feb",
-                    "Mar",
-                    "Apr",
-                ],
+                "labels":labels,
                 "datasets":[
                         {
                             "label":"",
-                            "data":[
-                                5,10,15,20,
-                            ]
+                            "data":datas
                         }
                     ]
                 },
             }
-        # big_graph["months_data"] = json.dumps(big_graph["months_data"])
         
+        ## SETTIMANE ##
+        labels = []
+        datas = []
+        last_year = None
+        for i in range(len(timesteps_weeks)-1):
+            start_date = timesteps_weeks[i]
+            end_date = timesteps_weeks[i+1]
+            ## Build label
+            labels.append(start_date.strftime("%d/%m"))
+            if start_date.year != last_year:
+                labels[-1] += start_date.strftime("/%Y")
+                last_year = start_date.year
+            ## Build data
+            data = method(access_date__gte=start_date,access_date__lte=end_date)
+            data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
+            datas.append(data.count())
+            
         big_graph["weeks_data"] = {
             "data":{
+                "labels":labels,
                 "datasets":[
                         {
                             "label":"",
-                            "data":[
-                                
-                            ]
+                            "data":datas
                         }
                     ]
                 },
-                "labels":[
-                    
-                ]
             }
-        big_graph["weeks_data"] = json.dumps(big_graph["weeks_data"])
+        
+        ## GIORNI ##
+        labels = []
+        datas = [] 
+        last_year = None
+        for i in range(len(timesteps_days)-1):
+            start_date = timesteps_days[i]
+            end_date = timesteps_days[i+1]
+            ## Build label
+            labels.append(start_date.strftime("%d/%m"))
+            if start_date.year != last_year:
+                labels[-1] += start_date.strftime("/%Y")
+                last_year = start_date.year
+            ## Build data
+            data = method(access_date__gte=start_date,access_date__lte=end_date)
+            data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
+            datas.append(data.count())
         
         big_graph["days_data"] = {
             "data":{
+                "labels":labels,
                 "datasets":[
                         {
                             "label":"",
-                            "data":[
-                                
-                            ]
+                            "data":datas
                         }
                     ]
                 },
-                "labels":[
-                    
-                ]
             }
-        big_graph["days_data"] = json.dumps(big_graph["days_data"])
         
         return big_graph
+    
+    @classmethod
+    def get_storico_bar_graph(cls,start:datetime.date,end:datetime.date,code=None,from_hours=None,to_hours=None):
+        from django.db.models import Count
+        
+        name_methods = {
+            "yellow":"yellows",
+            "green":"greens",
+            "white":"whites",
+            None:"filter",
+        }
+        method = getattr(TriageAccess,name_methods[code])
+        
+        data = method(access_date__gte=start,access_date__lte=end)
+        data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
+        data = data.values('access_reason__reason').annotate(total=Count('access_reason')).order_by("access_reason__reason")
+        
+        labels = [reason["access_reason__reason"] for reason in data]
+        datas = [reason["total"] for reason in data]
+        
+        data ={
+            "data":{
+                "labels":labels,
+                "datasets":[
+                        {
+                            "label":"",
+                            "data":datas
+                        }
+                    ]
+                },
+            }
+        return data
+    
+    @classmethod
+    def get_storico_table(cls,start:datetime.date,end:datetime.date,code=None,from_hours=None,to_hours=None):
+        from django.template.loader import render_to_string
+        import re
+        
+        name_methods = {
+            "yellow":"yellows",
+            "green":"greens",
+            "white":"whites",
+            None:"filter",
+        }
+        method = getattr(TriageAccess,name_methods[code])
+
+        units = {}
+        units["temperature"] = "°C"
+        units["pressure"] = "mmHg"
+        units["heartrate"] = "bpm"
+                
+        data = method(access_date__gte=start,access_date__lte=end)
+        data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
+        data = data.order_by("access_date")
+        for item in data:
+            item.access_date_cache = item.access_date.strftime("%d/%m/%Y %H:%M")
+            item.access_date_order_cache = int(item.access_date.strftime("%Y%m%d%H%M"))
+            item.hresults = None
+            video = item.patientvideo_set.last()
+            if video:
+                measure = video.patientmeasureresult_set.last()
+                if measure:
+                    item.hresults = measure.get_hresult
+        
+        table = render_to_string("includes/storico_table.html",{
+            "items":data,
+            "units":units,            
+        })
+        table = re.sub(r'\s*\n\s*', ' ', table).strip()
+        return str(table)

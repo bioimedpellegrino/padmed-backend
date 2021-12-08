@@ -18,8 +18,7 @@ class DateRangeForm(forms.Form):
     )
     
     ## Hidden inputs
-    code = forms.ModelChoiceField(
-        queryset=TriageCode.objects.all(),
+    code = forms.CharField(
         widget=forms.HiddenInput(),
         required=False,
         )
@@ -49,3 +48,33 @@ class DateRangeForm(forms.Form):
             if isinstance(visible.field,forms.DateField):
                 visible.field.widget.input_type = "date"
                 # visible.field.widget.attrs['class'] = 'datetimepicker'
+    
+    def clean_from_hours(self):
+        data = self.cleaned_data.get('from_hours', '')
+        if not data:
+            data = None
+        return data
+    
+    def clean_to_hours(self):
+        data = self.cleaned_data.get('to_hours', '')
+        if not data:
+            data = None
+        return data
+    
+    def clean_code(self):
+        data = self.cleaned_data.get('code', '')
+        if not data:
+            data = None
+        return data
+    
+    # def start_hours(self):
+    #     data = self.cleaned_data.get('start', '')
+    #     if data:
+    #         data = data.date()
+    #     return data
+    
+    # def end_hours(self):
+    #     data = self.cleaned_data.get('end', '')
+    #     if data:
+    #         data = data.date()
+    #     return data
