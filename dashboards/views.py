@@ -3,6 +3,7 @@ import datetime
 from dateutil.relativedelta import relativedelta
 from django.shortcuts import render,redirect
 from django.utils import timezone
+from django.urls import reverse
 from django.http import JsonResponse, HttpResponseRedirect
 from django.template.context_processors import csrf
 from crispy_forms.utils import render_crispy_form
@@ -86,30 +87,6 @@ class StoricoView(APIView):
             "bar_graph":bar_graph,
             "storico_table":storico_table,
             })
-        
-class IconsView(APIView):
-    """[summary]
-
-    Args:
-        APIView ([type]): [description]
-    """
-    template_name = 'icons.html'
-    
-    def get(self, request, *args, **kwargs):
-        
-        return render(request, self.template_name, {})
-        
-class MapsView(APIView):
-    """[summary]
-
-    Args:
-        APIView ([type]): [description]
-    """
-    template_name = 'maps.html'
-    
-    def get(self, request, *args, **kwargs):
-        
-        return render(request, self.template_name, {})
 
 class UserProfileView(APIView):
     """[summary]
@@ -120,8 +97,39 @@ class UserProfileView(APIView):
     template_name = 'profile.html'
     
     def get(self, request, *args, **kwargs):
+        return self.GET_render(request,*args, **kwargs)
+    
+    def GET_render(self,request,*args, **kwargs):
+        from .forms import AppUserEditForm
+        #### Objects from post ####
+        form = kwargs.get("form",None)
+        has_error = kwargs.get("has_error",False)
+        ###########################
         
-        return render(request, self.template_name, {})
+        user = request.user
+        if not form:
+            form = AppUserEditForm(
+                instance = user,
+            )
+        return render(request, self.template_name, {
+            "form":form,
+            "has_error":has_error,
+        })
+        
+    def post(self, request, *args, **kwargs):
+        from .forms import AppUserEditForm
+        user = request.user
+        form = AppUserEditForm(
+            request.POST or None,
+            instance = user,
+        )
+        if form.is_valid():
+            modified_user = form.save()
+            return HttpResponseRedirect(reverse('user_profile'))
+        else:
+            kwargs["form"] = form
+            kwargs["has_error"] = True
+            return self.GET_render(request, *args, **kwargs)
 
 class GetStoricoData(APIView):
     

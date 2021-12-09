@@ -36,29 +36,29 @@ def side_menu_context(current_url_name):
         }
     side_menu.append(item)
 
-    url_name = "icons"
-    item = {
-        "text":"Icons",
-        "url":url_name,
-        "active":current_url_name==url_name,
-        "icon_classes":"ni ni-planet text-blue",
-        "childs":None,
-        }
-    side_menu.append(item)
+    # url_name = "icons"
+    # item = {
+    #     "text":"Icons",
+    #     "url":url_name,
+    #     "active":current_url_name==url_name,
+    #     "icon_classes":"ni ni-planet text-blue",
+    #     "childs":None,
+    #     }
+    # side_menu.append(item)
 
-    url_name = "maps"
-    item = {
-        "text":"Maps",
-        "url":url_name,
-        "active":current_url_name==url_name,
-        "icon_classes":"ni ni-pin-3 text-orange",
-        "childs":None,
-        }
-    side_menu.append(item)
+    # url_name = "maps"
+    # item = {
+    #     "text":"Maps",
+    #     "url":url_name,
+    #     "active":current_url_name==url_name,
+    #     "icon_classes":"ni ni-pin-3 text-orange",
+    #     "childs":None,
+    #     }
+    # side_menu.append(item)
 
     url_name = "user_profile"
     item = {
-        "text":"User profile",
+        "text":"Utente",
         "url":url_name,
         "active":current_url_name==url_name,
         "icon_classes":"ni ni-single-02 text-yellow",
@@ -69,7 +69,7 @@ def side_menu_context(current_url_name):
 
     url_name = "logout"
     item = {
-        "text":"Logout",
+        "text":"Esci",
         "url":url_name,
         "active":current_url_name==url_name,
         "icon_classes":"ni ni-user-run text-red",

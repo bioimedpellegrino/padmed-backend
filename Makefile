@@ -28,6 +28,17 @@ makemigrations: init
 migrate: init
 	. $(VENV)/bin/activate ; $(PYTHON) manage.py migrate
 
+migrate_fake: init
+	. $(VENV)/bin/activate ; $(PYTHON) manage.py migrate --fake; $(PYTHON) manage.py createcachetable
+
+migrate_one_fake: init
+	. $(VENV)/bin/activate ; $(PYTHON) manage.py migrate $(appname) ${migration_name} --fake createcachetable
+
+migrate_reverse: init
+	. $(VENV)/bin/activate ; $(PYTHON) manage.py migrate $(appname) ${migration_name}
+	
+#./run-make.sh migrate_reverse appname=app migration_name=0001_initial
+	
 execute: venv
 	. $(VENV)/bin/activate; $(command)
 
