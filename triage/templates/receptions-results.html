@@ -84,11 +84,26 @@
               </div>
             </div>
           </div>
+          <div class="row">
+            <div class="col-xl-3 col-lg-6">
+              <div class="card-body">
+                <div class="row">
+                  <a class="btn btn-lg btn-primary" onclick="sendToQuickPrinterChrome();">Stampa risultati</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-lg-6">
+              <div class="card-body">
+                <div class="row">
+                  <a class="btn btn-lg btn-primary" id="returnHome" href="{% url 'receptions'%}">Procedi con una nuova misurazione</a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
-    <a class="btn btn-lg btn-primary" onclick="sendToQuickPrinterChrome();">Stampa risultati</a>
 </div>
 {% endblock content %}
 
