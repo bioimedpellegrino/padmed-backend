@@ -25,6 +25,7 @@ from dfxutils.renderer import NullRenderer, Renderer
 from dfxutils.sdkhelpers import DfxSdkHelpers
 
 from .utils import save_config, load_config, generate_reqid, determine_action
+from logger.utils import add_log
 
 # Api method for device registration. Be careful with that (must be sure to store the device_token)
 async def register(config=None, license_key=None):
@@ -245,7 +246,8 @@ async def make_measure(config, config_path, video_path, demographics=None, start
             with open(debug_study_cfg_file, 'rb') as f:
                 study_cfg_bytes = f.read()
     except Exception as e:
-        print(e)
+        import traceback
+        add_log(level=5, message=5, custom_message='Error on STEP 1 make measure: %s' % ex)
         return
     
     # Create DFX SDK collector (or FAIL)
