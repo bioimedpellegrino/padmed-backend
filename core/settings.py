@@ -8,6 +8,7 @@ from decouple import config
 from envparse import env
 from django.urls import reverse_lazy
 from unipath import Path
+from django.contrib.messages import constants as messages
 import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -190,3 +191,12 @@ INIT_MAX_WAITING_SECONDS = env("INIT_MAX_WAITING_SECONDS", cast=float, default=2
 
 ## CRISPY FORM SETTINGS 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+## MESSAGES 
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+MESSAGE_TAGS = {
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',
+}

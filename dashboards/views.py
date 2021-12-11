@@ -9,6 +9,8 @@ from django.template.context_processors import csrf
 from crispy_forms.utils import render_crispy_form
 from rest_framework.views import APIView
 from triage.models import *
+from django.utils.translation import gettext_lazy as _
+
 class LiveView(APIView):
     """[summary]
 
@@ -118,6 +120,7 @@ class UserProfileView(APIView):
         
     def post(self, request, *args, **kwargs):
         from .forms import AppUserEditForm
+        from django.contrib import messages
         user = request.user
         form = AppUserEditForm(
             request.POST or None,
@@ -125,6 +128,8 @@ class UserProfileView(APIView):
         )
         if form.is_valid():
             modified_user = form.save()
+            print(modified_user)
+            messages.add_message(request, messages.SUCCESS, _('Modifiche salvate correttamente.'))
             return HttpResponseRedirect(reverse('user_profile'))
         else:
             kwargs["form"] = form
