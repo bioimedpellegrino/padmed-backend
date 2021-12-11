@@ -250,19 +250,19 @@ async def make_measure(config, config_path, video_path, demographics=None, start
     except Exception as ex:
         import traceback
         add_log(level=5, message=5, custom_message='Error on STEP 1 make measure: %s' % ex)
-        return
+        return None, logs
     
     # Create DFX SDK collector (or FAIL)
     if not factory.initializeStudy(study_cfg_bytes):
         print(f"DFX factory creation failed: {factory.getLastErrorMessage()}")
         logs["2"] = f"DFX factory creation failed: {factory.getLastErrorMessage()}"
-        return
+        return None, logs
     factory.setMode("discrete")
     collector = factory.createCollector()
     if collector.getCollectorState() == dfxsdk.CollectorState.ERROR:
         print(f"DFX collector creation failed: {collector.getLastErrorMessage()}")
         logs["3"] = f"DFX collector creation failed: {collector.getLastErrorMessage()}"
-        return
+        return None, logs
     
     print("Created DFX Collector:")
     chunk_duration_s = float(settings.CHUNK_DURATION)
