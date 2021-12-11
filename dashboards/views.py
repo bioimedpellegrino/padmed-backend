@@ -103,15 +103,16 @@ class UserProfileView(APIView):
     
     def GET_render(self,request,*args, **kwargs):
         from .forms import AppUserEditForm
+        from app.models import AppUser
         #### Objects from post ####
         form = kwargs.get("form",None)
         has_error = kwargs.get("has_error",False)
         ###########################
         
-        user = request.user
+        app_user = AppUser.get_or_create_from_parent(request.user)
         if not form:
             form = AppUserEditForm(
-                instance = user,
+                instance = app_user,
             )
         return render(request, self.template_name, {
             "form":form,
@@ -121,10 +122,11 @@ class UserProfileView(APIView):
     def post(self, request, *args, **kwargs):
         from .forms import AppUserEditForm
         from django.contrib import messages
-        user = request.user
+        from app.models import AppUser
+        app_user = AppUser.get_or_create_from_parent(request.user)
         form = AppUserEditForm(
             request.POST or None,
-            instance = user,
+            instance = app_user,
         )
         if form.is_valid():
             modified_user = form.save()
