@@ -249,6 +249,7 @@ async def make_measure(config, config_path, video_path, demographics=None, start
                 study_cfg_bytes = f.read()
     except Exception as ex:
         import traceback
+        print(traceback.format_exc())
         add_log(level=5, message=5, custom_message='Error on STEP 1 make measure: %s' % ex)
         return None, logs
     
