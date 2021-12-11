@@ -408,3 +408,18 @@ class PatientMeasureResult(models.Model):
             hresult["heart_rate"]["order"] = "%s%03d"%(0, 130-hresult["heart_rate"]["mean"])
         
         return hresult
+    
+    
+    
+class MeasureLogger(models.Model):
+    
+    id = models.AutoField(primary_key=True)
+    triage_access = models.ForeignKey(TriageAccess, blank=True, null=True, on_delete=models.CASCADE)
+    log = models.TextField(null=True, blank=True)
+    
+    def __str__(self):
+        return self.triage_access
+    
+    class Meta:
+        verbose_name = "Log Misurazione"
+        verbose_name_plural = "Logs Misurazioni"
