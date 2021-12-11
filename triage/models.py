@@ -414,6 +414,7 @@ class PatientMeasureResult(models.Model):
 class MeasureLogger(models.Model):
     
     id = models.AutoField(primary_key=True)
+    created = models.DateTimeField(auto_now_add=True)
     triage_access = models.ForeignKey(TriageAccess, blank=True, null=True, on_delete=models.CASCADE)
     log = models.TextField(null=True, blank=True)
     
