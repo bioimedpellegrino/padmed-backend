@@ -419,8 +419,16 @@ class MeasureLogger(models.Model):
     log = models.TextField(null=True, blank=True)
     
     def __str__(self):
-        return self.triage_access
+        return "{}".format(self.id)
     
     class Meta:
         verbose_name = "Log Misurazione"
         verbose_name_plural = "Logs Misurazioni"
+        
+    def add_log(self, text):
+        if self.log:
+            self.log += "\n" + text
+            self.save()
+        else:
+            self.log = text
+            self.save()
