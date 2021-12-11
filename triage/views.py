@@ -14,9 +14,10 @@ from deepaffex.utils import save_config, load_config
 import asyncio
 import datetime
 import os
+import json
 
 from .forms import PatientForm
-from .models import Hospital, Patient, TriageCode, TriageAccessReason, TriageAccess, PatientVideo, PatientMeasureResult
+from .models import Hospital, Patient, TriageCode, TriageAccessReason, TriageAccess, PatientVideo, PatientMeasureResult, MeasureLogger
 from .utils import generate_video_measure, unpack_result_deepaffex
 
 class DecodeFiscalCodeView(APIView):
@@ -127,12 +128,16 @@ class RecordVideoView(APIView):
         patient_video.triage_access = triage_access
         patient_video.video = video
         patient_video.save()
-        
         #Make the measure
         video_path = os.path.join(settings.MEDIA_ROOT, video)
         config_path = os.path.join(settings.CORE_DIR, "config.json")
         config = load_config(config_path)
-        measurement_id = asyncio.run(make_measure(config=config, config_path=config_path, video_path=video_path))
+        measurement_id, logs = asyncio.run(make_measure(config=config, config_path=config_path, video_path=video_path))
+        # Logger
+        log = MeasureLogger()
+        log.triage_access = triage_access
+        log.log = json.dumps(logs)
+        log.save()
         # Save results
         p_measure_result = PatientMeasureResult()
         p_measure_result.patient_video = patient_video

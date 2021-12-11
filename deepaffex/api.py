@@ -220,6 +220,7 @@ async def make_measure(config, config_path, video_path, demographics=None, start
     headers = {"Authorization": f"Bearer {token}"}
     # Prepare to make a measurement..
     app = AppState()
+    logs = {}
     try:
         # Open the camera or video
         imreader = VideoReader(video_path, start_time, end_time, rotation=rotation, fps=fps)
@@ -235,6 +236,7 @@ async def make_measure(config, config_path, video_path, demographics=None, start
         # Create DFX SDK factory
         factory = dfxsdk.Factory()
         print("Created DFX Factory:", factory.getVersion())
+        logs["1"] = "Created DFX Factory:{}".format(factory.getVersion())
         sdk_id = factory.getSdkId()
 
         # Get study config data..
@@ -245,20 +247,22 @@ async def make_measure(config, config_path, video_path, demographics=None, start
             # .. or from a file
             with open(debug_study_cfg_file, 'rb') as f:
                 study_cfg_bytes = f.read()
-    except Exception as e:
+    except Exception as ex:
         import traceback
         add_log(level=5, message=5, custom_message='Error on STEP 1 make measure: %s' % ex)
-        return
+        return None, logs
     
     # Create DFX SDK collector (or FAIL)
     if not factory.initializeStudy(study_cfg_bytes):
         print(f"DFX factory creation failed: {factory.getLastErrorMessage()}")
-        return
+        logs["2"] = f"DFX factory creation failed: {factory.getLastErrorMessage()}"
+        return None, logs
     factory.setMode("discrete")
     collector = factory.createCollector()
     if collector.getCollectorState() == dfxsdk.CollectorState.ERROR:
         print(f"DFX collector creation failed: {collector.getLastErrorMessage()}")
-        return
+        logs["3"] = f"DFX collector creation failed: {collector.getLastErrorMessage()}"
+        return None, logs
     
     print("Created DFX Collector:")
     chunk_duration_s = float(settings.CHUNK_DURATION)
@@ -267,7 +271,7 @@ async def make_measure(config, config_path, video_path, demographics=None, start
     print(imreader.frames_to_process, frames_per_chunk, app.number_chunks)
     app.begin_frame = imreader.start_frame
     app.end_frame = imreader.stop_frame
-
+    logs["4"] = "Created DFX Collector: %s %s %s" %(imreader.frames_to_process, frames_per_chunk, app.number_chunks)
     # Set collector config
     collector.setTargetFPS(imreader.fps)
     collector.setChunkDurationSeconds(chunk_duration_s)
@@ -294,7 +298,7 @@ async def make_measure(config, config_path, video_path, demographics=None, start
                                                     partner_id=partner_id)
         app.measurement_id = response["ID"]
         print(f"Created measurement {app.measurement_id}")
-
+        logs["5"] = f"Created measurement {app.measurement_id}"
         # Use the session to connect to the WebSocket
         async with session.ws_connect(dfxapi.Settings.ws_url) as ws:
             # Subscribe to results
@@ -350,7 +354,7 @@ async def make_measure(config, config_path, video_path, demographics=None, start
 
                 app.step = MeasurementStep.WAITING_RESULTS
                 print("Extraction complete, waiting for results")
-
+                logs["6"] = "Extraction complete, waiting for results"
             # Coroutine to receive responses using the Websocket
             async def receive_results():
                 num_results_received = 0
@@ -371,7 +375,7 @@ async def make_measure(config, config_path, video_path, demographics=None, start
 
                 app.step = MeasurementStep.COMPLETED
                 print("Measurement complete")
-
+                logs["7"] = "Measurement complete"
             # Coroutine for rendering
             async def render():
                 if type(renderer) == NullRenderer:
@@ -393,13 +397,14 @@ async def make_measure(config, config_path, video_path, demographics=None, start
                     if e is not None and type(e) != asyncio.CancelledError:
                         print(e, "ok")
                 print(f"Measurement {app.measurement_id} failed")
+                logs["8"] = f"Measurement {app.measurement_id} failed"
             else:
                 config["last_measurement"] = app.measurement_id
                 save_config(config, config_path)
                 print(f"Measurement {app.measurement_id} completed")
                 print(f"Use 'python {os.path.basename(__file__)} measure get' to get comprehensive results")
-            
-            return app.measurement_id
+                logs["8"] = f"Measurement {app.measurement_id} completed"
+            return app.measurement_id, logs
 
 async def extract_from_imgs(chunk_queue, imreader, tracker, collector, renderer, app):
     # Read frames from the image source, track faces and extract using collector
