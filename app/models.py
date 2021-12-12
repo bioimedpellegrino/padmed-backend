@@ -361,82 +361,168 @@ class RestrictedClass(models.Model):
             traceback.print_exc()
             raise(e)
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request=None,user=None):
         """
         Return True if the given request has permission to add an object.
         Can be overridden by the user in subclasses.
         """
+        if (request is None and user is None) or (request is not None and user is not None):
+            return TypeError("has_add_permission() needs one (and only one) of this arguments: 'request','user'")
+        if request:
+            user = request.user.appuser
         perm = get_class_perm('add', self)
-        return request.user.appuser.has_perm(perm,self)
+        return user.has_perm(perm,self)
 
-    def has_change_permission(self, request, obj=None):
+    def has_change_permission(self, request=None,user=None):
         """
         Return True if the given request has permission to change the given
         Django model instance, the default implementation doesn't examine the
         `obj` parameter.
-
-        Can be overridden by the user in subclasses. In such case it should
-        return True if the given request has permission to change the `obj`
-        model instance. If `obj` is None, this should return True if the given
-        request has permission to change *any* object of the given type.
         """
+        if (request is None and user is None) or (request is not None and user is not None):
+            return TypeError("has_change_permission() needs one (and only one) of this arguments: 'request','user'")
+        if request:
+            user = request.user.appuser
         perm = get_class_perm('change', self)
-        return request.user.appuser.has_perm(perm,self)
+        return user.has_perm(perm,self)
 
-    def has_delete_permission(self, request, obj=None):
+    def has_delete_permission(self, request=None,user=None):
         """
         Return True if the given request has permission to change the given
         Django model instance, the default implementation doesn't examine the
         `obj` parameter.
-
-        Can be overridden by the user in subclasses. In such case it should
-        return True if the given request has permission to delete the `obj`
-        model instance. If `obj` is None, this should return True if the given
-        request has permission to delete *any* object of the given type.
         """
+        if (request is None and user is None) or (request is not None and user is not None):
+            return TypeError("has_delete_permission() needs one (and only one) of this arguments: 'request','user'")
+        if request:
+            user = request.user.appuser
         perm = get_class_perm('delete', self)
-        return request.user.appuser.has_perm(perm,self)
+        return user.has_perm(perm,self)
 
-    def has_view_permission(self, request, obj=None):
+    def has_view_permission(self, request=None,user=None):
         """
         Return True if the given request has permission to view the given
         Django model instance. The default implementation doesn't examine the
         `obj` parameter.
-
-        If overridden by the user in subclasses, it should return True if the
-        given request has permission to view the `obj` model instance. If `obj`
-        is None, it should return True if the request has permission to view
-        any object of the given type.
         """
+        if (request is None and user is None) or (request is not None and user is not None):
+            return TypeError("has_view_permission() needs one (and only one) of this arguments: 'request','user'")
+        if request:
+            user = request.user.appuser
         perm_view = get_class_perm('view', self)
         perm_change = get_class_perm('change', self)
         return (
-            request.user.appuser.has_perm(perm_view,self) or
-            request.user.appuser.has_perm(perm_change,self)
+            user.has_perm(perm_view,self) or
+            user.has_perm(perm_change,self)
         )
 
-    def has_view_or_change_permission(self, request, obj=None):
-        return self.has_view_permission(request, obj) or self.has_change_permission(request, obj)
-
-    def has_module_permission(self, request):
-        """
-        Return True if the given request has any permission in the given
-        app label.
-
-        Can be overridden by the user in subclasses. In such case it should
-        return True if the given request has permission to view the module on
-        the admin index page and access the module's index page. Overriding it
-        does not restrict access to the add, change or delete views. Use
-        `ModelAdmin.has_(add|change|delete)_permission` for that.
-        """
-        obj_content_type = ContentType.objects.get_for_model(self)
-        app_label,_ = obj_content_type.natural_key()
-        return request.user.appuser.has_module_perms(app_label)
+    def has_view_or_change_permission(self, request=None,user=None):
+        if (request is None and user is None) or (request is not None and user is not None):
+            return TypeError("has_view_or_change_permission() needs one (and only one) of this arguments: 'request','user'")
+        return self.has_view_permission(request=request,user=user) or self.has_change_permission(request=request,user=user)
     
     @classmethod
-    def filter_for_request(cls,request):
-        app_user = request.user.appuser
-        app_groups = app_user.appgroups.triage_hospital_set()
+    def has_global_add_permission(cls, request=None,user=None):
+        """
+        Return True if the given request has permission to add an object.
+        Can be overridden by the user in subclasses.
+        """
+        if (request is None and user is None) or (request is not None and user is not None):
+            return TypeError("has_global_add_permission() needs one (and only one) of this arguments: 'request','user'")
+        if request:
+            user = request.user.appuser
+        perm = get_class_perm('add', cls)
+        return user.has_perm(perm)
+    
+    @classmethod
+    def has_global_change_permission(cls, request=None,user=None):
+        """
+        Return True if the given request has permission to change the given
+        Django model instance, the default implementation doesn't examine the
+        `obj` parameter.
+        """
+        if (request is None and user is None) or (request is not None and user is not None):
+            return TypeError("has_global_change_permission() needs one (and only one) of this arguments: 'request','user'")
+        if request:
+            user = request.user.appuser
+        perm = get_class_perm('change', cls)
+        return user.has_perm(perm,cls)
+    
+    @classmethod
+    def has_global_delete_permission(cls, request=None,user=None):
+        """
+        Return True if the given request has permission to change the given
+        Django model instance, the default implementation doesn't examine the
+        `obj` parameter.
+        """
+        if (request is None and user is None) or (request is not None and user is not None):
+            return TypeError("has_global_delete_permission() needs one (and only one) of this arguments: 'request','user'")
+        if request:
+            user = request.user.appuser
+        perm = get_class_perm('delete', cls)
+        return user.has_perm(perm,cls)
+    
+    @classmethod
+    def has_global_view_permission(cls, request=None,user=None):
+        """
+        Return True if the given request has permission to view the given
+        Django model instance. The default implementation doesn't examine the
+        `obj` parameter.
+        """
+        if (request is None and user is None) or (request is not None and user is not None):
+            return TypeError("has_global_view_permission() needs one (and only one) of this arguments: 'request','user'")
+        if request:
+            user = request.user.appuser
+        perm_view = get_class_perm('view', cls)
+        perm_change = get_class_perm('change', cls)
+        return (
+            user.has_perm(perm_view,cls) or
+            user.has_perm(perm_change,cls)
+        )
+    
+    @classmethod
+    def has_global_view_or_change_permission(cls, request=None,user=None):
+        if (request is None and user is None) or (request is not None and user is not None):
+            return TypeError("has_global_view_or_change_permission() needs one (and only one) of this arguments: 'request','user'")
+        return cls.has_global_view_permission(request=request,user=user) or cls.has_global_change_permission(request=request,user=user)
+    
+    @classmethod
+    def filter_for_request(cls,type,request=None,user=None):
+        """Use this function to get all the instance for wich a certain user (throughout a request)
+        has the permission of specified type
+
+        Args:
+            type (str): can have values view,add,change,delete,admin
+            request (HttpRequest, optional): the request containing the user. Defaults to None.
+            user (User, optional): the user. Defaults to None.
+
+        Returns:
+            QuerySet: the queryset containing the instance for wich User has "type" permission. 
+        """
+        if (request is None and user is None) or (request is not None and user is not None):
+            return TypeError("filter_for_request() needs one (and only one) of this arguments: 'request','user'")
+        if request is not None:
+            user = request.user.appuser
+        perm_function = getattr(cls,"has_global_%s_permission"%type)
+        if perm_function(request):
+            return cls.objects.all()
+        
+        all_permissions = user.get_all_permissions()
+        class_perm = get_class_perm(type,cls)
+        ## If i have <app_label>.view_<class_name>.13 this will return 13
+        ## If i have <app_label>.view_<class_name> this will raise the value error and the cycle will continue
+        all_ids = set()
+        for perm in all_permissions:
+            try:
+                if perm.startswith(class_perm+"."):
+                    id_str = perm[perm.index(".",perm.index(".")+1)+1:]
+                    id = int(id_str)
+                    all_ids.add(int(id_str))
+            except ValueError:
+                continue
+        
+        return cls.objects.filter(id__in=all_ids)
+        
     
 def auto_create_permissions(sender, instance, created, **kwargs):
     if created:
