@@ -11,7 +11,7 @@ from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
 class AppUser(User):
-    """
+    """e
     This is the base user of this app. It inherit from User, so all the functionality
     of the User class can be found here.
     """
@@ -38,7 +38,7 @@ class AppUser(User):
         self._dashboard_options = json.dumps(value)
         
     @classmethod
-    def extend_parent(cls,parent_obj):
+    def extend_parent(cls,parent_obj:User):
         try:
             attrs = {}
             for field in parent_obj._meta._get_fields(reverse=False, include_parents=True):
@@ -65,13 +65,30 @@ class AppUser(User):
         return child_obj
     
     @classmethod
-    def get_or_create_from_parent(cls,parent_obj):
+    def get_or_create_from_parent(cls,parent_obj:User):
         try:
             child_obj = parent_obj.appuser
         except cls.DoesNotExist:
             child_obj = cls.extend_parent(parent_obj)
         return child_obj
-        
+    
+    def viewable_hospitals(self)->list():
+        """Returns a list of all the hospital with respect to wich the user has viewer permissions"""
+        try:
+            groups = self.groups.filter()
+            
+            from django.contrib.auth.models import Permission
+            from django.contrib.contenttypes.models import ContentType
+            content_type = ContentType.objects.get_for_model(type(self))
+            all_permissions = Permission.objects.filter(content_type=content_type)
+            for permission in all_permissions:
+                print(permission.codename,permission.name,permission)
+            
+            return
+        except Exception as e:
+            traceback.print_exc()
+            raise(e)
+    
 @receiver(post_save, sender=User)
 def create_appuser(sender, instance, created, **kwargs):
     if created:
@@ -93,7 +110,7 @@ class AppGroup(Group):
         verbose_name_plural = _("Application Groups")
         
     @classmethod
-    def extend_parent(cls,parent_obj):
+    def extend_parent(cls,parent_obj:Group):
         try:
             attrs = {}
             for field in parent_obj._meta._get_fields(reverse=False, include_parents=True):
@@ -111,7 +128,7 @@ class AppGroup(Group):
             raise(e)
     
     @classmethod
-    def get_or_create_from_parent(cls,parent_obj):
+    def get_or_create_from_parent(cls,parent_obj:Group):
         try:
             child_obj = parent_obj.appgroup
         except cls.DoesNotExist:

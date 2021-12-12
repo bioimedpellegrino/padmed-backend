@@ -110,6 +110,7 @@ class UserProfileView(APIView):
         ###########################
         
         app_user = AppUser.get_or_create_from_parent(request.user)
+        viewable_hospitals = app_user.viewable_hospitals()
         if not form:
             form = AppUserEditForm(
                 instance = app_user,
