@@ -200,3 +200,6 @@ MESSAGE_TAGS = {
     messages.WARNING: 'warning',
     messages.ERROR: 'danger',
 }
+
+## DEFAULTS PRIMARY KEYS 
+DEFAULT_AUTO_FIELD='django.db.models.AutoField' 

@@ -43,6 +43,7 @@ TRIAGE_CODES = (
 class Hospital(RestrictedClass):
     
     id = models.AutoField(primary_key=True)
+    name = models.CharField(blank=True,null=True,max_length=512,default="")
     full_address = models.TextField(blank=True, null=True, default="")
     city = models.ForeignKey(City, blank=True, null=True, on_delete=models.PROTECT, related_name="hospital_city")
     province = models.ForeignKey(Province, blank=True, null=True, on_delete=models.PROTECT, related_name="hospital_province")

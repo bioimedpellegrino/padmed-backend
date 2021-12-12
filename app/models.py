@@ -6,12 +6,92 @@ Copyright (c) 2019 - present AppSeed.us
 import traceback
 from django.db import models
 from django.contrib.auth.models import User,Group
+from django.contrib.admin import ModelAdmin
 from django.contrib.contenttypes.fields import GenericRelation,GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
+
+def get_class_permission_codename(type,obj):
+    """
+    Args:
+        type (str): can be "view","change","add","delete"
+        obj (models.Model): any model instance
+
+    Returns:
+        str: The codename of the corresponding permission
+    """
+    obj_content_type = ContentType.objects.get_for_model(obj)
+    app_label,class_name = obj_content_type.natural_key()
+    return '%s_%s'%(type,class_name)
+
+def get_instance_permission_codename(type,obj):
+    """
+    Args:
+        type (str): can be "view","change","add","delete"
+        obj (models.Model): any model instance
+
+    Returns:
+        str: The codename of the corresponding permission
+    """
+    obj_content_type = ContentType.objects.get_for_model(obj)
+    app_label,class_name = obj_content_type.natural_key()
+    return '%s_%s.%s'%(type,class_name,obj.pk)
+
+def get_class_perm(type,obj):
+    """
+    Args:
+        type (str): can be "view","change","add","delete"
+        obj (models.Model): any model instance
+
+    Returns:
+        str: The codename of the corresponding permission
+    """
+    obj_content_type = ContentType.objects.get_for_model(obj)
+    app_label,class_name = obj_content_type.natural_key()
+    return '%s.%s_%s'%(app_label,type,class_name)
+
+def get_instance_perm(type,obj):
+    """
+    Args:
+        type (str): can be "view","change","add","delete"
+        obj (models.Model): any model instance
+
+    Returns:
+        str: The codename of the corresponding permission
+    """
+    obj_content_type = ContentType.objects.get_for_model(obj)
+    app_label,class_name = obj_content_type.natural_key()
+    return '%s.%s_%s.%s'%(app_label,type,class_name,obj.pk)
+
+def get_class_permission_name(type,obj):
+    """
+    Args:
+        type (str): can be "view","change","add","delete"
+        obj (models.Model): any model instance
+
+    Returns:
+        str: The name of the corresponding permission
+    """
+    obj_content_type = ContentType.objects.get_for_model(obj)
+    app_label,class_name = obj_content_type.natural_key()
+    return 'Can %s %s'%(type,class_name)
+
+def get_instance_permission_name(type,obj):
+    """
+    Args:
+        type (str): can be "view","change","add","delete"
+        obj (models.Model): any model instance
+
+    Returns:
+        str: The name of the corresponding permission
+    """
+    obj_content_type = ContentType.objects.get_for_model(obj)
+    app_label,class_name = obj_content_type.natural_key()
+    return 'Can %s %s %s'%(type,class_name,obj.pk)
+        
 class AppUser(User):
     """e
     This is the base user of this app. It inherit from User, so all the functionality
@@ -29,7 +109,7 @@ class AppUser(User):
     class Meta():
         verbose_name = _("Application User")
         verbose_name_plural = _("Application Users")
-        
+            
     @property
     def dashboard_options(self):
         from app.utils import AttributeJson
@@ -38,7 +118,7 @@ class AppUser(User):
     def dashboard_options(self,value):
         import json
         self._dashboard_options = json.dumps(value)
-        
+    
     @classmethod
     def extend_parent(cls,parent_obj:User):
         try:
@@ -74,23 +154,19 @@ class AppUser(User):
             child_obj = cls.extend_parent(parent_obj)
         return child_obj
     
-    def viewable_hospitals(self)->list():
-        """Returns a list of all the hospital with respect to wich the user has viewer permissions"""
-        try:
-            groups = self.groups.filter()
-            
-            from django.contrib.auth.models import Permission
-            from django.contrib.contenttypes.models import ContentType
-            content_type = ContentType.objects.get_for_model(type(self))
-            all_permissions = Permission.objects.filter(content_type=content_type)
-            for permission in all_permissions:
-                print(permission.codename,permission.name,permission)
-            
-            return
-        except Exception as e:
-            traceback.print_exc()
-            raise(e)
-    
+    def has_perm(self, class_perm, obj=None):
+        has_class_permission = super().has_perm(class_perm)
+        if has_class_permission:
+            return has_class_permission
+        if not obj:
+            return has_class_permission
+
+        obj_id = obj.id
+        
+        instance_perm = class_perm + "." + str(obj_id)
+        has_instance_permission = super().has_perm(instance_perm)
+        return has_instance_permission
+        
 @receiver(post_save, sender=User)
 def create_appuser(sender, instance, created, **kwargs):
     if created:
@@ -101,61 +177,37 @@ class AppGroup(Group):
     This is the base group of this app. It inherit from Group, so all the functionality
     of the Group class can be found here.
     """
-    ## See 
-    # https://docs.djangoproject.com/en/3.2/ref/contrib/contenttypes/ at 
-    # https://docs.djangoproject.com/en/3.2/ref/contrib/contenttypes/#django.contrib.contenttypes.fields.GenericForeignKey
-    # for generic relations and their utility
-    tag = models.SlugField()
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE,null=True)
-    object_id = models.PositiveIntegerField(null=True)
-    content_object = GenericForeignKey('content_type', 'object_id')
-
+    pass
     class Meta():
-        verbose_name = _("Application Group")
-        verbose_name_plural = _("Application Groups")
-        
-    @classmethod
-    def extend_parent(cls,parent_obj:Group):
-        try:
-            attrs = {}
-            for field in parent_obj._meta._get_fields(reverse=False, include_parents=True):
-                if field.attname not in attrs:
-                    attrs[field.attname] = getattr(parent_obj, field.attname)
-            attrs0 = {cls._meta.parents[parent_obj.__class__].name : parent_obj}
-            child_obj = cls(**attrs0)
-            child_obj.save()
-            print(attrs)
-            child_obj.__dict__.update(attrs)
-            child_obj.save()
-            return child_obj
-        except Exception as e:
-            traceback.print_exc()
-            raise(e)
+        proxy = True
     
     @classmethod
-    def get_or_create_from_parent(cls,parent_obj:Group):
-        try:
-            child_obj = parent_obj.appgroup
-        except cls.DoesNotExist:
-            child_obj = cls.extend_parent(parent_obj)
-        return child_obj
-        
-@receiver(post_save, sender=Group)
-def create_appgroup(sender, instance, created, **kwargs):
-    if created:
-        AppGroup.extend_parent(instance)
-        
+    def get_admins_name(cls,content_type,obj=None):
+        if obj:
+            return "%s - %s (id: %s) - Admins"%(content_type.name,obj.name,obj.id)
+        else:
+            return "%s - Admins"%(content_type.name)
+    @classmethod
+    def get_creators_name(cls,content_type,obj=None):
+        if obj:
+            return "%s - %s (id: %s) - Creators"%(content_type.name,obj.name,obj.id)
+        else:
+            return "%s - Creators"%(content_type.name)
+    @classmethod
+    def get_editors_name(cls,content_type,obj=None):
+        if obj:
+            return "%s - %s (id: %s) - Editors"%(content_type.name,obj.name,obj.id)
+        else:
+            return "%s - Editors"%(content_type.name)
+    @classmethod
+    def get_viewers_name(cls,content_type,obj=None):
+        if obj:
+            return "%s - %s (id: %s) - Viewers"%(content_type.name,obj.name,obj.id)
+        else:
+            return "%s - Viewers"%(content_type.name)  
 
 class RestrictedClass(models.Model):
-    
-    ## See 
-    # https://docs.djangoproject.com/en/3.2/ref/contrib/contenttypes/#django.contrib.contenttypes.fields.GenericForeignKey
-    # for generic relations and their utility
-    # and https://docs.djangoproject.com/en/3.2/topics/db/models/ for generic related_name values in abstract classes
-    
-    name = models.CharField(blank=True, null=True, max_length=512, default="")
-    ## Permission Groups ##
-    groups = GenericRelation(AppGroup,related_name="%(app_label)s_%(class)s_set", related_query_name='%(app_label)s_%(class)s')
+    TYPES = ["view","add","change","delete","admin"]
     
     class Meta():
         abstract = True
@@ -163,64 +215,231 @@ class RestrictedClass(models.Model):
     @classmethod
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-        models.signals.post_save.connect(create_groups, sender=cls)
+        models.signals.post_save.connect(auto_create_permissions, sender=cls)
+        models.signals.post_delete.connect(auto_delete_permissions,sender=cls)
         
-    def get_or_create_groups(self):
+    def create_permissions(self):
         from django.contrib.auth.models import Permission
         from django.contrib.contenttypes.models import ContentType
+        from django.contrib.auth.models import Group
         try:
-            content_type = ContentType.objects.get_for_model(type(self))
+            content_type = ContentType.objects.get_for_model(self)
             
-            ## Look for lacking groups
-            existing_group_tags = self.groups.values_list("tag",flat=True)
+            ## Get or create permissions
+            class_permissions = {}
+            instance_permissions = {}
+            for type in self.TYPES:
+                class_permissions[type],c = Permission.objects.get_or_create(
+                    content_type=content_type,
+                    codename = get_class_permission_codename(type,self),
+                    defaults={
+                        "name": get_class_permission_name(type,self)
+                    }
+                )
+                instance_permissions[type],c = Permission.objects.get_or_create(
+                    content_type=content_type,
+                    codename = get_instance_permission_codename(type,self),
+                    defaults={
+                        "name": get_instance_permission_name(type,self)
+                    }
+                )
             
-            admins_tag = "%s_%s_%s_admins"%(content_type.app_label.lower(),content_type.model.lower(),self.id)
-            creators_tag = "%s_%s_%s_creators"%(content_type.app_label.lower(),content_type.model.lower(),self.id)
-            editors_tag = "%s_%s_%s_editors"%(content_type.app_label.lower(),content_type.model.lower(),self.id)
-            viewers_tag = "%s_%s_%s_viewers"%(content_type.app_label.lower(),content_type.model.lower(),self.id)
+            ## DEFINE INSTANCE PERMISSION GROUPS
             
-            group_tags_to_create = set([admins_tag,creators_tag,editors_tag,viewers_tag]).difference(set(existing_group_tags))
-            if group_tags_to_create:
-                ## Create Groups
-                all_permissions = Permission.objects.filter(content_type=content_type)
-                view_perm = all_permissions.get(codename__startswith="view").id
-                add_perm = all_permissions.get(codename__startswith="add").id
-                change_perm = all_permissions.get(codename__startswith="change").id
-                delete_perm = all_permissions.get(codename__startswith="delete").id
-                all_groups_params ={
-                    admins_tag:{
-                        "name":"%s - %s (id: %s) - Admins"%(content_type.model.capitalize(),self.name,self.id),
-                        "permissions":[view_perm,add_perm,change_perm,delete_perm],
-                    },
-                    creators_tag:{
-                        "name":"%s - %s (id: %s) - Creators"%(content_type.model.capitalize(),self.name,self.id),
-                        "permissions":[view_perm,add_perm,change_perm,delete_perm],
-                    },
-                    editors_tag:{
-                        "name":"%s - %s (id: %s) - Editors"%(content_type.model.capitalize(),self.name,self.id),
-                        "permissions":[view_perm,change_perm],
-                            
-                    },
-                    viewers_tag:{
-                        "name":"%s - %s (id: %s) - Viewers"%(content_type.model.capitalize(),self.name,self.id),
-                        "permissions":[view_perm],
-                    },
-                }
-                for group_tag_to_create in group_tags_to_create:
-                    app_group = AppGroup(
-                        tag = group_tag_to_create,
-                        name = all_groups_params[group_tag_to_create]["name"],
-                        content_object=self
-                        )
-                    app_group.save()
-                    app_group.permissions.add(*all_groups_params[group_tag_to_create]["permissions"])
+            view_perm = instance_permissions["view"]
+            add_perm = instance_permissions["add"] 
+            change_perm = instance_permissions["change"] 
+            delete_perm = instance_permissions["delete"] 
+            admin_perm = instance_permissions["admin"] 
+            
+            ## Get group names
+            admins_name = AppGroup.get_admins_name(content_type,self)
+            creators_name = AppGroup.get_creators_name(content_type,self)
+            editors_name = AppGroup.get_editors_name(content_type,self)
+            viewers_name = AppGroup.get_viewers_name(content_type,self)
+            ## Define per-group permissions
+            all_groups_params ={
+                admins_name:{
+                    "permissions":[view_perm,change_perm,add_perm,delete_perm,admin_perm],
+                },
+                creators_name:{
+                    "permissions":[view_perm,change_perm,add_perm,delete_perm],
+                },
+                editors_name:{
+                    "permissions":[view_perm,change_perm],
+                        
+                },
+                viewers_name:{
+                    "permissions":[view_perm],
+                },
+            }
+            for group_name_to_create in all_groups_params:
+                app_group,c = Group.objects.get_or_create(
+                    name = group_name_to_create,
+                    )
+                app_group.save()
+                app_group.permissions.set(all_groups_params[group_name_to_create]["permissions"])
+            
+            ## DEFINE CLASS PERMISSION GROUPS
+            
+            view_perm = class_permissions["view"]
+            add_perm = class_permissions["add"] 
+            change_perm = class_permissions["change"] 
+            delete_perm = class_permissions["delete"] 
+            admin_perm = class_permissions["admin"] 
+            
+            ## Get group names
+            admins_name = AppGroup.get_admins_name(content_type)
+            creators_name = AppGroup.get_creators_name(content_type)
+            editors_name = AppGroup.get_editors_name(content_type)
+            viewers_name = AppGroup.get_viewers_name(content_type)
+            ## Define per-group permissions
+            all_groups_params ={
+                admins_name:{
+                    "permissions":[view_perm,change_perm,add_perm,delete_perm,admin_perm],
+                },
+                creators_name:{
+                    "permissions":[view_perm,change_perm,add_perm,delete_perm],
+                },
+                editors_name:{
+                    "permissions":[view_perm,change_perm],
+                        
+                },
+                viewers_name:{
+                    "permissions":[view_perm],
+                },
+            }
+            for group_name_to_create in all_groups_params:
+                app_group,c = Group.objects.get_or_create(
+                    name = group_name_to_create,
+                    )
+                app_group.save()
+                app_group.permissions.set(all_groups_params[group_name_to_create]["permissions"])
                     
-            groups = self.groups.all()
-            return groups
+        except Exception as e:
+            traceback.print_exc()
+            raise(e)
+        
+    def delete_permissions(self):
+        from django.contrib.auth.models import Permission
+        from django.contrib.contenttypes.models import ContentType
+        from django.contrib.auth.models import Group
+        try:
+            content_type = ContentType.objects.get_for_model(self)
+            
+            ## Get or create permissions
+            
+            instance_permissions = {}
+            for type in self.TYPES:
+                Permission.objects.filter(
+                    content_type=content_type,
+                    codename = get_class_permission_codename(type,self),
+                ).delete()
+                instance_permissions[type] = Permission.objects.filter(
+                    content_type=content_type,
+                    codename = get_instance_permission_codename(type,self)
+                ).delete()
+            
+            ## Get group names
+            admins_name = AppGroup.get_admins_name(content_type,self)
+            creators_name = AppGroup.get_creators_name(content_type,self)
+            editors_name = AppGroup.get_editors_name(content_type,self)
+            viewers_name = AppGroup.get_viewers_name(content_type,self)
+            ## Define per-group permissions
+            all_groups_params ={
+                admins_name,
+                creators_name,
+                editors_name,
+                viewers_name,
+            }
+            for group_name_to_create in all_groups_params:
+                app_group = Group.objects.filter(
+                    name = group_name_to_create,
+                    ).delete()
+                    
         except Exception as e:
             traceback.print_exc()
             raise(e)
 
-def create_groups(sender, instance, created, **kwargs):
+    def has_add_permission(self, request):
+        """
+        Return True if the given request has permission to add an object.
+        Can be overridden by the user in subclasses.
+        """
+        perm = get_class_perm('add', self)
+        return request.user.appuser.has_perm(perm,self)
+
+    def has_change_permission(self, request, obj=None):
+        """
+        Return True if the given request has permission to change the given
+        Django model instance, the default implementation doesn't examine the
+        `obj` parameter.
+
+        Can be overridden by the user in subclasses. In such case it should
+        return True if the given request has permission to change the `obj`
+        model instance. If `obj` is None, this should return True if the given
+        request has permission to change *any* object of the given type.
+        """
+        perm = get_class_perm('change', self)
+        return request.user.appuser.has_perm(perm,self)
+
+    def has_delete_permission(self, request, obj=None):
+        """
+        Return True if the given request has permission to change the given
+        Django model instance, the default implementation doesn't examine the
+        `obj` parameter.
+
+        Can be overridden by the user in subclasses. In such case it should
+        return True if the given request has permission to delete the `obj`
+        model instance. If `obj` is None, this should return True if the given
+        request has permission to delete *any* object of the given type.
+        """
+        perm = get_class_perm('delete', self)
+        return request.user.appuser.has_perm(perm,self)
+
+    def has_view_permission(self, request, obj=None):
+        """
+        Return True if the given request has permission to view the given
+        Django model instance. The default implementation doesn't examine the
+        `obj` parameter.
+
+        If overridden by the user in subclasses, it should return True if the
+        given request has permission to view the `obj` model instance. If `obj`
+        is None, it should return True if the request has permission to view
+        any object of the given type.
+        """
+        perm_view = get_class_perm('view', self)
+        perm_change = get_class_perm('change', self)
+        return (
+            request.user.appuser.has_perm(perm_view,self) or
+            request.user.appuser.has_perm(perm_change,self)
+        )
+
+    def has_view_or_change_permission(self, request, obj=None):
+        return self.has_view_permission(request, obj) or self.has_change_permission(request, obj)
+
+    def has_module_permission(self, request):
+        """
+        Return True if the given request has any permission in the given
+        app label.
+
+        Can be overridden by the user in subclasses. In such case it should
+        return True if the given request has permission to view the module on
+        the admin index page and access the module's index page. Overriding it
+        does not restrict access to the add, change or delete views. Use
+        `ModelAdmin.has_(add|change|delete)_permission` for that.
+        """
+        obj_content_type = ContentType.objects.get_for_model(self)
+        app_label,_ = obj_content_type.natural_key()
+        return request.user.appuser.has_module_perms(app_label)
+    
+    @classmethod
+    def filter_for_request(cls,request):
+        app_user = request.user.appuser
+        app_groups = app_user.appgroups.triage_hospital_set()
+    
+def auto_create_permissions(sender, instance, created, **kwargs):
     if created:
-        instance.get_or_create_groups()
+        instance.create_permissions()
+def auto_delete_permissions(sender, instance, **kwargs):
+    instance.delete_permissions()

@@ -104,13 +104,14 @@ class UserProfileView(APIView):
     def GET_render(self,request,*args, **kwargs):
         from .forms import AppUserEditForm
         from app.models import AppUser
+        from triage.models import Hospital
         #### Objects from post ####
         form = kwargs.get("form",None)
         has_error = kwargs.get("has_error",False)
         ###########################
         
         app_user = AppUser.get_or_create_from_parent(request.user)
-        viewable_hospitals = app_user.viewable_hospitals()
+        viewable_hospitals = Hospital.filter_for_request(request)
         if not form:
             form = AppUserEditForm(
                 instance = app_user,
