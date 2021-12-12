@@ -8,6 +8,7 @@ from pprint import pprint
 from dateutil.relativedelta import relativedelta
 
 from generic.models import City, Province, Country
+from app.models import RestrictedClass
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -39,16 +40,13 @@ TRIAGE_CODES = (
     (YELLOW, 'YELLOW')
 )
         
-class Hospital(models.Model):
+class Hospital(RestrictedClass):
     
     id = models.AutoField(primary_key=True)
-    name = models.CharField(blank=True, null=True, max_length=512, default="")
     full_address = models.TextField(blank=True, null=True, default="")
     city = models.ForeignKey(City, blank=True, null=True, on_delete=models.PROTECT, related_name="hospital_city")
     province = models.ForeignKey(Province, blank=True, null=True, on_delete=models.PROTECT, related_name="hospital_province")
     country = models.ForeignKey(Country, blank=True, null=True,on_delete=models.PROTECT, related_name="hospital_country")
-    ## Permission Groups ##
-    app_groups = models.ManyToManyField('app.AppGroup',blank=True,verbose_name="Hospital's Application Groups")
     
     def __str__(self):
         return self.name
@@ -57,47 +55,6 @@ class Hospital(models.Model):
         verbose_name = "Ospedale"
         verbose_name_plural = "Ospedali"
         
-    def get_or_create_groups(self):
-        from django.contrib.auth.models import Permission
-        from django.contrib.contenttypes.models import ContentType
-        content_type = ContentType.objects.get_for_model(type(self))
-        all_permissions = Permission.objects.filter(content_type=content_type)
-        groups = self.app_groups
-        all_groups = []
-        all_groups.extend([
-            {
-                "name":"Hospital %s (id %s) Add"%(self.name,self.id),
-                "class":type(self).__name__,
-                "id":self.id,
-                "permissions":all_permissions.get(codename__startswith="add")
-            },
-            {
-                "name":"Hospital %s (id %s) Change"%(self.name,self.id),
-                "class":type(self).__name__,
-                "id":self.id,
-                "permissions":all_permissions.get(codename__startswith="change")
-            },
-            {
-                "name":"Hospital %s (id %s) Delete"%(self.name,self.id),
-                "class":type(self).__name__,
-                "id":self.id,
-                "permissions":all_permissions.get(codename__startswith="delete")
-            },
-            {
-                "name":"Hospital %s (id %s) View"%(self.name,self.id),
-                "class":type(self).__name__,
-                "id":self.id,
-                "permissions":all_permissions.get(codename__startswith="view")
-            },
-            
-        ])
-        
-        
-@receiver(post_save, sender=Hospital)
-def create_hospital_groups(sender, instance, created, **kwargs):
-    if created:
-        instance.get_or_create_groups()
-
 class Patient(models.Model):
     """
     Model Patient
