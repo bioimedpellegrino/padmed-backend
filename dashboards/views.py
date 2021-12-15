@@ -110,25 +110,26 @@ class UserProfileView(APIView):
         has_error = kwargs.get("has_error",False)
         ###########################
         
-        app_user = AppUser.get_or_create_from_parent(request.user)
-        viewable_hospitals = Hospital.filter_for_request(request)
+        user = AppUser.get_or_create_from_parent(request.user)
+        hospitals = Hospital.filter_for_request("view",request)
         if not form:
             form = AppUserEditForm(
-                instance = app_user,
+                instance = user,
             )
         return render(request, self.template_name, {
             "form":form,
             "has_error":has_error,
+            "hospitals":hospitals
         })
         
     def post(self, request, *args, **kwargs):
         from .forms import AppUserEditForm
         from django.contrib import messages
         from app.models import AppUser
-        app_user = AppUser.get_or_create_from_parent(request.user)
+        user = AppUser.get_or_create_from_parent(request.user)
         form = AppUserEditForm(
             request.POST or None,
-            instance = app_user,
+            instance = user,
         )
         if form.is_valid():
             modified_user = form.save()

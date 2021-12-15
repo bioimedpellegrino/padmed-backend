@@ -13,199 +13,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-
-def get_class_permission_codename(type,obj):
-    """
-    Args:
-        type (str): can be "view","change","add","delete"
-        obj (models.Model): any model instance
-
-    Returns:
-        str: The codename of the corresponding permission
-    """
-    obj_content_type = ContentType.objects.get_for_model(obj)
-    app_label,class_name = obj_content_type.natural_key()
-    return '%s_%s'%(type,class_name)
-
-def get_instance_permission_codename(type,obj):
-    """
-    Args:
-        type (str): can be "view","change","add","delete"
-        obj (models.Model): any model instance
-
-    Returns:
-        str: The codename of the corresponding permission
-    """
-    obj_content_type = ContentType.objects.get_for_model(obj)
-    app_label,class_name = obj_content_type.natural_key()
-    return '%s_%s.%s'%(type,class_name,obj.pk)
-
-def get_class_perm(type,obj):
-    """
-    Args:
-        type (str): can be "view","change","add","delete"
-        obj (models.Model): any model instance
-
-    Returns:
-        str: The codename of the corresponding permission
-    """
-    obj_content_type = ContentType.objects.get_for_model(obj)
-    app_label,class_name = obj_content_type.natural_key()
-    return '%s.%s_%s'%(app_label,type,class_name)
-
-def get_instance_perm(type,obj):
-    """
-    Args:
-        type (str): can be "view","change","add","delete"
-        obj (models.Model): any model instance
-
-    Returns:
-        str: The codename of the corresponding permission
-    """
-    obj_content_type = ContentType.objects.get_for_model(obj)
-    app_label,class_name = obj_content_type.natural_key()
-    return '%s.%s_%s.%s'%(app_label,type,class_name,obj.pk)
-
-def get_class_permission_name(type,obj):
-    """
-    Args:
-        type (str): can be "view","change","add","delete"
-        obj (models.Model): any model instance
-
-    Returns:
-        str: The name of the corresponding permission
-    """
-    obj_content_type = ContentType.objects.get_for_model(obj)
-    app_label,class_name = obj_content_type.natural_key()
-    return 'Can %s %s'%(type,class_name)
-
-def get_instance_permission_name(type,obj):
-    """
-    Args:
-        type (str): can be "view","change","add","delete"
-        obj (models.Model): any model instance
-
-    Returns:
-        str: The name of the corresponding permission
-    """
-    obj_content_type = ContentType.objects.get_for_model(obj)
-    app_label,class_name = obj_content_type.natural_key()
-    return 'Can %s %s %s'%(type,class_name,obj.pk)
-        
-class AppUser(User):
-    """e
-    This is the base user of this app. It inherit from User, so all the functionality
-    of the User class can be found here.
-    """
-    light_theme = "light"
-    darl_theme = "dark"
-    THEMES = (
-        (light_theme,_("Chiaro")),
-        (darl_theme,_("Scuro"))
-    )
-    theme = models.CharField(verbose_name=_("Tema"),max_length=512, choices=THEMES,default="light")
-    _dashboard_options = models.TextField(verbose_name=_("Opzioni Dashboard"),default="{}")
-
-    class Meta():
-        verbose_name = _("Application User")
-        verbose_name_plural = _("Application Users")
-            
-    @property
-    def dashboard_options(self):
-        from app.utils import AttributeJson
-        return AttributeJson(self,"_dashboard_options")
-    @dashboard_options.setter
-    def dashboard_options(self,value):
-        import json
-        self._dashboard_options = json.dumps(value)
-    
-    @classmethod
-    def extend_parent(cls,parent_obj:User):
-        try:
-            attrs = {}
-            for field in parent_obj._meta._get_fields(reverse=False, include_parents=True):
-                if field.attname not in attrs:
-                    attrs[field.attname] = getattr(parent_obj, field.attname)
-            attrs0 = {cls._meta.parents[parent_obj.__class__].name : parent_obj}
-            child_obj = cls(**attrs0)
-            child_obj.save()
-            print(attrs)
-            child_obj.__dict__.update(attrs)
-            child_obj.save()
-            return child_obj
-        except Exception as e:
-            traceback.print_exc()
-            raise(e)
-        ## Alternatively
-        # child_obj = cls(group_ptr_id=parent_obj.pk)
-        # child_obj.__dict__.update(parent_obj.__dict__)
-        # child_obj.save()
-        # return child_obj
-        ## Alternatively
-        # for field in parent_obj._meta.fields
-        #     setattr(child_obj, field.attname, getattr(parent_obj, field.attname))
-        return child_obj
-    
-    @classmethod
-    def get_or_create_from_parent(cls,parent_obj:User):
-        try:
-            child_obj = parent_obj.appuser
-        except cls.DoesNotExist:
-            child_obj = cls.extend_parent(parent_obj)
-        return child_obj
-    
-    def has_perm(self, class_perm, obj=None):
-        has_class_permission = super().has_perm(class_perm)
-        if has_class_permission:
-            return has_class_permission
-        if not obj:
-            return has_class_permission
-
-        obj_id = obj.id
-        
-        instance_perm = class_perm + "." + str(obj_id)
-        has_instance_permission = super().has_perm(instance_perm)
-        return has_instance_permission
-        
-@receiver(post_save, sender=User)
-def create_appuser(sender, instance, created, **kwargs):
-    if created:
-        AppUser.extend_parent(instance)
-
-class AppGroup(Group):
-    """
-    This is the base group of this app. It inherit from Group, so all the functionality
-    of the Group class can be found here.
-    """
-    pass
-    class Meta():
-        proxy = True
-    
-    @classmethod
-    def get_admins_name(cls,content_type,obj=None):
-        if obj:
-            return "%s - %s (id: %s) - Admins"%(content_type.name,obj.name,obj.id)
-        else:
-            return "%s - Admins"%(content_type.name)
-    @classmethod
-    def get_creators_name(cls,content_type,obj=None):
-        if obj:
-            return "%s - %s (id: %s) - Creators"%(content_type.name,obj.name,obj.id)
-        else:
-            return "%s - Creators"%(content_type.name)
-    @classmethod
-    def get_editors_name(cls,content_type,obj=None):
-        if obj:
-            return "%s - %s (id: %s) - Editors"%(content_type.name,obj.name,obj.id)
-        else:
-            return "%s - Editors"%(content_type.name)
-    @classmethod
-    def get_viewers_name(cls,content_type,obj=None):
-        if obj:
-            return "%s - %s (id: %s) - Viewers"%(content_type.name,obj.name,obj.id)
-        else:
-            return "%s - Viewers"%(content_type.name)  
-
 class RestrictedClass(models.Model):
     TYPES = ["view","add","change","delete","admin"]
     
@@ -522,10 +329,204 @@ class RestrictedClass(models.Model):
                 continue
         
         return cls.objects.filter(id__in=all_ids)
-        
     
 def auto_create_permissions(sender, instance, created, **kwargs):
     if created:
         instance.create_permissions()
 def auto_delete_permissions(sender, instance, **kwargs):
     instance.delete_permissions()
+
+def get_class_permission_codename(type,obj):
+    """
+    Args:
+        type (str): can be "view","change","add","delete"
+        obj (models.Model): any model instance
+
+    Returns:
+        str: The codename of the corresponding permission
+    """
+    obj_content_type = ContentType.objects.get_for_model(obj)
+    app_label,class_name = obj_content_type.natural_key()
+    return '%s_%s'%(type,class_name)
+
+def get_instance_permission_codename(type,obj):
+    """
+    Args:
+        type (str): can be "view","change","add","delete"
+        obj (models.Model): any model instance
+
+    Returns:
+        str: The codename of the corresponding permission
+    """
+    obj_content_type = ContentType.objects.get_for_model(obj)
+    app_label,class_name = obj_content_type.natural_key()
+    return '%s_%s.%s'%(type,class_name,obj.pk)
+
+def get_class_perm(type,obj):
+    """
+    Args:
+        type (str): can be "view","change","add","delete"
+        obj (models.Model): any model instance
+
+    Returns:
+        str: The codename of the corresponding permission
+    """
+    obj_content_type = ContentType.objects.get_for_model(obj)
+    app_label,class_name = obj_content_type.natural_key()
+    return '%s.%s_%s'%(app_label,type,class_name)
+
+def get_instance_perm(type,obj):
+    """
+    Args:
+        type (str): can be "view","change","add","delete"
+        obj (models.Model): any model instance
+
+    Returns:
+        str: The codename of the corresponding permission
+    """
+    obj_content_type = ContentType.objects.get_for_model(obj)
+    app_label,class_name = obj_content_type.natural_key()
+    return '%s.%s_%s.%s'%(app_label,type,class_name,obj.pk)
+
+def get_class_permission_name(type,obj):
+    """
+    Args:
+        type (str): can be "view","change","add","delete"
+        obj (models.Model): any model instance
+
+    Returns:
+        str: The name of the corresponding permission
+    """
+    obj_content_type = ContentType.objects.get_for_model(obj)
+    app_label,class_name = obj_content_type.natural_key()
+    return 'Can %s %s'%(type,class_name)
+
+def get_instance_permission_name(type,obj):
+    """
+    Args:
+        type (str): can be "view","change","add","delete"
+        obj (models.Model): any model instance
+
+    Returns:
+        str: The name of the corresponding permission
+    """
+    obj_content_type = ContentType.objects.get_for_model(obj)
+    app_label,class_name = obj_content_type.natural_key()
+    return 'Can %s %s %s'%(type,class_name,obj.pk)
+        
+class AppUser(User):
+    """e
+    This is the base user of this app. It inherit from User, so all the functionality
+    of the User class can be found here.
+    """
+    from triage.models import Hospital
+    light_theme = "light"
+    darl_theme = "dark"
+    THEMES = (
+        (light_theme,_("Chiaro")),
+        (darl_theme,_("Scuro"))
+    )
+    theme = models.CharField(verbose_name=_("Tema"),max_length=512, choices=THEMES,default="light")
+    _dashboard_options = models.TextField(verbose_name=_("Opzioni Dashboard"),default="{}")
+    hospital_logged = models.ForeignKey(Hospital,verbose_name=_("Ospedalle attualmente loggato"),on_delete=models.SET_NULL,blank=True,null=True)
+
+    class Meta():
+        verbose_name = _("Application User")
+        verbose_name_plural = _("Application Users")
+            
+    @property
+    def dashboard_options(self):
+        from app.utils import AttributeJson
+        return AttributeJson(self,"_dashboard_options")
+    @dashboard_options.setter
+    def dashboard_options(self,value):
+        import json
+        self._dashboard_options = json.dumps(value)
+    
+    @classmethod
+    def extend_parent(cls,parent_obj:User):
+        try:
+            attrs = {}
+            for field in parent_obj._meta._get_fields(reverse=False, include_parents=True):
+                if field.attname not in attrs:
+                    attrs[field.attname] = getattr(parent_obj, field.attname)
+            attrs0 = {cls._meta.parents[parent_obj.__class__].name : parent_obj}
+            child_obj = cls(**attrs0)
+            child_obj.save()
+            print(attrs)
+            child_obj.__dict__.update(attrs)
+            child_obj.save()
+            return child_obj
+        except Exception as e:
+            traceback.print_exc()
+            raise(e)
+        ## Alternatively
+        # child_obj = cls(group_ptr_id=parent_obj.pk)
+        # child_obj.__dict__.update(parent_obj.__dict__)
+        # child_obj.save()
+        # return child_obj
+        ## Alternatively
+        # for field in parent_obj._meta.fields
+        #     setattr(child_obj, field.attname, getattr(parent_obj, field.attname))
+        return child_obj
+    
+    @classmethod
+    def get_or_create_from_parent(cls,parent_obj:User):
+        try:
+            child_obj = parent_obj.appuser
+        except cls.DoesNotExist:
+            child_obj = cls.extend_parent(parent_obj)
+        return child_obj
+    
+    def has_perm(self, class_perm, obj=None):
+        has_class_permission = super().has_perm(class_perm)
+        if has_class_permission:
+            return has_class_permission
+        if not obj:
+            return has_class_permission
+
+        obj_id = obj.id
+        
+        instance_perm = class_perm + "." + str(obj_id)
+        has_instance_permission = super().has_perm(instance_perm)
+        return has_instance_permission
+        
+@receiver(post_save, sender=User)
+def create_appuser(sender, instance, created, **kwargs):
+    if created:
+        AppUser.extend_parent(instance)
+
+class AppGroup(Group):
+    """
+    This is the base group of this app. It inherit from Group, so all the functionality
+    of the Group class can be found here.
+    """
+    pass
+    class Meta():
+        proxy = True
+    
+    @classmethod
+    def get_admins_name(cls,content_type,obj=None):
+        if obj:
+            return "%s - %s (id: %s) - Admins"%(content_type.name,obj.name,obj.id)
+        else:
+            return "%s - Admins"%(content_type.name)
+    @classmethod
+    def get_creators_name(cls,content_type,obj=None):
+        if obj:
+            return "%s - %s (id: %s) - Creators"%(content_type.name,obj.name,obj.id)
+        else:
+            return "%s - Creators"%(content_type.name)
+    @classmethod
+    def get_editors_name(cls,content_type,obj=None):
+        if obj:
+            return "%s - %s (id: %s) - Editors"%(content_type.name,obj.name,obj.id)
+        else:
+            return "%s - Editors"%(content_type.name)
+    @classmethod
+    def get_viewers_name(cls,content_type,obj=None):
+        if obj:
+            return "%s - %s (id: %s) - Viewers"%(content_type.name,obj.name,obj.id)
+        else:
+            return "%s - Viewers"%(content_type.name)  
+
