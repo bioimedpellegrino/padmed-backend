@@ -112,6 +112,9 @@ class UserProfileView(APIView):
         
         user = AppUser.get_or_create_from_parent(request.user)
         hospitals = Hospital.filter_for_request("view",request)
+        hospitals = list(hospitals)
+        editable_hospitals = Hospital.filter_for_request("change",request)
+        logged_hospital = user.hospital_logged
         if not form:
             form = AppUserEditForm(
                 instance = user,
@@ -119,7 +122,9 @@ class UserProfileView(APIView):
         return render(request, self.template_name, {
             "form":form,
             "has_error":has_error,
-            "hospitals":hospitals
+            "hospitals":hospitals,
+            "editable_hospitals":editable_hospitals,
+            "logged_hospital":logged_hospital,
         })
         
     def post(self, request, *args, **kwargs):

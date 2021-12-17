@@ -479,6 +479,8 @@ class AppUser(User):
         return child_obj
     
     def has_perm(self, class_perm, obj=None):
+        if self.is_superuser:
+            return True
         has_class_permission = super().has_perm(class_perm)
         if has_class_permission:
             return has_class_permission

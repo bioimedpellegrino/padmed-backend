@@ -1,5 +1,6 @@
 <!-- Message bar, see https://getbootstrap.com/docs/4.0/components/alerts/ -->
 <div class="toast-message">
+
     {% comment %} <div class="toast text-white" data-autohide="false">
         <div class="toast-header">
             <img src="..." class="rounded mr-2" alt="...">
@@ -17,8 +18,16 @@
         <div class="col-xl-12">
             {% if messages %}
                 {% for message in messages %}
-                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">    
-                        {{ message }}
+                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                        <span class="alert-icon">
+                            {% if message.tags == "success" %}
+                                <i class="ni ni-like-2"></i>
+                            {% endif %}
+                        </span>
+                        <span class="alert-text">{{ message }}</span>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
                 {% endfor %}
             {% endif %}

@@ -44,6 +44,7 @@ class Hospital(RestrictedClass):
     
     id = models.AutoField(primary_key=True)
     name = models.CharField(blank=True,null=True,max_length=512,default="")
+    logo = models.ImageField(verbose_name="Logo",null=True,blank=True,upload_to='triage/hospital/logos')
     full_address = models.TextField(blank=True, null=True, default="")
     city = models.ForeignKey(City, blank=True, null=True, on_delete=models.PROTECT, related_name="hospital_city")
     province = models.ForeignKey(Province, blank=True, null=True, on_delete=models.PROTECT, related_name="hospital_province")
@@ -51,11 +52,24 @@ class Hospital(RestrictedClass):
     
     def __str__(self):
         return self.name
-        
+    
     class Meta:
         verbose_name = "Ospedale"
         verbose_name_plural = "Ospedali"
-        
+    
+    @property
+    def fancy_address(self):
+        result = ""
+        if self.full_address:
+            result += self.full_address
+        if self.city:
+            result += " - "+self.city
+        if self.province:
+            result += " ("+self.province+")"
+        if self.country:
+            result += " - "+self.country
+        return result
+
 class Patient(models.Model):
     """
     Model Patient
