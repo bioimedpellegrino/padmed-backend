@@ -25,7 +25,11 @@
             </span>
             <div class="media-body ml-2 d-none d-lg-block">
               <span class="mb-0 text-sm  font-weight-bold">
-                {{ request.user.username }}
+                {% if request.user.appuser %}
+                  {{ request.user.appuser.logged_profile }}
+                {% else %}
+                  {{ request.user.username }}
+                {% endif %}
               </span>
             </div>
           </div>

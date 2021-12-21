@@ -111,10 +111,6 @@ class UserProfileView(APIView):
         ###########################
         
         user = AppUser.get_or_create_from_parent(request.user)
-        hospitals = Hospital.filter_for_request("view",request)
-        hospitals = list(hospitals)
-        editable_hospitals = Hospital.filter_for_request("change",request)
-        logged_hospital = user.hospital_logged
         if not form:
             form = AppUserEditForm(
                 instance = user,
@@ -122,9 +118,6 @@ class UserProfileView(APIView):
         return render(request, self.template_name, {
             "form":form,
             "has_error":has_error,
-            "hospitals":hospitals,
-            "editable_hospitals":editable_hospitals,
-            "logged_hospital":logged_hospital,
         })
         
     def post(self, request, *args, **kwargs):
@@ -138,9 +131,63 @@ class UserProfileView(APIView):
         )
         if form.is_valid():
             modified_user = form.save()
-            print(modified_user)
             messages.add_message(request, messages.SUCCESS, _('Modifiche salvate correttamente.'))
             return HttpResponseRedirect(reverse('user_profile'))
+        else:
+            kwargs["form"] = form
+            kwargs["has_error"] = True
+            return self.GET_render(request, *args, **kwargs)
+
+class HospitalsView(APIView):
+    """[summary]
+
+    Args:
+        APIView ([type]): [description]
+    """
+    template_name = 'hospitals.html'
+    
+    def get(self, request, *args, **kwargs):
+        return self.GET_render(request,*args, **kwargs)
+    
+    def GET_render(self,request,*args, **kwargs):
+        from .forms import HospitalSelectForm
+        from app.models import AppUser
+        from triage.models import Hospital
+        #### Objects from post ####
+        form = kwargs.get("form",None)
+        has_error = kwargs.get("has_error",False)
+        ###########################
+        
+        user = AppUser.get_or_create_from_parent(request.user)
+        hospitals = Hospital.filter_for_request("view",request)
+        editable_hospitals = Hospital.filter_for_request("change",request)
+        logged_hospital = user.hospital_logged
+        if not form:
+            form = HospitalSelectForm(
+                queryset = hospitals,
+                initial={"hospital":logged_hospital}
+            )
+        return render(request, self.template_name, {
+            "form":form,
+            "has_error":has_error,
+            "hospitals":hospitals,
+            "editable_hospitals":editable_hospitals,
+            "logged_hospital":logged_hospital,
+        })
+        
+    def post(self, request, *args, **kwargs):
+        from .forms import HospitalSelectForm
+        from django.contrib import messages
+        from app.models import AppUser
+        user = AppUser.get_or_create_from_parent(request.user)
+        form = HospitalSelectForm(
+            request.POST or None,
+        )
+        if form.is_valid():
+            user.hospital_logged = form.cleaned_data["hospital"]
+            user.save()
+            messages.add_message(request, messages.SUCCESS, _('Profilo attivato: %s.'%(user.logged_profile)))
+            return HttpResponseRedirect(reverse('hospitals'))
         else:
             kwargs["form"] = form
             kwargs["has_error"] = True

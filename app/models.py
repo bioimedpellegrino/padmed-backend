@@ -443,6 +443,10 @@ class AppUser(User):
         import json
         self._dashboard_options = json.dumps(value)
     
+    @property
+    def logged_profile(self):
+        return "%s - %s"%(self.username,self.hospital_logged)
+    
     @classmethod
     def extend_parent(cls,parent_obj:User):
         try:

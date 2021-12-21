@@ -1,0 +1,108 @@
+{% extends 'layouts/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %} Profile {% endblock title %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center" 
+        style="min-height: 600px; background-image: url(/static/assets/img/theme/medicina-sfondo.jpg); background-size: cover; background-position: center top;">
+    <!-- Mask -->
+    <span class="mask bg-gradient-default opacity-8"></span>
+    <!-- Header container -->
+    <div class="container-fluid d-flex align-items-center">
+      <div class="row">
+        <div class="col-lg-7 col-md-10">
+          <h1 class="display-2 text-white">Ciao {{ request.user.username }}</h1>
+          <p class="text-white mt-0 mb-5">
+            Questa è la pagna della struttura di riferimento. Da qui è possibile selezionare la struttura a cui riferire i dati delle dashboards.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid mt--7">
+    <div class="row">
+      <div class="col-xl-12 order-xl-1">
+        <div class="card bg-secondary shadow">
+          <div class="card-header bg-white border-0">
+            <div class="row align-items-center">
+              <div class="col-8">
+                <h3 class="mb-0">Selezione ospedali</h3>
+              </div>
+              <div class="col-4 text-right">
+                <input form="date-form" type="submit" class="btn btn-sm btn-primary" value="Salva">
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <form id="date-form" name="date-form" method='post'>
+              {% crispy form %}
+            </form>
+          </div>
+          {% for hospital in hospitals %}
+            <div id="id_hospital_{{hospital.id}}" class="card card-profile shadow hospital-cards" style="{% if hospital != logged_hospital %}display:none;{% endif %}">
+              {% if hospital.logo %}
+                <div class="row justify-content-center">
+                  <div class="col-lg-3 order-lg-2">
+                    <div class="card-profile-image">
+                      <a>
+                        <img src="{{ hospital.logo.url }}" class="rounded-circle">
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+              <div class="card-header text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
+                {% if hospital in editable_hospitals %}
+                  <a href="#" class="btn btn-sm btn-default float-right">Modifica</a>
+                {% endif %}
+              </div>
+              {% if hospital.logo %}
+                <div class="pt-5"></div>
+              {% endif %}
+              <div class="text-center">
+                <h2>
+                  {{hospital}}
+                </h2>
+                <h2>
+                  <small class="text-muted">{{hospital.fancy_address}}</small>
+                </h2>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    {% include "includes/footer.html" %}
+
+  </div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+  <script>
+    $(document).ready( function () {
+      hospital_select_behaviour();
+    });
+
+    function hospital_select_behaviour(){
+      $("#id_hospital").change(function(){
+        var id_hospital_val = $(this).val();
+        id_hospital_val = "id_hospital_"+id_hospital_val;
+        $(".hospital-cards").each(function(){
+          if($(this).attr("id") == id_hospital_val){
+            $(this).show();
+          } else {
+            $(this).hide();
+          }
+        })
+      })
+    }
+  </script>
+
+{% endblock javascripts %}

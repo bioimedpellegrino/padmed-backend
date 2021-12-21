@@ -43,7 +43,7 @@ def side_menu_context(current_url_name):
         }
     side_menu.append(item)
     
-    url_name = "user_profile"
+    url_name = "hospitals"
     item = {
         "type":"url",
         "text":"Ospedali",

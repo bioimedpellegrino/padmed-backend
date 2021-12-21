@@ -1,11 +1,13 @@
 
 import datetime
 from dateutil.relativedelta import relativedelta
+from django.db.models import query
 from django.forms import widgets
 from django.forms.widgets import HiddenInput
 from django.utils import timezone
 from django import forms
 from crispy_forms.helper import FormHelper
+from django.utils.translation import gettext_lazy as _
 
 class DateRangeForm(forms.Form):
     from .models import TriageCode
@@ -114,3 +116,18 @@ class AppUserEditForm(forms.ModelForm):
                 css_class="pl-lg-4"
             )
         )
+        
+class HospitalSelectForm(forms.Form):
+    from triage.models import Hospital
+    hospital = forms.ModelChoiceField(
+        label=_("Ospedale"),
+        queryset=Hospital.objects.all(),
+        required=True,
+        help_text=_("Seleziona una struttura tra quelle disponibili.")
+        )
+    ## Crispy forms helper for formatting staff
+    helper = FormHelper()
+    def __init__(self, *args,queryset=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if queryset is not None:
+            self.fields["hospital"].queryset = queryset
