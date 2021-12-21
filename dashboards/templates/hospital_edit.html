@@ -1,0 +1,52 @@
+{% extends 'layouts/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %} Profile {% endblock title %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center" 
+        style="min-height: 600px; background-image: url(/static/assets/img/theme/medicina-sfondo.jpg); background-size: cover; background-position: center top;">
+    <!-- Mask -->
+    <span class="mask bg-gradient-default opacity-8"></span>
+    <!-- Header container -->
+  </div>
+
+  <div class="container-fluid mt--7">
+    <div class="row">
+      <div class="col-xl-12 order-xl-1">
+        <div class="card bg-secondary shadow">
+          <div class="card-header bg-white border-0">
+            <div class="row align-items-center">
+              <div class="col-8">
+                {% if form.instance %}
+                  <h3 class="mb-0">Modifica ospedale "{{form.instance}}"</h3>
+                {% else %}
+                  <h3 class="mb-0">Crea nuovo ospedale</h3>
+                {% endif %}
+              </div>
+              <div class="col-4 text-right">
+                <input form="data-form" type="submit" class="btn btn-sm btn-primary" value="Salva">
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <form id="data-form" name="data-form" method='post' enctype="multipart/form-data">
+              {% crispy form %}
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% include "includes/footer.html" %}
+
+  </div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+{% endblock javascripts %}

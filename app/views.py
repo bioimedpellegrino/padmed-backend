@@ -20,29 +20,30 @@ def index(request):
     # html_template = loader.get_template( 'index.html' )
     return HttpResponseRedirect(reverse('live_dash'))
 
-@login_required(login_url="/login/")
-def pages(request):
-    context = {}
-    # All resource paths end in .html.
-    # Pick out the html file name from the url. And load that template.
-    try:
+# @login_required(login_url="/login/")
+# def pages(request):
+#     context = {}
+#     # All resource paths end in .html.
+#     # Pick out the html file name from the url. And load that template.
+#     try:
         
-        load_template      = request.path.split('/')[-1]
-        context['segment'] = load_template
-
-        html_template = loader.get_template( load_template )
-        return HttpResponse(html_template.render(context, request))
+#         load_template      = request.path.split('/')[-1]
+#         context['segment'] = load_template
+#         html_template = loader.get_template( load_template )
+#         return HttpResponse(html_template.render(context, request))
         
-    except template.TemplateDoesNotExist:
-        if settings.DEBUG:
-            import traceback
-            traceback.print_exc()
-        html_template = loader.get_template( 'page-404.html' )
-        return HttpResponse(html_template.render(context, request))
+#     except template.TemplateDoesNotExist:
+#         if settings.DEBUG:
+#             import traceback
+#             traceback.print_exc()
+#         html_template = loader.get_template( 'page-404.html' )
+#         return HttpResponse(html_template.render(context, request))
 
-    except:
-        if settings.DEBUG:
-            import traceback
-            traceback.print_exc()
-        html_template = loader.get_template( 'page-500.html' )
-        return HttpResponse(html_template.render(context, request))
+#     except:
+#         if settings.DEBUG:
+#             import traceback
+#             traceback.print_exc()
+#         html_template = loader.get_template( 'page-500.html' )
+#         return HttpResponse(html_template.render(context, request))
+
+

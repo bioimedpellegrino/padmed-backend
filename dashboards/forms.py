@@ -131,3 +131,22 @@ class HospitalSelectForm(forms.Form):
         super().__init__(*args, **kwargs)
         if queryset is not None:
             self.fields["hospital"].queryset = queryset
+
+
+class HospitalEditForm(forms.ModelForm):
+    class Meta:
+        from triage.models import Hospital
+        model = Hospital
+        exclude = ("id",)
+        labels = {
+            "name":"Nome",
+            "full_address":"Indirizzo",
+            "city":"Città",
+            "province":"Provincia",
+            "country":"Stato",
+        }
+        
+    ## Crispy forms helper for formatting staff
+    helper = FormHelper()
+    def __init__(self, *args,**kwargs):
+        super().__init__(*args, **kwargs)

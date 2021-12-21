@@ -57,7 +57,7 @@
               {% endif %}
               <div class="card-header text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
                 {% if hospital in editable_hospitals %}
-                  <a href="#" class="btn btn-sm btn-default float-right">Modifica</a>
+                  <a href="{% url 'hospital_edit' id=hospital.id %}" class="btn btn-sm btn-default float-right">Modifica</a>
                 {% endif %}
               </div>
               {% if hospital.logo %}

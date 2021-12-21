@@ -7,6 +7,7 @@ urlpatterns=[
     path('storico', StoricoView.as_view(), name='storico_dash'),
     path('user-profile', UserProfileView.as_view(), name='user_profile'),
     path('hospitals', HospitalsView.as_view(), name='hospitals'),
+    path('hospital/<int:id>', HospitalEditView.as_view(), name='hospital_edit'),
     
     ## AJAX Views
     
