@@ -169,6 +169,7 @@ class HospitalsView(View):
         APIView ([type]): [description]
     """
     template_name = 'hospitals.html'
+    default_post_page = "hospitals"
     
     def get(self, request, *args, **kwargs):
         return self.GET_render(request,*args, **kwargs)
@@ -201,7 +202,7 @@ class HospitalsView(View):
     def post(self, request, *args, **kwargs):
         from .forms import HospitalSelectForm
         user = AppUser.get_or_create_from_parent(request.user)
-        next_page = request.GET.get("next","hospitals")
+        next_page = request.GET.get("next",self.default_post_page)
         
         form = HospitalSelectForm(
             request.POST or None,
@@ -209,7 +210,9 @@ class HospitalsView(View):
         if form.is_valid():
             user.hospital_logged = form.cleaned_data["hospital"]
             user.save()
-            messages.add_message(request, messages.SUCCESS, _('Profilo attivato: %s.'%(user.logged_profile)))
+            if next_page==self.default_post_page:   # TODO: da levare. Il messaggio deve uscire sempre, solo che per come è strutturato adesso copre 
+                                        # gli altri oggetti, quindi momentaneamente lo tolgo.
+                messages.add_message(request, messages.SUCCESS, _('Profilo attivato: %s.'%(user.logged_profile)))
             return HttpResponseRedirect(reverse(next_page))
         else:
             kwargs["form"] = form
