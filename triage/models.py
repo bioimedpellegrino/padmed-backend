@@ -69,7 +69,22 @@ class Hospital(RestrictedClass):
         if self.country:
             result += " - "+self.country
         return result
+        
+class Totem(models.Model):
+    name = models.CharField(verbose_name="Nome",blank=True,null=True,max_length=512,default="")
+    code = models.UUIDField(verbose_name="Codice totem fisico",auto_created=True,null=True,blank=True,unique=True)
+    description = models.TextField(verbose_name="Descrizione",blank=True,null=True)
+    logs = models.TextField(verbose_name="Storico",blank=True,null=True)
+    hospital = models.ForeignKey(Hospital,blank=True,null=True,on_delete=models.SET_NULL)
+    working = models.BooleanField(verbose_name="Funzionante",default=True)
+    activation_date = models.DateTimeField(verbose_name="Data di attivazione",blank=True, null=True)
+    disposal_date = models.DateTimeField(verbose_name="Data di dismissione",blank=True, null=True)
+    
+    created = models.DateTimeField(verbose_name="Data di creazione",auto_now_add=True)
+    modified = models.DateTimeField(verbose_name="Data di creazione",blank=True, null=True,auto_now=True)
 
+    def __str__(self):
+        return self.name
 class Patient(models.Model):
     """
     Model Patient
@@ -161,13 +176,13 @@ class TriageAccessReason(models.Model):
         verbose_name = "Motivo accesso"
         verbose_name_plural = "Motivi accesso al pronto soccorso"
 
-
 class TriageAccess(models.Model):
     
     id = models.AutoField(primary_key=True)
     created = models.DateTimeField(auto_now_add=True)
     patient = models.ForeignKey(Patient, blank=True, null=True, related_name='accesses', on_delete=models.CASCADE)
     hospital = models.ForeignKey(Hospital, blank=True, null=True, related_name='accesses', on_delete=models.CASCADE)
+    totem = models.ForeignKey(Totem, blank=True, null=True, related_name='accesses', on_delete=models.CASCADE)
     triage_code = models.ForeignKey(TriageCode, blank=True, null=True, on_delete=models.PROTECT)
     access_reason = models.ForeignKey(TriageAccessReason, blank=True, null=True, on_delete=models.PROTECT)
     access_date = models.DateTimeField(blank=True, null=True)
@@ -422,8 +437,6 @@ class PatientMeasureResult(models.Model):
             hresult["heart_rate"]["order"] = "%s%03d"%(0, 130-hresult["heart_rate"]["mean"])
         
         return hresult
-    
-    
     
 class MeasureLogger(models.Model):
     

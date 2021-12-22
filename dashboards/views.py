@@ -32,12 +32,12 @@ class LiveView(View):
     def get(self, request, *args, **kwargs):
         from .utils import get_max_waiting_time
         user = AppUser.get_or_create_from_parent(request.user)
-        if user.hospital_logged is None:
+        if user.get_hospital_logged is None:
             current_url = request.resolver_match.url_name
             messages.add_message(request, messages.WARNING, _('Seleziona un ospedale per usare le dashboard'))
             return HttpResponseRedirect('%s?next=%s' % (reverse('hospitals'), current_url))
         
-        # totems = user.hospital_logged.totems() #TODO
+        # totems = user.get_hospital_logged.totems() #TODO
         
         now = timezone.localtime()
         one_hour_ago = now - relativedelta(hours=1)
@@ -85,12 +85,12 @@ class StoricoView(View):
         from .forms import DateRangeForm
         
         user = AppUser.get_or_create_from_parent(request.user)
-        if user.hospital_logged is None:
+        if user.get_hospital_logged is None:
             current_url = request.resolver_match.url_name
             messages.add_message(request, messages.WARNING, _('Seleziona un ospedale per continuare con le dashboard'))
             return HttpResponseRedirect('%s?next=%s' % (reverse('hospitals'), current_url))
         
-        # totems = user.hospital_logged.totems() #TODO
+        # totems = user.get_hospital_logged.totems() #TODO
         
         now = timezone.localtime() 
         one_day_ago = now - relativedelta(days=250)
@@ -185,7 +185,7 @@ class HospitalsView(View):
         user = AppUser.get_or_create_from_parent(request.user)
         hospitals = Hospital.filter_for_request("view",request)
         editable_hospitals = Hospital.filter_for_request("change",request)
-        logged_hospital = user.hospital_logged
+        logged_hospital = user.get_hospital_logged
         if not form:
             form = HospitalSelectForm(
                 queryset = hospitals,

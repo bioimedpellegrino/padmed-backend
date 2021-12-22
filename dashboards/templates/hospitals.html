@@ -16,7 +16,7 @@
         <div class="col-lg-7 col-md-10">
           <h1 class="display-2 text-white">Ciao {{ request.user.username }}</h1>
           <p class="text-white mt-0 mb-5">
-            Questa è la pagna della struttura di riferimento. Da qui è possibile selezionare la struttura a cui riferire i dati delle dashboards.
+            Questa è la pagna della struttura di riferimento. Da qui è possibile selezionare la struttura a cui si riferiscono i dati delle dashboards.
           </p>
         </div>
       </div>
@@ -70,6 +70,75 @@
                 <h2>
                   <small class="text-muted">{{hospital.fancy_address}}</small>
                 </h2>
+              </div>
+              <div class="tab-pane tab-example-result fade show active" role="tabpanel">
+                <div class="row">
+                  <div class="col">
+                    <div class="card-profile-stats d-flex justify-content-center mt-md-5">
+                      <div>
+                        <span class="heading">{{hospital.accesses.count}}</span>
+                        <span class="description">Accessi</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Table -->
+                <div class="row">
+                  <div class="col">
+                    <div class="card shadow">
+                      <div class="card-header border-0">
+                        <h3 class="mb-0">{{hospital.totem_set.count}} Totem</h3>
+                      </div>
+                      {% if hospital.totem_set.count %}
+                        <div class="table-responsive">
+                          <table class="table align-items-center table-flush">
+                            <thead class="thead-light">
+                              <tr>
+                                <th scope="col">Nome</th>
+                                <th scope="col">Descrizione</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Data di attivazione</th>
+                                <th scope="col">Misure effettuate</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {% for totem in hospital.totem_set.all %}
+                                <tr>
+                                  <th scope="row">
+                                    {{totem.name}}
+                                  </th>
+                                  <td>
+                                    {{totem.description}}
+                                  </td>
+                                  <td>
+                                    <span class="badge badge-dot mr-4">
+                                      {% if totem.working %}
+                                        <i class="bg-success"></i> Attivo
+                                      {% else %}
+                                        <i class="bg-warning"></i> Non attivo
+                                      {% endif %}
+                                    </span>
+                                  </td>
+                                  <td>
+                                    {% if totem.activation_date %}
+                                      {{totem.activation_date}}
+                                    {% endif %}
+                                  </td>
+                                  <td>
+                                    {{totem.accesses.count}}
+                                  </td>
+                                </tr>
+                              {% endfor %}
+                            </tbody>
+                          </table>
+                        </div>
+                      {% endif %}
+                      <div class="card-footer py-4">
+                        <nav aria-label="..."></nav>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           {% endfor %}

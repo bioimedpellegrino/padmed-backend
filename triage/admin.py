@@ -7,6 +7,9 @@ class PatientAdmin(admin.ModelAdmin):
 class HospitalAdmin(admin.ModelAdmin):
     pass
 
+class TotemAdmin(admin.ModelAdmin):
+    pass
+
 class CityAdmin(admin.ModelAdmin):
     pass
 
@@ -36,6 +39,7 @@ class MeasureLoggerAdmin(admin.ModelAdmin):
 
 admin.site.register(Patient, PatientAdmin)
 admin.site.register(Hospital, HospitalAdmin)
+admin.site.register(Totem, HospitalAdmin)
 admin.site.register(City, CityAdmin)
 admin.site.register(Province, ProvinceAdmin)
 admin.site.register(Country, CountryAdmin)
