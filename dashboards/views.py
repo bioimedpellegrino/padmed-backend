@@ -1,18 +1,22 @@
 
 import datetime
 from dateutil.relativedelta import relativedelta
-from django.shortcuts import render,redirect
+
+from django.shortcuts import render,redirect,get_object_or_404
 from django.utils import timezone
 from django.urls import reverse
 from django.http import JsonResponse, HttpResponseRedirect
 from django.template.context_processors import csrf
+from django.views.generic import View
+from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import PermissionDenied
+from django.contrib import messages
+
 from crispy_forms.utils import render_crispy_form
 from rest_framework.views import APIView
-from django.views.generic import View
+
 from triage.models import *
-from django.utils.translation import gettext_lazy as _
-from django.shortcuts import get_object_or_404
-from django.core.exceptions import PermissionDenied
+from app.models import AppUser
 
 # from django.http import Http404
 
@@ -27,6 +31,13 @@ class LiveView(View):
     
     def get(self, request, *args, **kwargs):
         from .utils import get_max_waiting_time
+        user = AppUser.get_or_create_from_parent(request.user)
+        if user.hospital_logged is None:
+            current_url = request.resolver_match.url_name
+            messages.add_message(request, messages.WARNING, _('Seleziona un ospedale per usare le dashboard'))
+            return HttpResponseRedirect('%s?next=%s' % (reverse('hospitals'), current_url))
+        
+        # totems = user.hospital_logged.totems() #TODO
         
         now = timezone.localtime()
         one_hour_ago = now - relativedelta(hours=1)
@@ -73,14 +84,22 @@ class StoricoView(View):
         from .utils import get_max_waiting_time
         from .forms import DateRangeForm
         
+        user = AppUser.get_or_create_from_parent(request.user)
+        if user.hospital_logged is None:
+            current_url = request.resolver_match.url_name
+            messages.add_message(request, messages.WARNING, _('Seleziona un ospedale per continuare con le dashboard'))
+            return HttpResponseRedirect('%s?next=%s' % (reverse('hospitals'), current_url))
+        
+        # totems = user.hospital_logged.totems() #TODO
+        
         now = timezone.localtime() 
         one_day_ago = now - relativedelta(days=250)
         form = DateRangeForm(
-            {   ## TODO: doesn't work
-            "start":one_day_ago.date().isoformat(),
-            "start_cache":one_day_ago.date().isoformat(),
-            "end":now.date().isoformat(),
-            "end_cache":now.date().isoformat(),
+            { 
+                "start":one_day_ago.date().isoformat(),
+                "start_cache":one_day_ago.date().isoformat(),
+                "end":now.date().isoformat(),
+                "end_cache":now.date().isoformat(),
             }
         )
         cards = GetStoricoData.get_storico_advanced_cards(one_day_ago,now)
@@ -156,7 +175,6 @@ class HospitalsView(View):
     
     def GET_render(self,request,*args, **kwargs):
         from .forms import HospitalSelectForm
-        from app.models import AppUser
         from triage.models import Hospital
         #### Objects from post ####
         form = kwargs.get("form",None)
@@ -182,9 +200,9 @@ class HospitalsView(View):
         
     def post(self, request, *args, **kwargs):
         from .forms import HospitalSelectForm
-        from django.contrib import messages
-        from app.models import AppUser
         user = AppUser.get_or_create_from_parent(request.user)
+        next_page = request.GET.get("next","hospitals")
+        
         form = HospitalSelectForm(
             request.POST or None,
         )
@@ -192,7 +210,7 @@ class HospitalsView(View):
             user.hospital_logged = form.cleaned_data["hospital"]
             user.save()
             messages.add_message(request, messages.SUCCESS, _('Profilo attivato: %s.'%(user.logged_profile)))
-            return HttpResponseRedirect(reverse('hospitals'))
+            return HttpResponseRedirect(reverse(next_page))
         else:
             kwargs["form"] = form
             kwargs["has_error"] = True
