@@ -40,7 +40,7 @@ class LiveView(View):
         hospital = user.dashboard_hospital
         
         now = timezone.localtime()
-        one_hour_ago = now - relativedelta(hours=1)
+        one_hour_ago = relativedelta(hours=1)
 
         cards = GetStoricoData.get_live_cards(start=None,end=now,diff_period=one_hour_ago,hospital=hospital)
 
@@ -366,19 +366,19 @@ class GetStoricoData(APIView):
         cards["gialli"] = dict()
         cards["verdi"] = dict()
         cards["bianchi"] = dict()
-        cards["personale"] = dict()
+        # cards["personale"] = dict()
         
-        value = 0 #TriageAccess.whites(exit_date__isnull=True).count() #TODO
-        diff = value - 0 #TriageAccess.whites(exit_date__gte=start,exit_date__lt=end).count()
-        positive_trend = diff >= 0
-        cards["personale"] = {
-            "value" : "?",
-            "diff": diff,
-            "positive_trend" : positive_trend,
-        }
+        # value = 0 #TriageAccess.whites(exit_date__isnull=True).count() #TODO
+        # diff = value - 0 #TriageAccess.whites(exit_date__gte=start,exit_date__lt=end).count()
+        # positive_trend = diff >= 0
+        # cards["personale"] = {
+        #     "value" : "?",
+        #     "diff": diff,
+        #     "positive_trend" : positive_trend,
+        # }
         
-        value = TriageAccess.yellows().count()
-        diff = value - TriageAccess.yellows().count()
+        value = TriageAccess.yellows(q_filter=filter).count()
+        diff = value - TriageAccess.yellows(q_filter=diff_filter).count()
         positive_trend = diff >= 0
         cards["gialli"] = {
             "value" : value,
@@ -386,8 +386,8 @@ class GetStoricoData(APIView):
             "positive_trend" : positive_trend,
         }
 
-        value = TriageAccess.greens().count()
-        diff = value - TriageAccess.greens().count()
+        value = TriageAccess.greens(q_filter=filter).count()
+        diff = value - TriageAccess.greens(q_filter=diff_filter).count()
         positive_trend = diff >= 0
         cards["verdi"] = {
             "value" : value,
@@ -395,8 +395,8 @@ class GetStoricoData(APIView):
             "positive_trend" : positive_trend,
         }
 
-        value = TriageAccess.whites().count()
-        diff = value - TriageAccess.whites().count()
+        value = TriageAccess.whites(q_filter=filter).count()
+        diff = value - TriageAccess.whites(q_filter=diff_filter).count()
         positive_trend = diff >= 0
         cards["bianchi"] = {
             "value" : value,
