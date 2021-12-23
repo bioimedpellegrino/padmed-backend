@@ -14,9 +14,19 @@
         <li class="nav-item dropdown">
           <a class="nav-link" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <div class="media align-items-center">
-              <span class="avatar avatar-sm rounded-circle">
-                <img alt="Image placeholder" src="/static/assets/img/theme/team-1-800x800.jpg">
-              </span>
+              {% if request.user.appuser %}
+                <span class="avatar avatar-sm">
+                  {% if request.user.appuser.img %}
+                    <img class="rounded-circle" src="{{ request.user.appuser.img.url }}">
+                  {% else %}
+                    <img class="rounded-circle" src="/static/default_user_img.jpeg">
+                  {% endif %}
+                </span>
+              {% else %}
+                <span class="avatar avatar-sm">
+                  <img class="rounded-circle" src="/static/default_user_img.jpeg">
+                </span>
+              {% endif %}
             </div>
           </a>
           <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-right">

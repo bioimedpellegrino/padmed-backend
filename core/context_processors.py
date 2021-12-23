@@ -46,7 +46,7 @@ def side_menu_context(current_url_name):
     url_name = "hospitals"
     item = {
         "type":"url",
-        "text":"Ospedali",
+        "text":"Ospedale",
         "url":url_name,
         "active":current_url_name==url_name,
         "icon_classes":"ni ni-building text-red",

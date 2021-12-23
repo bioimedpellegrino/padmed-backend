@@ -37,19 +37,19 @@ class LiveView(View):
             messages.add_message(request, messages.WARNING, _('Seleziona un ospedale per usare le dashboard'))
             return HttpResponseRedirect('%s?next=%s' % (reverse('hospitals'), current_url))
         
-        # totems = user.get_hospital_logged.totems() #TODO
+        hospital = user.get_hospital_logged
         
         now = timezone.localtime()
         one_hour_ago = now - relativedelta(hours=1)
 
-        cards = GetStoricoData.get_storico_cards(one_hour_ago,now)
+        cards = GetStoricoData.get_storico_cards(one_hour_ago,now,hospital=hospital)
 
         units = {}
         units["temperature"] = "°C"
         units["pressure"] = "mmHg"
         units["heartrate"] = "bpm"
                 
-        items = TriageAccess.ordered_items(exit_date__isnull=True)
+        items = TriageAccess.ordered_items(exit_date__isnull=True,hospital=hospital)
         max_waiting_time = get_max_waiting_time()
         max_waiting = max_waiting_time.hours*60 + max_waiting_time.minutes
         for item in items:
@@ -90,7 +90,7 @@ class StoricoView(View):
             messages.add_message(request, messages.WARNING, _('Seleziona un ospedale per continuare con le dashboard'))
             return HttpResponseRedirect('%s?next=%s' % (reverse('hospitals'), current_url))
         
-        # totems = user.get_hospital_logged.totems() #TODO
+        hospital = user.get_hospital_logged
         
         now = timezone.localtime() 
         one_day_ago = now - relativedelta(days=250)
@@ -102,10 +102,10 @@ class StoricoView(View):
                 "end_cache":now.date().isoformat(),
             }
         )
-        cards = GetStoricoData.get_storico_advanced_cards(one_day_ago,now)
-        big_graph = GetStoricoData.get_storico_big_graph(one_day_ago,now)
-        bar_graph = GetStoricoData.get_storico_bar_graph(one_day_ago,now)
-        storico_table = GetStoricoData.get_storico_table(one_day_ago,now)
+        cards = GetStoricoData.get_storico_advanced_cards(one_day_ago,now,hospital=hospital)
+        big_graph = GetStoricoData.get_storico_big_graph(one_day_ago,now,hospital=hospital)
+        bar_graph = GetStoricoData.get_storico_bar_graph(one_day_ago,now,hospital=hospital)
+        storico_table = GetStoricoData.get_storico_table(one_day_ago,now,hospital=hospital)
         return render(request, self.template_name, {
             "cards":cards,
             "form":form,
@@ -151,6 +151,7 @@ class UserProfileView(View):
         user = AppUser.get_or_create_from_parent(request.user)
         form = AppUserEditForm(
             request.POST or None,
+            request.FILES or None,
             instance = user,
         )
         if form.is_valid():
@@ -290,6 +291,9 @@ class GetStoricoData(APIView):
     def post(self, request, *args, **kwargs):
         from .forms import DateRangeForm
         
+        user = AppUser.get_or_create_from_parent(request.user)        
+        hospital = user.get_hospital_logged
+        
         ## Here it will need a timezone conversion https://stackoverflow.com/questions/18622007/runtimewarning-datetimefield-received-a-naive-datetime
         form = DateRangeForm(request.POST or None)
         
@@ -297,7 +301,8 @@ class GetStoricoData(APIView):
             # You could actually save through AJAX and return a success code here
             cards = self.get_storico_advanced_cards(
                 form.cleaned_data["start"],
-                form.cleaned_data["end"]
+                form.cleaned_data["end"],
+                hospital=hospital,
                 )
             big_graph = self.get_storico_big_graph(
                 form.cleaned_data["start"],
@@ -305,6 +310,7 @@ class GetStoricoData(APIView):
                 code = form.cleaned_data["code"],
                 from_hours = form.cleaned_data["from_hours"],
                 to_hours = form.cleaned_data["to_hours"],
+                hospital=hospital,
                 )
             bar_graph = self.get_storico_bar_graph(
                 form.cleaned_data["start"],
@@ -312,6 +318,7 @@ class GetStoricoData(APIView):
                 code = form.cleaned_data["code"],
                 from_hours = form.cleaned_data["from_hours"],
                 to_hours = form.cleaned_data["to_hours"],
+                hospital=hospital,
                 )
             storico_table = self.get_storico_table(
                 form.cleaned_data["start"],
@@ -319,6 +326,7 @@ class GetStoricoData(APIView):
                 code = form.cleaned_data["code"],
                 from_hours = form.cleaned_data["from_hours"],
                 to_hours = form.cleaned_data["to_hours"],
+                hospital=hospital,
                 )
             return JsonResponse({
                 'success': True,
@@ -335,12 +343,15 @@ class GetStoricoData(APIView):
             return JsonResponse({'success': False, 'form_html': form_html})
         
     @classmethod
-    def get_storico_cards(cls,start:datetime.datetime,end:datetime.datetime)->dict():
+    def get_storico_cards(cls,start:datetime.datetime,end:datetime.datetime,hospital:Hospital=None)->dict():
         
         diff_period = end - start
         diff_start = start - diff_period
         diff_end = start
-        
+        if hospital is None:
+            kwargs = {}
+        else:
+            kwargs = {"hospital":hospital}
         cards = dict()
         
         cards["gialli"] = dict()
@@ -356,9 +367,9 @@ class GetStoricoData(APIView):
             "diff": diff,
             "positive_trend" : positive_trend,
         }
-
-        value = TriageAccess.yellows(access_date__gte=start,access_date__lte=end).count()
-        diff = value - TriageAccess.yellows(access_date__gte=diff_start,access_date__lt=diff_end).count()
+        
+        value = TriageAccess.yellows(access_date__gte=start,access_date__lte=end,**kwargs).count()
+        diff = value - TriageAccess.yellows(access_date__gte=diff_start,access_date__lt=diff_end,**kwargs).count()
         positive_trend = diff >= 0
         cards["gialli"] = {
             "value" : value,
@@ -366,8 +377,8 @@ class GetStoricoData(APIView):
             "positive_trend" : positive_trend,
         }
 
-        value = TriageAccess.greens(access_date__gte=start,access_date__lte=end).count()
-        diff = value - TriageAccess.greens(access_date__gte=diff_start,access_date__lt=diff_end).count()
+        value = TriageAccess.greens(access_date__gte=start,access_date__lte=end,**kwargs).count()
+        diff = value - TriageAccess.greens(access_date__gte=diff_start,access_date__lt=diff_end,**kwargs).count()
         positive_trend = diff >= 0
         cards["verdi"] = {
             "value" : value,
@@ -375,8 +386,8 @@ class GetStoricoData(APIView):
             "positive_trend" : positive_trend,
         }
 
-        value = TriageAccess.whites(access_date__gte=start,access_date__lte=end).count()
-        diff = value - TriageAccess.whites(access_date__gte=diff_start,access_date__lt=diff_end).count()
+        value = TriageAccess.whites(access_date__gte=start,access_date__lte=end,**kwargs).count()
+        diff = value - TriageAccess.whites(access_date__gte=diff_start,access_date__lt=diff_end,**kwargs).count()
         positive_trend = diff >= 0
         cards["bianchi"] = {
             "value" : value,
@@ -387,11 +398,15 @@ class GetStoricoData(APIView):
         return cards
 
     @classmethod
-    def get_storico_advanced_cards(cls,start:datetime.datetime,end:datetime.datetime)->dict():
+    def get_storico_advanced_cards(cls,start:datetime.datetime,end:datetime.datetime,hospital:Hospital=None)->dict():
                 
         last_period = end - start
         last_start = start - last_period
         last_end = start
+        if hospital is None:
+            kwargs = {}
+        else:
+            kwargs = {"hospital":hospital}
         
         cards = dict()
         
@@ -405,8 +420,8 @@ class GetStoricoData(APIView):
         for name,method_name in name_methods:
             method = getattr(TriageAccess,method_name)
             
-            value = method(access_date__gte=start,access_date__lte=end)
-            last = method(access_date__gte=last_start,access_date__lt=last_end)
+            value = method(access_date__gte=start,access_date__lte=end,**kwargs)
+            last = method(access_date__gte=last_start,access_date__lt=last_end,**kwargs)
             diff = value.count() - last.count()
             
             value_1,last_1 = TriageAccess.filter_for_exit_interval(value,last,to_hours=2)
@@ -444,13 +459,18 @@ class GetStoricoData(APIView):
         return cards
     
     @classmethod
-    def get_storico_big_graph(cls,start:datetime.date,end:datetime.date,code=None,from_hours=None,to_hours=None)->dict():
+    def get_storico_big_graph(cls,start:datetime.date,end:datetime.date,code=None,from_hours=None,to_hours=None,hospital:Hospital=None)->dict():
         import json
         from .utils import timesteps_builder
         ## See https://www.chartjs.org/docs/latest/, 
         # https://www.chartjs.org/docs/latest/developers/updates.html, 
         # https://demos.creative-tim.com/argon-dashboard-pro-react/?_ga=2.191324073.2076643225.1638138645-576346499.1636196270#/documentation/charts
         
+        if hospital is None:
+            kwargs = {}
+        else:
+            kwargs = {"hospital":hospital}
+            
         name_methods = {
             "yellow":"yellows",
             "green":"greens",
@@ -476,7 +496,7 @@ class GetStoricoData(APIView):
             if start_date.month == 1:
                 labels[-1] += " %s"%start_date.year
             ## Build data
-            data = method(access_date__gte=start_date,access_date__lte=end_date)
+            data = method(access_date__gte=start_date,access_date__lte=end_date,**kwargs)
             data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
             datas.append(data.count())
         
@@ -505,7 +525,7 @@ class GetStoricoData(APIView):
                 labels[-1] += start_date.strftime("/%Y")
                 last_year = start_date.year
             ## Build data
-            data = method(access_date__gte=start_date,access_date__lte=end_date)
+            data = method(access_date__gte=start_date,access_date__lte=end_date,**kwargs)
             data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
             datas.append(data.count())
             
@@ -534,7 +554,7 @@ class GetStoricoData(APIView):
                 labels[-1] += start_date.strftime("/%Y")
                 last_year = start_date.year
             ## Build data
-            data = method(access_date__gte=start_date,access_date__lte=end_date)
+            data = method(access_date__gte=start_date,access_date__lte=end_date,**kwargs)
             data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
             datas.append(data.count())
         
@@ -553,9 +573,14 @@ class GetStoricoData(APIView):
         return big_graph
     
     @classmethod
-    def get_storico_bar_graph(cls,start:datetime.date,end:datetime.date,code=None,from_hours=None,to_hours=None):
+    def get_storico_bar_graph(cls,start:datetime.date,end:datetime.date,code=None,from_hours=None,to_hours=None,hospital:Hospital=None):
         from django.db.models import Count
         
+        if hospital is None:
+            kwargs = {}
+        else:
+            kwargs = {"hospital":hospital}
+            
         name_methods = {
             "yellow":"yellows",
             "green":"greens",
@@ -564,7 +589,7 @@ class GetStoricoData(APIView):
         }
         method = getattr(TriageAccess,name_methods[code])
         
-        data = method(access_date__gte=start,access_date__lte=end)
+        data = method(access_date__gte=start,access_date__lte=end,**kwargs)
         data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
         data = data.values('access_reason__reason').annotate(total=Count('access_reason')).order_by("access_reason__reason")
         
@@ -585,10 +610,15 @@ class GetStoricoData(APIView):
         return data
     
     @classmethod
-    def get_storico_table(cls,start:datetime.date,end:datetime.date,code=None,from_hours=None,to_hours=None):
+    def get_storico_table(cls,start:datetime.date,end:datetime.date,code=None,from_hours=None,to_hours=None,hospital:Hospital=None):
         from django.template.loader import render_to_string
         import re
         
+        if hospital is None:
+            kwargs = {}
+        else:
+            kwargs = {"hospital":hospital}
+            
         name_methods = {
             "yellow":"yellows",
             "green":"greens",
@@ -602,7 +632,7 @@ class GetStoricoData(APIView):
         units["pressure"] = "mmHg"
         units["heartrate"] = "bpm"
                 
-        data = method(access_date__gte=start,access_date__lte=end)
+        data = method(access_date__gte=start,access_date__lte=end,**kwargs)
         data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
         data = data.order_by("access_date")
         for item in data:

@@ -75,7 +75,7 @@ class AppUserEditForm(forms.ModelForm):
     class Meta(object):
         from app.models import AppUser
         model = AppUser
-        fields = ['username','first_name','last_name','email','theme','_dashboard_options']
+        fields = ['username','first_name','last_name','email',"img",'theme','_dashboard_options']
         widgets = {
             "_dashboard_options":forms.HiddenInput(),
         }
@@ -102,6 +102,7 @@ class AppUserEditForm(forms.ModelForm):
                 'first_name',
                 'last_name',
                 'email',
+                'img',
                 css_class="pl-lg-4"
             ),
             HTML(

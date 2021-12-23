@@ -3,7 +3,7 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
-import traceback
+import traceback,os
 from django.db import models
 from django.contrib.auth.models import User,Group
 from django.contrib.admin import ModelAdmin
@@ -12,6 +12,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 
 class RestrictedClass(models.Model):
     TYPES = ["view","add","change","delete","admin"]
@@ -413,7 +414,7 @@ def get_instance_permission_name(type,obj):
     obj_content_type = ContentType.objects.get_for_model(obj)
     app_label,class_name = obj_content_type.natural_key()
     return 'Can %s %s %s'%(type,class_name,obj.pk)
-        
+
 class AppUser(User):
     """e
     This is the base user of this app. It inherit from User, so all the functionality
@@ -427,6 +428,7 @@ class AppUser(User):
         (darl_theme,_("Scuro"))
     )
     theme = models.CharField(verbose_name=_("Tema"),max_length=512, choices=THEMES,default="light")
+    img = models.ImageField(verbose_name=_("Immagine del profilo"),null=True,blank=True,upload_to='app/appuser/imgs')
     _dashboard_options = models.TextField(verbose_name=_("Opzioni Dashboard"),default="{}")
     hospital_logged = models.ForeignKey(Hospital,verbose_name=_("Ospedalle attualmente loggato"),on_delete=models.SET_NULL,blank=True,null=True)
     totem_logged = models.ForeignKey(Totem,verbose_name=_("Totem"),on_delete=models.CASCADE,blank=True,null=True)
