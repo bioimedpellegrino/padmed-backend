@@ -85,12 +85,13 @@ class Totem(models.Model):
 
     def __str__(self):
         return self.name
+    
 class Patient(models.Model):
     """
     Model Patient
     """
     id = models.AutoField(primary_key=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # user = models.OneToOneField(User, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     fiscal_code = models.CharField(blank=True, null=True, max_length=512, default="")
@@ -233,23 +234,29 @@ class TriageAccess(models.Model):
         
         
     @classmethod
-    def whites(cls,exclude=[],**kwargs)->QuerySet:
+    def whites(cls,exclude=[],q_filter=None,**kwargs)->QuerySet:
         objs = cls.objects.filter(triage_code=TriageCode.get_white())
         objs = objs.filter(**kwargs)
+        if q_filter is not None:
+            objs = objs.filter(q_filter)
         for exc in exclude:
             objs = objs.exclude(**exc)
         return objs
     @classmethod
-    def greens(cls,exclude=[],**kwargs)->QuerySet:
+    def greens(cls,exclude=[],q_filter=None,**kwargs)->QuerySet:
         objs = cls.objects.filter(triage_code=TriageCode.get_green())
         objs = objs.filter(**kwargs)
+        if q_filter is not None:
+            objs = objs.filter(q_filter)
         for exc in exclude:
             objs = objs.exclude(**exc)
         return objs
     @classmethod
-    def yellows(cls,exclude=[],**kwargs)->QuerySet:
+    def yellows(cls,exclude=[],q_filter=None,**kwargs)->QuerySet:
         objs = cls.objects.filter(triage_code=TriageCode.get_yellow())
         objs = objs.filter(**kwargs)
+        if q_filter is not None:
+            objs = objs.filter(q_filter)
         for exc in exclude:
             objs = objs.exclude(**exc)
         return objs
@@ -258,11 +265,13 @@ class TriageAccess(models.Model):
         return cls.objects.filter(*args,**kwargs)
     
     @classmethod
-    def ordered_items(cls,exclude=[],**kwargs)->QuerySet:
+    def ordered_items(cls,exclude=[],q_filter=None,**kwargs)->QuerySet:
         ## Implement here the ordering policy of the hospital ##
         objs = cls.objects.all().order_by("access_date")
         
         objs = cls.objects.filter(**kwargs)
+        if q_filter is not None:
+            objs = objs.filter(q_filter)
         for exc in exclude:
             objs = objs.exclude(**exc)
         

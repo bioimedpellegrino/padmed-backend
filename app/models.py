@@ -420,7 +420,7 @@ class AppUser(User):
     This is the base user of this app. It inherit from User, so all the functionality
     of the User class can be found here.
     """
-    from triage.models import Hospital,Totem
+    from triage.models import Hospital,Totem,Patient
     light_theme = "light"
     darl_theme = "dark"
     THEMES = (
@@ -430,13 +430,22 @@ class AppUser(User):
     theme = models.CharField(verbose_name=_("Tema"),max_length=512, choices=THEMES,default="light")
     img = models.ImageField(verbose_name=_("Immagine del profilo"),null=True,blank=True,upload_to='app/appuser/imgs')
     _dashboard_options = models.TextField(verbose_name=_("Opzioni Dashboard"),default="{}")
-    hospital_logged = models.ForeignKey(Hospital,verbose_name=_("Ospedalle attualmente loggato"),on_delete=models.SET_NULL,blank=True,null=True)
-    totem_logged = models.ForeignKey(Totem,verbose_name=_("Totem"),on_delete=models.CASCADE,blank=True,null=True)
+    _dashboard_hospital = models.ForeignKey(Hospital,verbose_name=_("Ospedalle attualmente loggato"),on_delete=models.SET_NULL,blank=True,null=True)
+    
+    ## Other types of users
+    totem_logged = models.OneToOneField(Totem,verbose_name=_("Totem"),on_delete=models.CASCADE,blank=True,null=True)
+    patient_logged = models.OneToOneField(Patient,verbose_name=_("Paziente"),on_delete=models.CASCADE,blank=True,null=True)
     
     class Meta():
         verbose_name = _("Application User")
         verbose_name_plural = _("Application Users")
             
+    @property
+    def is_totem(self):
+        return self.totem_logged is not None
+    @property
+    def is_patient(self):
+        return self.patient_logged is not None
     @property
     def dashboard_options(self):
         from app.utils import AttributeJson
@@ -448,23 +457,22 @@ class AppUser(User):
     
     @property
     def logged_profile(self):
-        return "%s - %s"%(self.username,self.hospital_logged)
+        return "%s - %s"%(self.username,self.dashboard_hospital)
     
     @property
-    def is_totem(self):
-        return self.totem_logged is not None
-    
-    @property
-    def get_hospital_logged(self):
+    def dashboard_hospital(self):
         from triage.models import Hospital
-        if self.hospital_logged is not None:
-            return self.hospital_logged
+        if self._dashboard_hospital is not None:
+            return self._dashboard_hospital
         else:
             hospitals = Hospital.filter_for_request("view",user=self)
             if hospitals.count()==1:
-                self.hospital_logged = hospitals[0]
+                self._dashboard_hospital = hospitals[0]
                 self.save()
-                return self.hospital_logged
+                return self._dashboard_hospital
+    @dashboard_hospital.setter
+    def dashboard_hospital(self,value):
+        self._dashboard_hospital = value
     
     @classmethod
     def extend_parent(cls,parent_obj:User):

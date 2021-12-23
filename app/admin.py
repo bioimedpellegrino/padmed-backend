@@ -18,7 +18,7 @@ class AppUserAdmin(UserAdmin):
             'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
         }),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
-        (_('User parameters'), {'fields': ('hospital_logged',)}),
+        (_('User parameters'), {'fields': ('_dashboard_hospital',)}),
         (_('Visualization'), {'fields': ('theme', '_dashboard_options')}),
     )
 

@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
 from django.conf import settings
+from django.core.exceptions import PermissionDenied
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -16,8 +17,10 @@ import datetime
 import os
 import json
 
+from app.models import AppUser
 from .forms import PatientForm
-from .models import Hospital, Patient, TriageCode, TriageAccessReason, TriageAccess, PatientVideo, PatientMeasureResult, MeasureLogger
+from .models import Hospital, Patient, TriageCode, TriageAccessReason, TriageAccess, \
+    PatientVideo, PatientMeasureResult, MeasureLogger, Totem
 from .utils import generate_video_measure, unpack_result_deepaffex
 
 class DecodeFiscalCodeView(APIView):
@@ -61,19 +64,33 @@ class ReceptionsView(APIView):
         return render(request, self.template_name, {'form': form})
     
     def post(self, request, *args, **kwargs):
-        
+        user = AppUser.get_or_create_from_parent(request.user)
+        totem = user.totem_logged
+        if not totem:
+            raise PermissionDenied("Solo gli utenti Totem sono abilitati all'inserimento dei dati. Effettura il login con un utente Totem o contattare l'assistenza.")
+        hospital = totem.hospital
+        if not hospital:
+            raise PermissionDenied("Questo Totem non ha un hospedale associato. Associare un ospedale al Totem o contattare l'assistenza.")
+
         form = PatientForm(request.POST)
         
         if form.is_valid():
             fiscal_code = str(form.cleaned_data['fiscal_code']).upper()
             fiscal_code_decoded = codicefiscale.decode(fiscal_code)
-            user, c = User.objects.get_or_create(username=fiscal_code_decoded['code'])
-            patient, created = Patient.objects.get_or_create(fiscal_code=fiscal_code_decoded['code'], user=user)
-            hospital = Hospital.objects.all().first()
+            patient, created = Patient.objects.get_or_create(
+                fiscal_code=fiscal_code_decoded['code']
+                )
+            patient_user, c = AppUser.objects.get_or_create(
+                username=fiscal_code_decoded['code'],
+                patient_logged=patient,
+                )
+            # hospital = Hospital.objects.all().first()
+            # totem = Totem.objects.all().first()
             
             access = TriageAccess()
             access.patient = patient
             access.hospital = hospital
+            access.totem = totem
             access.access_date = datetime.datetime.now()
             access.save()
             

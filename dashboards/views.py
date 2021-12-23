@@ -32,17 +32,17 @@ class LiveView(View):
     def get(self, request, *args, **kwargs):
         from .utils import get_max_waiting_time
         user = AppUser.get_or_create_from_parent(request.user)
-        if user.get_hospital_logged is None:
+        if user.dashboard_hospital is None:
             current_url = request.resolver_match.url_name
             messages.add_message(request, messages.WARNING, _('Seleziona un ospedale per usare le dashboard'))
             return HttpResponseRedirect('%s?next=%s' % (reverse('hospitals'), current_url))
         
-        hospital = user.get_hospital_logged
+        hospital = user.dashboard_hospital
         
         now = timezone.localtime()
         one_hour_ago = now - relativedelta(hours=1)
 
-        cards = GetStoricoData.get_storico_cards(one_hour_ago,now,hospital=hospital)
+        cards = GetStoricoData.get_live_cards(start=None,end=now,diff_period=one_hour_ago,hospital=hospital)
 
         units = {}
         units["temperature"] = "°C"
@@ -85,12 +85,12 @@ class StoricoView(View):
         from .forms import DateRangeForm
         
         user = AppUser.get_or_create_from_parent(request.user)
-        if user.get_hospital_logged is None:
+        if user.dashboard_hospital is None:
             current_url = request.resolver_match.url_name
             messages.add_message(request, messages.WARNING, _('Seleziona un ospedale per continuare con le dashboard'))
             return HttpResponseRedirect('%s?next=%s' % (reverse('hospitals'), current_url))
         
-        hospital = user.get_hospital_logged
+        hospital = user.dashboard_hospital
         
         now = timezone.localtime() 
         one_day_ago = now - relativedelta(days=250)
@@ -186,7 +186,7 @@ class HospitalsView(View):
         user = AppUser.get_or_create_from_parent(request.user)
         hospitals = Hospital.filter_for_request("view",request)
         editable_hospitals = Hospital.filter_for_request("change",request)
-        logged_hospital = user.get_hospital_logged
+        logged_hospital = user.dashboard_hospital
         if not form:
             form = HospitalSelectForm(
                 queryset = hospitals,
@@ -209,7 +209,7 @@ class HospitalsView(View):
             request.POST or None,
         )
         if form.is_valid():
-            user.hospital_logged = form.cleaned_data["hospital"]
+            user.dashboard_hospital = form.cleaned_data["hospital"]
             user.save()
             if next_page==self.default_post_page:   # TODO: da levare. Il messaggio deve uscire sempre, solo che per come è strutturato adesso copre 
                                         # gli altri oggetti, quindi momentaneamente lo tolgo.
@@ -292,7 +292,7 @@ class GetStoricoData(APIView):
         from .forms import DateRangeForm
         
         user = AppUser.get_or_create_from_parent(request.user)        
-        hospital = user.get_hospital_logged
+        hospital = user.dashboard_hospital
         
         ## Here it will need a timezone conversion https://stackoverflow.com/questions/18622007/runtimewarning-datetimefield-received-a-naive-datetime
         form = DateRangeForm(request.POST or None)
@@ -343,15 +343,24 @@ class GetStoricoData(APIView):
             return JsonResponse({'success': False, 'form_html': form_html})
         
     @classmethod
-    def get_storico_cards(cls,start:datetime.datetime,end:datetime.datetime,hospital:Hospital=None)->dict():
-        
-        diff_period = end - start
-        diff_start = start - diff_period
-        diff_end = start
-        if hospital is None:
-            kwargs = {}
+    def get_live_cards(cls,start:datetime.datetime=None,end:datetime.datetime=None,diff_period:datetime.datetime=None,hospital:Hospital=None)->dict():
+        from django.db.models import Q
+        if end is not None:
+            filter = Q(exit_date__isnull=True)|Q(exit_date__gt=end)
+            diff_filter = Q(exit_date__isnull=True)|Q(exit_date__gt=end)
         else:
-            kwargs = {"hospital":hospital}
+            filter = Q(exit_date__isnull=True)
+            diff_filter = Q(exit_date__isnull=True)
+            
+        if start is not None:
+            filter = filter & Q(access_date__gte=start)
+            diff_filter = diff_filter & Q(access_date__gte=start - diff_period)
+        if end is not None:
+            filter = filter & Q(access_date__lte = end)
+            diff_filter = diff_filter & Q(access_date__lte=end - diff_period)
+        if hospital is not None:
+            filter = filter & Q(hospital=hospital)
+            diff_filter = diff_filter & Q(hospital=hospital)
         cards = dict()
         
         cards["gialli"] = dict()
@@ -368,8 +377,8 @@ class GetStoricoData(APIView):
             "positive_trend" : positive_trend,
         }
         
-        value = TriageAccess.yellows(access_date__gte=start,access_date__lte=end,**kwargs).count()
-        diff = value - TriageAccess.yellows(access_date__gte=diff_start,access_date__lt=diff_end,**kwargs).count()
+        value = TriageAccess.yellows().count()
+        diff = value - TriageAccess.yellows().count()
         positive_trend = diff >= 0
         cards["gialli"] = {
             "value" : value,
@@ -377,8 +386,8 @@ class GetStoricoData(APIView):
             "positive_trend" : positive_trend,
         }
 
-        value = TriageAccess.greens(access_date__gte=start,access_date__lte=end,**kwargs).count()
-        diff = value - TriageAccess.greens(access_date__gte=diff_start,access_date__lt=diff_end,**kwargs).count()
+        value = TriageAccess.greens().count()
+        diff = value - TriageAccess.greens().count()
         positive_trend = diff >= 0
         cards["verdi"] = {
             "value" : value,
@@ -386,8 +395,8 @@ class GetStoricoData(APIView):
             "positive_trend" : positive_trend,
         }
 
-        value = TriageAccess.whites(access_date__gte=start,access_date__lte=end,**kwargs).count()
-        diff = value - TriageAccess.whites(access_date__gte=diff_start,access_date__lt=diff_end,**kwargs).count()
+        value = TriageAccess.whites().count()
+        diff = value - TriageAccess.whites().count()
         positive_trend = diff >= 0
         cards["bianchi"] = {
             "value" : value,
