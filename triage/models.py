@@ -12,13 +12,14 @@ from app.models import RestrictedClass
 
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models import F
+from django.db.models import F,Q
 from django.db.models.fields import related
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
 from django.db.models.signals import pre_save, post_init
 from django.db.models.query import QuerySet
+from django.utils import timezone
 
 
 GENDER = (
@@ -226,42 +227,35 @@ class TriageAccess(models.Model):
     def waiting_time(self)->relativedelta:
         from dateutil.relativedelta import relativedelta as rd
         access_date = self.access_date
-        tz = pytz.timezone('Europe/Rome')
-        rome_now = datetime.datetime.now(tz)
-        waiting_time = rd(rome_now,access_date)
+        now = timezone.localtime()
+        waiting_time = rd(now,access_date)
         ## TODO: formatta waiting_time
         return waiting_time
         
         
     @classmethod
-    def whites(cls,exclude=[],q_filter=None,**kwargs)->QuerySet:
+    def whites(cls,*args,exclude=[],**kwargs)->QuerySet:
         objs = cls.objects.filter(triage_code=TriageCode.get_white())
-        objs = objs.filter(**kwargs)
-        if q_filter is not None:
-            objs = objs.filter(q_filter)
+        objs = objs.filter(*args,**kwargs)
         for exc in exclude:
             objs = objs.exclude(**exc)
         return objs
     @classmethod
-    def greens(cls,exclude=[],q_filter=None,**kwargs)->QuerySet:
+    def greens(cls,*args,exclude=[],**kwargs)->QuerySet:
         objs = cls.objects.filter(triage_code=TriageCode.get_green())
-        objs = objs.filter(**kwargs)
-        if q_filter is not None:
-            objs = objs.filter(q_filter)
+        objs = objs.filter(*args,**kwargs)
         for exc in exclude:
             objs = objs.exclude(**exc)
         return objs
     @classmethod
-    def yellows(cls,exclude=[],q_filter=None,**kwargs)->QuerySet:
+    def yellows(cls,*args,exclude=[],**kwargs)->QuerySet:
         objs = cls.objects.filter(triage_code=TriageCode.get_yellow())
-        objs = objs.filter(**kwargs)
-        if q_filter is not None:
-            objs = objs.filter(q_filter)
+        objs = objs.filter(*args,**kwargs)
         for exc in exclude:
             objs = objs.exclude(**exc)
         return objs
     @classmethod
-    def filter(cls,*args,**kwargs):
+    def filter(cls,q_filter=None,*args,**kwargs):
         return cls.objects.filter(*args,**kwargs)
     
     @classmethod
@@ -278,19 +272,40 @@ class TriageAccess(models.Model):
         return objs
     
     @classmethod
-    def filter_for_exit_interval(cls,value,last=None,from_hours=None,to_hours=None):
+    def get_q_filter_for_exit_interval(cls,from_hours=None,to_hours=None):
         from datetime import timedelta
-        from django.db.models import F
-        filter_dict = {}
-        if from_hours:
-            filter_dict["exit_date__gte"] = F("access_date")+timedelta(hours=from_hours)
-        if to_hours:
-            filter_dict["exit_date__lt"] = F("access_date")+timedelta(hours=to_hours)
+        now = timezone.localtime()
         
-        value = value.filter(**filter_dict)
-        if last is not None:
-            last = last.filter(**filter_dict)
-            return value, last
+        q_filter = Q()
+        if from_hours:
+            q_filter = q_filter & (
+                (
+                    Q(exit_date__isnull=False) &
+                    Q(exit_date__gte = F("access_date")+timedelta(hours=from_hours))
+                ) |                
+                (
+                    Q(exit_date__isnull=True) &
+                    Q(access_date__lte=now-timedelta(hours=from_hours))
+                )
+            )
+        if to_hours:
+            q_filter = q_filter & (
+                (
+                    Q(exit_date__isnull=False) &
+                    Q(exit_date__lt = F("access_date")+timedelta(hours=to_hours))
+                ) |                
+                (
+                    Q(exit_date__isnull=True) &
+                    Q(access_date__gt=now-timedelta(hours=to_hours))
+                )
+            )
+        
+        return q_filter
+    
+    @classmethod
+    def filter_for_exit_interval(cls,value,from_hours=None,to_hours=None):
+        q_filter = cls.get_q_filter_for_exit_interval(from_hours=from_hours,to_hours=to_hours)
+        value = value.filter(q_filter)
         return value
     
     class Meta:

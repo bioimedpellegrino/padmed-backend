@@ -49,10 +49,9 @@
       <div class="container-fluid outer-space">
         <div class="header-body outer-space">
 
-          <!-- Card stats -->
+          <!-- Filters -->
           <div class="row">
-
-            <div class="col-xl-3 col-lg-6">
+            <div class="col-xl-12 col-lg-12 mb-5">
               <div class="card card-stats mb-4 mb-xl-0">
                 <div class="card-body">
                   <div class="row">
@@ -66,8 +65,12 @@
                 </div>
               </div>
             </div>
+          </div>
 
-            <div class="col-xl-3 col-lg-6">
+          <!-- Card stats -->
+          <div class="row">
+
+            <div class="col-xl-4 col-lg-6">
               <div class="card card-stats mb-4 mb-xl-0">
                 <div class="card-body">
                   <div class="row">
@@ -90,7 +93,7 @@
                       </div>
                     </div>
                   </div>
-                  <h5 class="card-title text-uppercase text-muted mt-2 mb-0">Permanenza</h5>
+                  {% comment %} <h5 class="card-title text-uppercase text-muted mt-2 mb-0">Permanenza</h5>
 
                   <div class="div-hover">
                     <div id="id_y_0_2" class="row clickable-1">
@@ -122,12 +125,12 @@
                         <span id="gialli-diff_3" class="{{ cards.gialli.diff_3_class }} ml-2">{{ cards.gialli.diff_3_formatted }}</span>
                       </div>
                     </div>
-                  </div>
+                  </div> {% endcomment %}
                 </div>
               </div>
             </div>
 
-            <div class="col-xl-3 col-lg-6">
+            <div class="col-xl-4 col-lg-6">
               <div class="card card-stats mb-4 mb-xl-0">
                 <div class="card-body">
                   <div class="row">
@@ -150,7 +153,7 @@
                       </div>
                     </div>
                   </div>
-                  <h5 class="card-title text-uppercase text-muted mt-2 mb-0">Permanenza</h5>
+                  {% comment %} <h5 class="card-title text-uppercase text-muted mt-2 mb-0">Permanenza</h5>
                   <div class="div-hover">
                     <div id="id_g_0_2" class="row clickable-1">
                       <div class="col-xl-6 col-lg-6 hoverDiv">
@@ -179,12 +182,12 @@
                         <span id="verdi-diff_3" class="{{ cards.verdi.diff_3_class }} ml-2">{{ cards.verdi.diff_3_formatted }}</span>
                       </div>
                     </div>
-                  </div>
+                  </div> {% endcomment %}
                 </div>
               </div>
             </div>
 
-            <div class="col-xl-3 col-lg-6">
+            <div class="col-xl-4 col-lg-6">
               <div class="card card-stats mb-4 mb-xl-0">
                 <div class="card-body">
                   <div class="row">
@@ -207,7 +210,7 @@
                       </div>
                     </div>
                   </div>
-                  <h5 class="card-title text-uppercase text-muted mt-2 mb-0">Permanenza</h5>
+                  {% comment %} <h5 class="card-title text-uppercase text-muted mt-2 mb-0">Permanenza</h5>
                   <div class="div-hover">
                     <div id="id_w_0_2" class="row clickable-1">
                       <div class="col-xl-6 col-lg-6 hoverDiv">
@@ -236,7 +239,7 @@
                         <span id="bianchi-diff_3" class="{{ cards.bianchi.diff_3_class }} ml-2">{{ cards.bianchi.diff_3_formatted }}</span>
                       </div>
                     </div>
-                  </div>
+                  </div> {% endcomment %}
                 </div>
               </div>
             </div>
@@ -329,8 +332,8 @@
 
     $(document).ready(function () {
       set_submit_form();
-      define_clickable();
-      define_hidden_input_behaviour();
+      // define_clickable();
+      // define_hidden_input_behaviour();
       // Funciton Charts funncitons //
       build_funciton_chart();
       define_buttons_function_chart();
@@ -431,7 +434,7 @@
     }
     //--------------//
 
-    function define_clickable(){
+    {% comment %} function define_clickable(){
       var class_to_add = "border border-primary";
       $('.clickable-1').click(function() {
           $('.clickable-1').removeClass(class_to_add);
@@ -442,9 +445,9 @@
           $('.clickable-1').removeClass(class_to_add);
         }
       });
-    }
+    } {% endcomment %}
 
-    function define_hidden_input_behaviour(){
+    {% comment %} function define_hidden_input_behaviour(){
       var dict_to_fields = {
         "#id_y_all": ["yellow","",""],
         "#id_y_0_2": ["yellow","0","2"],
@@ -473,7 +476,7 @@
           $('#id_to_hours').val(null);
         }
       });
-    }
+    } {% endcomment %}
 
     function build_funciton_chart(){
       // Get the canvas

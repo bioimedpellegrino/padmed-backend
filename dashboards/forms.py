@@ -7,11 +7,12 @@ from django.forms.widgets import HiddenInput
 from django.utils import timezone
 from django import forms
 from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Submit, Row, Column
 from django.utils.translation import gettext_lazy as _
 
 class DateRangeForm(forms.Form):
     from .models import TriageCode
-    
+    ## TODO: fix timezone problems https://stackoverflow.com/questions/30700039/how-to-use-datefield-in-a-django-form-in-a-timezone-aware-way
     start = forms.DateField(
         input_formats=["%Y-%m-%d",],
         label="Data inizio",
@@ -20,27 +21,34 @@ class DateRangeForm(forms.Form):
         label="Data fine",
     )
     
-    ## Hidden inputs
-    code = forms.CharField(
-        widget=forms.HiddenInput(),
+    code = forms.ChoiceField(
+        choices=(
+            (None,"----"),
+            ("yellow","Gialli"),
+            ("green","Verdi"),
+            ("white","Bianchi"),
+        ),
+        label="Codice",
         required=False,
         )
     from_hours = forms.FloatField(
-        widget=forms.HiddenInput(),
+        label="Attesa minima (ore)",
         required=False,
         )
     to_hours = forms.FloatField(
-        widget=forms.HiddenInput(),
+        label="Attesa massima (ore)",
         required=False,
         )
-    start_cache = forms.DateField(
-        widget=forms.HiddenInput(),
-        required=False,
-    )
-    end_cache = forms.DateField(
-        widget=forms.HiddenInput(),
-        required=False,
-    )
+    
+    # ## Hidden inputs
+    # start_cache = forms.DateField(
+    #     widget=forms.HiddenInput(),
+    #     required=False,
+    # )
+    # end_cache = forms.DateField(
+    #     widget=forms.HiddenInput(),
+    #     required=False,
+    # )
     
     ## Crispy forms helper for formatting staff
     helper = FormHelper()
@@ -51,6 +59,16 @@ class DateRangeForm(forms.Form):
             if isinstance(visible.field,forms.DateField):
                 visible.field.widget.input_type = "date"
                 # visible.field.widget.attrs['class'] = 'datetimepicker'
+        self.helper.layout = Layout(
+            Row(
+                Column('start', css_class='form-group col-xl-3 col-lg-4 mb-0'),
+                Column('end', css_class='form-group col-xl-3 col-lg-4 mb-0'),
+                Column('code', css_class='form-group col-xl-2 col-lg-4 mb-0'),
+                Column('from_hours', css_class='form-group col-xl-2 col-lg-4 mb-0'),
+                Column('to_hours', css_class='form-group col-xl-2 col-lg-4 mb-0'),
+                css_class='form-row'
+            )
+        )
     
     def clean_from_hours(self):
         data = self.cleaned_data.get('from_hours', '')

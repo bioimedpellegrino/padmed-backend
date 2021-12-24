@@ -93,7 +93,7 @@ class StoricoView(View):
         hospital = user.dashboard_hospital
         
         now = timezone.localtime() 
-        one_day_ago = now - relativedelta(days=250)
+        one_day_ago = now - relativedelta(days=1)
         form = DateRangeForm(
             { 
                 "start":one_day_ago.date().isoformat(),
@@ -302,6 +302,9 @@ class GetStoricoData(APIView):
             cards = self.get_storico_advanced_cards(
                 form.cleaned_data["start"],
                 form.cleaned_data["end"],
+                code = form.cleaned_data["code"],
+                from_hours = form.cleaned_data["from_hours"],
+                to_hours = form.cleaned_data["to_hours"],
                 hospital=hospital,
                 )
             big_graph = self.get_storico_big_graph(
@@ -377,8 +380,8 @@ class GetStoricoData(APIView):
         #     "positive_trend" : positive_trend,
         # }
         
-        value = TriageAccess.yellows(q_filter=filter).count()
-        diff = value - TriageAccess.yellows(q_filter=diff_filter).count()
+        value = TriageAccess.yellows(filter).count()
+        diff = value - TriageAccess.yellows(diff_filter).count()
         positive_trend = diff >= 0
         cards["gialli"] = {
             "value" : value,
@@ -386,8 +389,8 @@ class GetStoricoData(APIView):
             "positive_trend" : positive_trend,
         }
 
-        value = TriageAccess.greens(q_filter=filter).count()
-        diff = value - TriageAccess.greens(q_filter=diff_filter).count()
+        value = TriageAccess.greens(filter).count()
+        diff = value - TriageAccess.greens(diff_filter).count()
         positive_trend = diff >= 0
         cards["verdi"] = {
             "value" : value,
@@ -395,8 +398,8 @@ class GetStoricoData(APIView):
             "positive_trend" : positive_trend,
         }
 
-        value = TriageAccess.whites(q_filter=filter).count()
-        diff = value - TriageAccess.whites(q_filter=diff_filter).count()
+        value = TriageAccess.whites(filter).count()
+        diff = value - TriageAccess.whites(diff_filter).count()
         positive_trend = diff >= 0
         cards["bianchi"] = {
             "value" : value,
@@ -407,7 +410,7 @@ class GetStoricoData(APIView):
         return cards
 
     @classmethod
-    def get_storico_advanced_cards(cls,start:datetime.datetime,end:datetime.datetime,hospital:Hospital=None)->dict():
+    def get_storico_advanced_cards(cls,start:datetime.datetime,end:datetime.datetime,code=None,from_hours=None,to_hours=None,hospital:Hospital=None)->dict():
                 
         last_period = end - start
         last_start = start - last_period
@@ -416,7 +419,17 @@ class GetStoricoData(APIView):
             kwargs = {}
         else:
             kwargs = {"hospital":hospital}
-        
+            
+        if code is not None:
+            if code=="yellow":
+                kwargs["triage_code"] = TriageCode.get_yellow()
+            if code=="green":
+                kwargs["triage_code"] = TriageCode.get_green()
+            if code=="white":
+                kwargs["triage_code"] = TriageCode.get_white()
+                
+        wait_q_filter = TriageAccess.get_q_filter_for_exit_interval(from_hours=from_hours,to_hours=to_hours)
+            
         cards = dict()
         
         name_methods = [
@@ -429,40 +442,15 @@ class GetStoricoData(APIView):
         for name,method_name in name_methods:
             method = getattr(TriageAccess,method_name)
             
-            value = method(access_date__gte=start,access_date__lte=end,**kwargs)
-            last = method(access_date__gte=last_start,access_date__lt=last_end,**kwargs)
+            value = method(wait_q_filter,access_date__gte=start,access_date__lte=end,**kwargs)
+            last = method(wait_q_filter,access_date__gte=last_start,access_date__lt=last_end,**kwargs)
             diff = value.count() - last.count()
-            
-            value_1,last_1 = TriageAccess.filter_for_exit_interval(value,last,to_hours=2)
-            diff_1 = value_1.count() - last_1.count()
-            value_2,last_2 = TriageAccess.filter_for_exit_interval(value,last,from_hours=2,to_hours=4)
-            diff_2 = value_2.count() - last_2.count()
-            value_3,last_3 = TriageAccess.filter_for_exit_interval(value,last,from_hours=4)
-            diff_3 = value_3.count() - last_3.count()
             
             cards[name] = {
                 "value" : value.count(),
                 "diff" : diff,
                 "diff_formatted" : "("+sign_format[diff>=0]+str(diff)+")",
                 "diff_class" : class_format[diff>=0],
-                
-                "value_1": value_1.count(),
-                "diff_1": diff_1,
-                "diff_1_formatted" : "("+sign_format[diff_1>=0]+str(diff_1)+")",
-                "diff_1_class" : class_format[diff_1>=0],
-                "value_1_description" : "Meno di 2h",
-                
-                "value_2": value_2.count(),
-                "diff_2": diff_2,
-                "diff_2_formatted" : "("+sign_format[diff_2>=0]+str(diff_2)+")",
-                "diff_2_class" : class_format[diff_2>=0],
-                "value_2_description" : "Tra 2h e 4h",
-                
-                "value_3": value_3.count(),
-                "diff_3": diff_3,
-                "diff_3_formatted" : "("+sign_format[diff_3>=0]+str(diff_3)+")",
-                "diff_3_class" : class_format[diff_3>=0],
-                "value_3_description" : "Più di 4h",
             }
         
         return cards
@@ -492,6 +480,8 @@ class GetStoricoData(APIView):
         timesteps_weeks = timesteps_builder(start,end,"w")
         timesteps_days = timesteps_builder(start,end,"d")
         
+        wait_q_filter = TriageAccess.get_q_filter_for_exit_interval(from_hours=from_hours,to_hours=to_hours)
+        
         big_graph = {}
         
         ## MESI ##
@@ -505,10 +495,9 @@ class GetStoricoData(APIView):
             if start_date.month == 1:
                 labels[-1] += " %s"%start_date.year
             ## Build data
-            data = method(access_date__gte=start_date,access_date__lte=end_date,**kwargs)
-            data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
+            data = method(wait_q_filter,access_date__gte=start_date,access_date__lte=end_date,**kwargs)
+            # data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
             datas.append(data.count())
-        
         big_graph["months_data"] = {
             "data":{
                 "labels":labels,
@@ -534,8 +523,8 @@ class GetStoricoData(APIView):
                 labels[-1] += start_date.strftime("/%Y")
                 last_year = start_date.year
             ## Build data
-            data = method(access_date__gte=start_date,access_date__lte=end_date,**kwargs)
-            data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
+            data = method(wait_q_filter,access_date__gte=start_date,access_date__lte=end_date,**kwargs)
+            # data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
             datas.append(data.count())
             
         big_graph["weeks_data"] = {
@@ -563,8 +552,8 @@ class GetStoricoData(APIView):
                 labels[-1] += start_date.strftime("/%Y")
                 last_year = start_date.year
             ## Build data
-            data = method(access_date__gte=start_date,access_date__lte=end_date,**kwargs)
-            data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
+            data = method(wait_q_filter,access_date__gte=start_date,access_date__lte=end_date,**kwargs)
+            # data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
             datas.append(data.count())
         
         big_graph["days_data"] = {
