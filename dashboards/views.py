@@ -93,13 +93,13 @@ class StoricoView(View):
         hospital = user.dashboard_hospital
         
         now = timezone.localtime() 
-        one_day_ago = now - relativedelta(days=1)
+        one_day_ago = now - relativedelta(days=30)
         form = DateRangeForm(
             { 
                 "start":one_day_ago.date().isoformat(),
-                "start_cache":one_day_ago.date().isoformat(),
+                # "start_cache":one_day_ago.date().isoformat(),
                 "end":now.date().isoformat(),
-                "end_cache":now.date().isoformat(),
+                # "end_cache":now.date().isoformat(),
             }
         )
         cards = GetStoricoData.get_storico_advanced_cards(one_day_ago,now,hospital=hospital)

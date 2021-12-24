@@ -81,7 +81,7 @@
                           <tr id="id_y_all" class="clickable-1">
                             <td>
                               <span id="gialli-value" class="h2 font-weight-bold mb-0">{{ cards.gialli.value }}</span>
-                              <span id="gialli-diff" class="{{ cards.gialli.diff_class }} mr-2 pl-2">{{ cards.gialli.diff_formatted }}</span>
+                              {% comment %} <span id="gialli-diff" class="{{ cards.gialli.diff_class }} mr-2 pl-2">{{ cards.gialli.diff_formatted }}</span> {% endcomment %}
                             </td>
                           </tr>
                         </tbody>
@@ -93,6 +93,11 @@
                       </div>
                     </div>
                   </div>
+                  <p class="mt-3 mb-0 text-muted text-sm">
+                    <span id="gialli-diff" class="{{ cards.gialli.diff_class }} mr-2 pl-2">{{ cards.gialli.diff_formatted }}</span>
+                    <span class="text-nowrap">Rispetto al periodo precedente</span>
+                  </p>
+
                   {% comment %} <h5 class="card-title text-uppercase text-muted mt-2 mb-0">Permanenza</h5>
 
                   <div class="div-hover">
@@ -141,7 +146,7 @@
                           <tr id="id_g_all" class="clickable-1">
                             <td>
                               <span id="verdi-value" class="h2 font-weight-bold mb-0">{{ cards.verdi.value }}</span>
-                              <span id="verdi-diff" class="{{ cards.verdi.diff_class }} mr-2 pl-2">{{ cards.verdi.diff_formatted }}</span>
+                              {% comment %} <span id="verdi-diff" class="{{ cards.verdi.diff_class }} mr-2 pl-2">{{ cards.verdi.diff_formatted }}</span> {% endcomment %}
                             </td>
                           </tr>
                         </tbody>
@@ -153,6 +158,10 @@
                       </div>
                     </div>
                   </div>
+                  <p class="mt-3 mb-0 text-muted text-sm">
+                    <span id="verdi-diff" class="{{ cards.verdi.diff_class }} mr-2 pl-2">{{ cards.verdi.diff_formatted }}</span>
+                    <span class="text-nowrap">Rispetto al periodo precedente</span>
+                  </p>
                   {% comment %} <h5 class="card-title text-uppercase text-muted mt-2 mb-0">Permanenza</h5>
                   <div class="div-hover">
                     <div id="id_g_0_2" class="row clickable-1">
@@ -198,7 +207,7 @@
                           <tr id="id_w_all" class="clickable-1">
                             <td>
                               <span id="bianchi-value" class="h2 font-weight-bold mb-0">{{ cards.bianchi.value }}</span>
-                              <span id="bianchi-diff" class="{{ cards.bianchi.diff_class }} mr-2 pl-2">{{ cards.bianchi.diff_formatted }}</span>
+                              {% comment %} <span id="bianchi-diff" class="{{ cards.bianchi.diff_class }} mr-2 pl-2">{{ cards.bianchi.diff_formatted }}</span> {% endcomment %}
                             </td>
                           </tr>
                         </tbody>
@@ -210,6 +219,10 @@
                       </div>
                     </div>
                   </div>
+                  <p class="mt-3 mb-0 text-muted text-sm">
+                    <span id="bianchi-diff" class="{{ cards.bianchi.diff_class }} mr-2 pl-2">{{ cards.bianchi.diff_formatted }}</span>
+                    <span class="text-nowrap">Rispetto al periodo precedente</span>
+                  </p>
                   {% comment %} <h5 class="card-title text-uppercase text-muted mt-2 mb-0">Permanenza</h5>
                   <div class="div-hover">
                     <div id="id_w_0_2" class="row clickable-1">
