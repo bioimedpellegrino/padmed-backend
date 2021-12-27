@@ -40,6 +40,49 @@
      var textEncoded = encodeURI(commandsToPrint);
      window.location.href="intent://"+textEncoded+"#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;";
  }
+
+
+ var keybuffer = [];
+
+function press(event) {
+  console.log("pressed");
+  if (event.which === 13) {
+    return send();
+  }
+  var number = event.which - 48;
+  if (number < 0 || number > 9) {
+    return;
+  }
+  keybuffer.push(number);
+}
+
+$(document).on("keypress", press);
+
+  function send() {
+    console.log("scanned ");
+    socket.emit('scan', keybuffer.join(""));
+    keybuffer.length = 0;
+  }
+
+
+  var RFIDTime = false;
+  var RFIDInput = "";
+  $(document).keyup(function(e){
+  if(!RFIDTime) RFIDInput += String.fromCharCode(e.which); RFIDTime = e.timeStamp;
+  
+  if(RFIDTime){
+  if(e.timeStamp RFIDTime < 20){
+  RFIDInput += String.fromCharCode(e.which);
+  RFIDTime = e.timeStamp;
+  if(RFIDInput.length == 10){
+  console.log('detected RFID, value:' + RFIDInput);
+  }
+  } else {
+  RFIDInput = "";
+  RFIDTime = false;
+  }
+  }
+  });
 </script>
 {% endblock javascripts %}
 {% endblock content %}
