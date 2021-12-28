@@ -169,3 +169,30 @@ class HospitalEditForm(forms.ModelForm):
     helper = FormHelper()
     def __init__(self, *args,**kwargs):
         super().__init__(*args, **kwargs)
+        
+# class AccessForm(forms.ModelForm):
+#     class Meta:
+#         from triage.models import TriageAccess
+#         model = TriageAccess
+#         exclude = ("id",)
+#         labels = {
+#             "patient":"Paziente",
+#             "hospital":"Ospedale",
+#             "totem":"Totem",
+#             "triage_code": "Codice Triage",
+#             "access_reason":"Ragione di accesso",
+#             "access_date":"Data di accesso",
+#             "exit_date":"Data di uscita"
+#         }
+    
+#     ## Crispy forms helper for formatting staff
+#     helper = FormHelper()
+    
+#     def __init__(self, *args, readonly=None, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         for visible in self.visible_fields():
+#             if isinstance(visible.field,forms.DateField):
+#                 visible.field.widget.input_type = "date"
+#         if readonly is not None:
+#             for field in self:
+#                 field.field.disabled = True

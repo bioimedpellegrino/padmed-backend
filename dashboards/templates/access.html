@@ -1,0 +1,120 @@
+{% extends 'layouts/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %} Profile {% endblock title %}
+
+{% block content %}
+
+<div class="header bg-gradient-primary pb-8 pt-5 pt-md-8">
+  <div class="container-fluid">
+    <div class="header-body">
+
+    </div>
+  </div>
+</div>
+
+  <div class="container-fluid mt--7">
+    <div class="row">
+      <div class="col-xl-12 order-xl-1">
+        <div class="card bg-secondary shadow">
+          <div class="card-header bg-white border-0">
+            <div class="row align-items-center">
+              <div class="col-8">
+                <h3 class="mb-0">Accesso {{access}} - {{access.access_date}}</h3>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div>
+              <h3 class="border-bottom">
+                Anagrafica
+              </h3>
+              <dl class="row">
+                <dt class="col-sm-3 col-md-2">Nome</dt>
+                <dd class="col-sm-9 col-md-4">
+                  {{ access.patient.first_name }}&nbsp;{{ access.patient.middle_name }}
+                </dd>
+                <dt class="col-sm-3 col-md-2">Cognome</dt>
+                <dd class="col-sm-9 col-md-4">
+                  {{ access.patient.last_name }}
+                </dd>
+                <dt class="col-sm-3 col-md-2">Data nascita</dt>
+                <dd class="col-sm-9 col-md-4">
+                  {{ access.patient.birth_date }}
+                </dd>
+                <dt class="col-sm-3 col-md-2">Sesso</dt>
+                <dd class="col-sm-9 col-md-4">
+                  {{ access.patient.gender }}
+                </dd>
+                <dt class="col-sm-3 col-md-2">Codice fiscale</dt>
+                <dd class="col-sm-9 col-md-4">
+                  {{ access.patient.fiscal_code }}
+                </dd>
+              </dl>
+            </div>
+            <div>
+              <h3 class="border-bottom">
+                Dati accesso
+              </h3>
+              <dl class="row">
+                <dt class="col-sm-3 col-md-2">Ospedale</dt>
+                <dd class="col-sm-9 col-md-4">
+                  {{ access.hospital }}
+                </dd>
+                <dt class="col-sm-3 col-md-2">Totem</dt>
+                <dd class="col-sm-9 col-md-4">
+                  {{ access.totem }}
+                </dd>
+                <dt class="col-sm-3 col-md-2">Motivo</dt>
+                <dd class="col-sm-9 col-md-4">
+                  {{ access.access_reason }}
+                </dd>
+                <dt class="col-sm-3 col-md-2">Codice triage</dt>
+                <dd class="col-sm-9 col-md-4">
+                  {{ access.triage_code }}
+                </dd>
+                <dt class="col-sm-3 col-md-2">Data entrata</dt>
+                <dd class="col-sm-9 col-md-4">
+                  {{ access.access_date }}
+                </dd>
+                <dt class="col-sm-3 col-md-2">Data uscita</dt>
+                <dd class="col-sm-9 col-md-4">
+                  {% if access.exit_date %}{{ access.exit_date }}{% endif %}
+                </dd>
+              </dl>
+            </div><div>
+              <h3 class="border-bottom">
+                Ultimi parametri
+              </h3>
+              <dl class="row">
+                <dt class="col-sm-3 col-md-2">Temperatura</dt>
+                <dd class="col-sm-9 col-md-4">
+                  {{ access.last_hresult.temperature.mean }} &#177; {{ access.last_hresult.temperature.stdev }} {{ access.last_hresult.temperature.unit }}
+                </dd>
+                <dt class="col-sm-3 col-md-2">Frequenza cardiaca</dt>
+                <dd class="col-sm-9 col-md-4">
+                  {{ access.last_hresult.heart_rate.mean }} &#177; {{ access.last_hresult.heart_rate.stdev }} {{ access.last_hresult.heart_rate.unit }}
+                </dd>
+                <dt class="col-sm-3 col-md-2">Pressione minima</dt>
+                <dd class="col-sm-9 col-md-4">
+                  {{ access.last_hresult.pressure.min.mean }} &#177; {{ access.last_hresult.pressure.min.stdev }} {{ access.last_hresult.pressure.min.unit }}
+                </dd>
+                <dt class="col-sm-3 col-md-2">Pressione massima</dt>
+                <dd class="col-sm-9 col-md-4">
+                  {{ access.last_hresult.pressure.max.mean }} &#177; {{ access.last_hresult.pressure.max.stdev }} {{ access.last_hresult.pressure.max.unit }}
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% include "includes/footer.html" %}
+
+  </div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}{% endblock javascripts %}

@@ -192,7 +192,18 @@ class TriageAccess(models.Model):
 
     def __str__(self):
         return "{} - {}".format(self.id, self.patient)
-    
+    @property
+    def h_str(self):
+        return "{} - {}".format(self.patient, self.local_access_date.strftime("%c"))
+        
+    # @property
+    # def local_access_date(self):
+    # # https://docs.djangoproject.com/en/3.2/topics/i18n/formatting/
+    #     import pytz
+    #     local_timezone = pytz.timezone(settings.TIME_ZONE)
+    #     local_access_date = self.access_date.astimezone(local_timezone)
+    #     return local_access_date
+        
     @property
     def is_white(self)->bool:
         return self.triage_code == TriageCode.get_white()
@@ -232,7 +243,16 @@ class TriageAccess(models.Model):
         ## TODO: formatta waiting_time
         return waiting_time
         
-        
+    @property
+    def last_hresult(self):
+        last_result = None
+        video = self.patientvideo_set.last()
+        if video:
+            measure = video.patientmeasureresult_set.last()
+            if measure:
+                last_result = measure.get_hresult
+        return last_result
+                    
     @classmethod
     def whites(cls,*args,exclude=[],**kwargs)->QuerySet:
         objs = cls.objects.filter(triage_code=TriageCode.get_white())

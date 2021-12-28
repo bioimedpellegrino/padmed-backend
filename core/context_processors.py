@@ -19,7 +19,7 @@ def side_menu_context(current_url_name):
     url_name = "live_dash"
     item = {
         "type":"url",
-        "text":"Live Pazienti",
+        "text":"Live Accessi",
         "url":url_name,
         "active":current_url_name==url_name,
         "icon_classes":"ni ni-bullet-list-67 text-primary",
@@ -30,7 +30,7 @@ def side_menu_context(current_url_name):
     url_name = "storico_dash"
     item = {
         "type":"url",
-        "text":"Storico",
+        "text":"Storico Accessi",
         "url":url_name,
         "active":current_url_name==url_name,
         "icon_classes":"ni ni-chart-pie-35 text-yellow",
@@ -50,6 +50,28 @@ def side_menu_context(current_url_name):
         "url":url_name,
         "active":current_url_name==url_name,
         "icon_classes":"ni ni-building text-red",
+        "childs":None,
+        }
+    side_menu.append(item)
+    
+    url_name = "hospitals"
+    item = {
+        "type":"url",
+        "text":"Totem",
+        "url":url_name,
+        "active":current_url_name==url_name,
+        "icon_classes":"ni ni-camera-compact text-blue",
+        "childs":None,
+        }
+    side_menu.append(item)
+    
+    url_name = "hospitals"
+    item = {
+        "type":"url",
+        "text":"Pazienti",
+        "url":url_name,
+        "active":current_url_name==url_name,
+        "icon_classes":"fa fa-id-card text-warning",
         "childs":None,
         }
     side_menu.append(item)

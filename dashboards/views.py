@@ -21,11 +21,6 @@ from app.models import AppUser
 # from django.http import Http404
 
 class LiveView(View):
-    """[summary]
-
-    Args:
-        APIView ([type]): [description]
-    """
     
     template_name = 'live_dash.html'
     
@@ -59,12 +54,7 @@ class LiveView(View):
             item.waiting_range_cache = min(int(item.waiting_cache/33.3),3)
             item.waiting_minutes_cache = item_waiting_time.days*24*60 + item_waiting_time.hours*60 + item_waiting_time.minutes
             
-            item.hresults = None
-            video = item.patientvideo_set.last()
-            if video:
-                measure = video.patientmeasureresult_set.last()
-                if measure:
-                    item.hresults = measure.get_hresult
+            item.hresults = item.last_hresult
                     
         return render(request, self.template_name, {
             "cards":cards,
@@ -72,6 +62,24 @@ class LiveView(View):
             "units":units,
             })
 
+class AccessView(View):
+    template_name = 'access.html'
+    
+    def get(self, request, *args, **kwargs):        
+        user = AppUser.get_or_create_from_parent(request.user)
+        id = kwargs.get("id", None)
+        access = get_object_or_404(TriageAccess,pk=id)
+        hospital = access.hospital
+        permission = hospital.has_view_permission(user=user) or user==access.patient.appuser
+        if permission:
+            pass
+        else:
+            raise PermissionDenied
+                    
+        return render(request, self.template_name, {
+            "access":access,
+            })
+        
 class StoricoView(View):
     """[summary]
 
