@@ -9,6 +9,7 @@ sudo apt-get install mysql-server
 sudo apt-get install libmysqlclient-dev
 sudo apt-get install python3-mediainfodll # for pymediainfo
 sudo apt-get install libopenblas-dev liblapack-dev # for Dlib
+sudo apt-get install swig # for smartcard reader
 
 # Installation of dfx #
 
