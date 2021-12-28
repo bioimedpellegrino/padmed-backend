@@ -22,8 +22,24 @@
     <br>Print Button</a>
 <!-- Specific JS goes HERE --> 
 {% block javascripts %}
-<script>
 
+<script>
+  //onScan.attachTo(document);
+// Register event listener
+try{
+  onScan.attachTo(document, {
+    suffixKeyCodes: [13], // enter-key expected at the end of a scan
+    reactToPaste: true, // Compatibility to built-in scanners in paste-mode (as opposed to keyboard-mode)
+    onScan: function(sCode, iQty) { // Alternative to document.addEventListener('scan')
+        document.getElementById("output").innerHTML = 'Scanned: ' + iQty + 'x ' + sCode; 
+    },
+    onKeyDetect: function(iKeyCode){ // output all potentially relevant key events - great for debugging!
+      document.getElementById("output").innerHTML = 'Pressed: ' + iKeyCode;
+    }
+});
+} catch(err){
+  //document.getElementById("output").innerHTML = err + " " + err.message;
+}
   function sendToQuickPrinterChrome(){
     var commandsToPrint =
                  "<LOGO>" +
