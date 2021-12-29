@@ -1,9 +1,15 @@
 ## PADMED ##
-
+sudo apt-update
 sudo apt-get install build-essential git # Compiler and Git
 sudo apt-get install python3.8-dev python3.8-venv # or 3.7
+sudo apt install python3-pip
+sudo apt install python3.8-venv
+sudo apt install python3-virtualenv
+sudo apt-get install mysql-server
+sudo apt-get install libmysqlclient-dev
 sudo apt-get install python3-mediainfodll # for pymediainfo
 sudo apt-get install libopenblas-dev liblapack-dev # for Dlib
+sudo apt-get install swig # for smartcard reader
 
 # Installation of dfx #
 

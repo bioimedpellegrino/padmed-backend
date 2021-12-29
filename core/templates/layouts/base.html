@@ -10,7 +10,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   
   <title>
-    Argon Dashboard Django - {% block title %} Open-Source Admin Panel {% endblock %} | Creative-Tim
+    Pad Med - {% block title %} Dashboard Panel {% endblock %}
   </title>
 
   <!-- Favicon - loaded as static -->
@@ -26,6 +26,22 @@
   <link href="/static/assets/css/argon-dashboard.css?v=1.1.0" rel="stylesheet" />
   <!-- Interactive tables (not downloaded) -->
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+  <!-- Message bar style -->
+  <style>
+    .toast-message {
+      position: absolute;
+      padding-right: 2%;
+      padding-left: 2%;
+      width: 100%;
+      top: 90px;
+      /* left: 70%; */
+      /* z-index: 1; */
+      /* display: inline-block; */
+      z-index:2;
+    }
+    .header {
+    }
+  </style>
   <!-- Specific CSS goes HERE -->
   {% block stylesheets %}{% endblock stylesheets %}
 
@@ -39,6 +55,8 @@
 
     {% include "includes/navigation.html" %}
 
+    {% include "includes/message_bar.html" %}
+
     {% block content %}{% endblock content %}
 
   </div>
@@ -49,6 +67,13 @@
   
   <!-- Interactive tables (not downloaded) -->
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+
+  {% comment %} <!-- Initialize toast messages -->
+  <script>
+    $(document).ready(function(){
+      $('.toast').toast('show');
+    });
+  </script> {% endcomment %}
 
   {% block javascripts %}{% endblock javascripts %}
 

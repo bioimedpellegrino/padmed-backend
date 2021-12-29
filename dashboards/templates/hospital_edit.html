@@ -11,16 +11,6 @@
     <!-- Mask -->
     <span class="mask bg-gradient-default opacity-8"></span>
     <!-- Header container -->
-    <div class="container-fluid d-flex align-items-center">
-      <div class="row">
-        <div class="col-lg-7 col-md-10">
-          <h1 class="display-2 text-white">Ciao {{ request.user.username }}</h1>
-          <p class="text-white mt-0 mb-5">
-            Questa è la pagna del tuo profilo. Da qui puoi modificare i tuoi dati personali e cambiare impostazioni di visualizzazione.
-          </p>
-        </div>
-      </div>
-    </div>
   </div>
 
   <div class="container-fluid mt--7">
@@ -30,15 +20,19 @@
           <div class="card-header bg-white border-0">
             <div class="row align-items-center">
               <div class="col-8">
-                <h3 class="mb-0">Account</h3>
+                {% if form.instance %}
+                  <h3 class="mb-0">Modifica ospedale "{{form.instance}}"</h3>
+                {% else %}
+                  <h3 class="mb-0">Crea nuovo ospedale</h3>
+                {% endif %}
               </div>
               <div class="col-4 text-right">
-                <input form="date-form" type="submit" class="btn btn-sm btn-primary" value="Salva">
+                <input form="data-form" type="submit" class="btn btn-sm btn-primary" value="Salva">
               </div>
             </div>
           </div>
           <div class="card-body">
-            <form id="date-form" name="date-form" method='post' enctype="multipart/form-data">
+            <form id="data-form" name="data-form" method='post' enctype="multipart/form-data">
               {% crispy form %}
             </form>
           </div>
@@ -53,4 +47,6 @@
 {% endblock content %}
 
 <!-- Specific JS goes HERE --> 
-{% block javascripts %}{% endblock javascripts %}
+{% block javascripts %}
+
+{% endblock javascripts %}

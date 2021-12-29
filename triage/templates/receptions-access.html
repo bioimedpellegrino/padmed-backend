@@ -94,4 +94,21 @@
 {% endblock content %}
 
 <!-- Specific JS goes HERE --> 
-{% block javascripts %}{% endblock javascripts %}
+{% block javascripts %}
+<script>
+  try{
+    onScan.attachTo(document, {
+      suffixKeyCodes: [13], // enter-key expected at the end of a scan
+      reactToPaste: true, // Compatibility to built-in scanners in paste-mode (as opposed to keyboard-mode)
+      onScan: function(sCode, iQty) { // Alternative to document.addEventListener('scan')
+          document.getElementById("id_fiscal_code").value = sCode.replace(/\s/g, '');
+      },
+      onKeyDetect: function(iKeyCode){ // output all potentially relevant key events - great for debugging!
+        //document.getElementById("fiscal_code").innerHTML = 'Pressed: ' + iKeyCode;
+      }
+  });
+  } catch(err){
+    //document.getElementById("output").innerHTML = err + " " + err.message;
+  }
+</script>
+{% endblock javascripts %}

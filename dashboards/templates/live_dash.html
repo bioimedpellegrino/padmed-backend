@@ -28,7 +28,7 @@
           <!-- Card stats -->
 
           <div class="row">
-            <div class="col-xl-3 col-lg-6">
+            <div class="col-xl-4 col-lg-6">
               <div class="card card-stats mb-4 mb-xl-0">
                 <div class="card-body">
                   <div class="row">
@@ -58,7 +58,7 @@
               </div>
             </div>
 
-            <div class="col-xl-3 col-lg-6">
+            <div class="col-xl-4 col-lg-6">
               <div class="card card-stats mb-4 mb-xl-0">
                 <div class="card-body">
                   <div class="row">
@@ -88,7 +88,7 @@
               </div>
             </div>
 
-            <div class="col-xl-3 col-lg-6">
+            <div class="col-xl-4 col-lg-6">
               <div class="card card-stats mb-4 mb-xl-0">
                 <div class="card-body">
                   <div class="row">
@@ -118,7 +118,7 @@
               </div>
             </div>
 
-            <div class="col-xl-3 col-lg-6">
+            {% comment %} <div class="col-xl-4 col-lg-6">
               <div class="card card-stats mb-4 mb-xl-0">
                 <div class="card-body">
                   <div class="row">
@@ -146,7 +146,7 @@
                   </p>
                 </div>
               </div>
-            </div>
+            </div> {% endcomment %}
           </div>
         </div>
       </div>
@@ -309,7 +309,7 @@
                             <i class="fas fa-ellipsis-v"></i>
                           </a>
                           <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                            <a class="dropdown-item" href="#">Dettaglio</a>
+                            <a class="dropdown-item" href="{% url 'access' id=item.id %}">Dettaglio</a>
                             <a class="dropdown-item" href="#">Segna come completato</a>
                             <a class="dropdown-item" href="#">Stampa scheda</a>
                           </div>

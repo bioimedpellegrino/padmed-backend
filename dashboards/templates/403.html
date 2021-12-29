@@ -1,6 +1,6 @@
 {% extends 'layouts/base-fullscreen.html' %}
 
-{% block title %} Error 403 {% endblock title %}
+{% block title %} Errore 403 {% endblock title %}
 
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}{% endblock stylesheets %}
@@ -15,21 +15,21 @@
             <div class="card-header bg-transparent pb-5">
 
               <div class="text-muted text-center mt-2 mb-3">
-                Oups! Error 403      
+                Ops! Errore 403      
               </div>
 
               <div class="text-center mb-4">
-                Access denied - Contact support or <a href="{% url 'login' %}"><small>AUTHENTICATE</small></a>.
+                Accesso negato. Contatta il supporto o <a href="{% url 'login' %}"><small>ACCEDI</small></a>.
               </div>
 
             </div>
           </div>
           <div class="row mt-3">
             <div class="col-6">
-              <a href="{% url 'login' %}" class="text-light"><small>LOGIN</small></a>
+              <a href="{% url 'login' %}" class="text-light"><small>ACCEDI</small></a>
             </div>
             <div class="col-6 text-right">
-              <a href="https://appseed.us/support" class="text-light"><small>Get Support</small></a>
+              <a href="https://appseed.us/support" class="text-light"><small>Contatta il supporto</small></a>
             </div>
           </div>
         </div>

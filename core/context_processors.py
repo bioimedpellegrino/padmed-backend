@@ -18,7 +18,8 @@ def side_menu_context(current_url_name):
     
     url_name = "live_dash"
     item = {
-        "text":"Live Dashboard",
+        "type":"url",
+        "text":"Live Accessi",
         "url":url_name,
         "active":current_url_name==url_name,
         "icon_classes":"ni ni-bullet-list-67 text-primary",
@@ -28,54 +29,85 @@ def side_menu_context(current_url_name):
 
     url_name = "storico_dash"
     item = {
-        "text":"Storico",
+        "type":"url",
+        "text":"Storico Accessi",
         "url":url_name,
         "active":current_url_name==url_name,
-        "icon_classes":"ni ni-tv-2 text-info",
+        "icon_classes":"ni ni-chart-pie-35 text-yellow",
         "childs":None,
         }
     side_menu.append(item)
-
-    # url_name = "icons"
+    
+    item = {
+        "type":"bar",
+        }
+    side_menu.append(item)
+    
+    url_name = "hospitals"
+    item = {
+        "type":"url",
+        "text":"Ospedale",
+        "url":url_name,
+        "active":current_url_name==url_name,
+        "icon_classes":"ni ni-building text-red",
+        "childs":None,
+        }
+    side_menu.append(item)
+    
+    url_name = "hospitals"
+    item = {
+        "type":"url",
+        "text":"Totem",
+        "url":url_name,
+        "active":current_url_name==url_name,
+        "icon_classes":"ni ni-camera-compact text-blue",
+        "childs":None,
+        }
+    side_menu.append(item)
+    
+    url_name = "hospitals"
+    item = {
+        "type":"url",
+        "text":"Pazienti",
+        "url":url_name,
+        "active":current_url_name==url_name,
+        "icon_classes":"fa fa-id-card text-warning",
+        "childs":None,
+        }
+    side_menu.append(item)
+    
+    # url_name = "user_profile"
     # item = {
-    #     "text":"Icons",
+    #     "type":"url",
+    #     "text":"Profilo",
     #     "url":url_name,
     #     "active":current_url_name==url_name,
-    #     "icon_classes":"ni ni-planet text-blue",
+    #     "icon_classes":"ni ni-single-02 text-yellow",
+    #     "childs":None,
+    #     }
+    # side_menu.append(item)
+    
+    # url_name = "user_profile"
+    # item = {
+    #     "type":"url",
+    #     "text":"Supporto",
+    #     "url":url_name,
+    #     "active":current_url_name==url_name,
+    #     "icon_classes":"ni ni-support-16 text-green",
     #     "childs":None,
     #     }
     # side_menu.append(item)
 
-    # url_name = "maps"
+    # url_name = "logout"
     # item = {
-    #     "text":"Maps",
+    #     "type":"url",
+    #     "text":"Esci",
     #     "url":url_name,
     #     "active":current_url_name==url_name,
-    #     "icon_classes":"ni ni-pin-3 text-orange",
+    #     "icon_classes":"ni ni-user-run text-red",
     #     "childs":None,
     #     }
     # side_menu.append(item)
-
-    url_name = "user_profile"
-    item = {
-        "text":"Utente",
-        "url":url_name,
-        "active":current_url_name==url_name,
-        "icon_classes":"ni ni-single-02 text-yellow",
-        "childs":None,
-        }
-    side_menu.append(item)
-
-
-    url_name = "logout"
-    item = {
-        "text":"Esci",
-        "url":url_name,
-        "active":current_url_name==url_name,
-        "icon_classes":"ni ni-user-run text-red",
-        "childs":None,
-        }
-    side_menu.append(item)
 
     return {
         "side_menu":side_menu,

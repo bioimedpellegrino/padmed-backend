@@ -8,16 +8,18 @@ from pprint import pprint
 from dateutil.relativedelta import relativedelta
 
 from generic.models import City, Province, Country
+from app.models import RestrictedClass
 
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models import F
+from django.db.models import F,Q
 from django.db.models.fields import related
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
 from django.db.models.signals import pre_save, post_init
 from django.db.models.query import QuerySet
+from django.utils import timezone
 
 
 GENDER = (
@@ -39,10 +41,11 @@ TRIAGE_CODES = (
     (YELLOW, 'YELLOW')
 )
         
-class Hospital(models.Model):
+class Hospital(RestrictedClass):
     
     id = models.AutoField(primary_key=True)
-    name = models.CharField(blank=True, null=True, max_length=512, default="")
+    name = models.CharField(blank=True,null=True,max_length=512,default="")
+    logo = models.ImageField(verbose_name="Logo",null=True,blank=True,upload_to='triage/hospital/logos')
     full_address = models.TextField(blank=True, null=True, default="")
     city = models.ForeignKey(City, blank=True, null=True, on_delete=models.PROTECT, related_name="hospital_city")
     province = models.ForeignKey(Province, blank=True, null=True, on_delete=models.PROTECT, related_name="hospital_province")
@@ -50,18 +53,46 @@ class Hospital(models.Model):
     
     def __str__(self):
         return self.name
-        
+    
     class Meta:
         verbose_name = "Ospedale"
         verbose_name_plural = "Ospedali"
     
+    @property
+    def fancy_address(self):
+        result = ""
+        if self.full_address:
+            result += self.full_address
+        if self.city:
+            result += " - "+self.city
+        if self.province:
+            result += " ("+self.province+")"
+        if self.country:
+            result += " - "+self.country
+        return result
+        
+class Totem(models.Model):
+    name = models.CharField(verbose_name="Nome",blank=True,null=True,max_length=512,default="")
+    code = models.UUIDField(verbose_name="Codice totem fisico",auto_created=True,null=True,blank=True,unique=True)
+    description = models.TextField(verbose_name="Descrizione",blank=True,null=True)
+    logs = models.TextField(verbose_name="Storico",blank=True,null=True)
+    hospital = models.ForeignKey(Hospital,blank=True,null=True,on_delete=models.SET_NULL)
+    working = models.BooleanField(verbose_name="Funzionante",default=True)
+    activation_date = models.DateTimeField(verbose_name="Data di attivazione",blank=True, null=True)
+    disposal_date = models.DateTimeField(verbose_name="Data di dismissione",blank=True, null=True)
+    
+    created = models.DateTimeField(verbose_name="Data di creazione",auto_now_add=True)
+    modified = models.DateTimeField(verbose_name="Data di creazione",blank=True, null=True,auto_now=True)
 
+    def __str__(self):
+        return self.name
+    
 class Patient(models.Model):
     """
     Model Patient
     """
     id = models.AutoField(primary_key=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # user = models.OneToOneField(User, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     fiscal_code = models.CharField(blank=True, null=True, max_length=512, default="")
@@ -147,13 +178,13 @@ class TriageAccessReason(models.Model):
         verbose_name = "Motivo accesso"
         verbose_name_plural = "Motivi accesso al pronto soccorso"
 
-
 class TriageAccess(models.Model):
     
     id = models.AutoField(primary_key=True)
     created = models.DateTimeField(auto_now_add=True)
     patient = models.ForeignKey(Patient, blank=True, null=True, related_name='accesses', on_delete=models.CASCADE)
     hospital = models.ForeignKey(Hospital, blank=True, null=True, related_name='accesses', on_delete=models.CASCADE)
+    totem = models.ForeignKey(Totem, blank=True, null=True, related_name='accesses', on_delete=models.CASCADE)
     triage_code = models.ForeignKey(TriageCode, blank=True, null=True, on_delete=models.PROTECT)
     access_reason = models.ForeignKey(TriageAccessReason, blank=True, null=True, on_delete=models.PROTECT)
     access_date = models.DateTimeField(blank=True, null=True)
@@ -161,7 +192,18 @@ class TriageAccess(models.Model):
 
     def __str__(self):
         return "{} - {}".format(self.id, self.patient)
-    
+    @property
+    def h_str(self):
+        return "{} - {}".format(self.patient, self.local_access_date.strftime("%c"))
+        
+    # @property
+    # def local_access_date(self):
+    # # https://docs.djangoproject.com/en/3.2/topics/i18n/formatting/
+    #     import pytz
+    #     local_timezone = pytz.timezone(settings.TIME_ZONE)
+    #     local_access_date = self.access_date.astimezone(local_timezone)
+    #     return local_access_date
+        
     @property
     def is_white(self)->bool:
         return self.triage_code == TriageCode.get_white()
@@ -196,63 +238,94 @@ class TriageAccess(models.Model):
     def waiting_time(self)->relativedelta:
         from dateutil.relativedelta import relativedelta as rd
         access_date = self.access_date
-        tz = pytz.timezone('Europe/Rome')
-        rome_now = datetime.datetime.now(tz)
-        waiting_time = rd(rome_now,access_date)
+        now = timezone.localtime()
+        waiting_time = rd(now,access_date)
         ## TODO: formatta waiting_time
         return waiting_time
         
-        
+    @property
+    def last_hresult(self):
+        last_result = None
+        video = self.patientvideo_set.last()
+        if video:
+            measure = video.patientmeasureresult_set.last()
+            if measure:
+                last_result = measure.get_hresult
+        return last_result
+                    
     @classmethod
-    def whites(cls,exclude=[],**kwargs)->QuerySet:
+    def whites(cls,*args,exclude=[],**kwargs)->QuerySet:
         objs = cls.objects.filter(triage_code=TriageCode.get_white())
-        objs = objs.filter(**kwargs)
+        objs = objs.filter(*args,**kwargs)
         for exc in exclude:
             objs = objs.exclude(**exc)
         return objs
     @classmethod
-    def greens(cls,exclude=[],**kwargs)->QuerySet:
+    def greens(cls,*args,exclude=[],**kwargs)->QuerySet:
         objs = cls.objects.filter(triage_code=TriageCode.get_green())
-        objs = objs.filter(**kwargs)
+        objs = objs.filter(*args,**kwargs)
         for exc in exclude:
             objs = objs.exclude(**exc)
         return objs
     @classmethod
-    def yellows(cls,exclude=[],**kwargs)->QuerySet:
+    def yellows(cls,*args,exclude=[],**kwargs)->QuerySet:
         objs = cls.objects.filter(triage_code=TriageCode.get_yellow())
-        objs = objs.filter(**kwargs)
+        objs = objs.filter(*args,**kwargs)
         for exc in exclude:
             objs = objs.exclude(**exc)
         return objs
     @classmethod
-    def filter(cls,*args,**kwargs):
+    def filter(cls,q_filter=None,*args,**kwargs):
         return cls.objects.filter(*args,**kwargs)
     
     @classmethod
-    def ordered_items(cls,exclude=[],**kwargs)->QuerySet:
+    def ordered_items(cls,exclude=[],q_filter=None,**kwargs)->QuerySet:
         ## Implement here the ordering policy of the hospital ##
         objs = cls.objects.all().order_by("access_date")
         
         objs = cls.objects.filter(**kwargs)
+        if q_filter is not None:
+            objs = objs.filter(q_filter)
         for exc in exclude:
             objs = objs.exclude(**exc)
         
         return objs
     
     @classmethod
-    def filter_for_exit_interval(cls,value,last=None,from_hours=None,to_hours=None):
+    def get_q_filter_for_exit_interval(cls,from_hours=None,to_hours=None):
         from datetime import timedelta
-        from django.db.models import F
-        filter_dict = {}
-        if from_hours:
-            filter_dict["exit_date__gte"] = F("access_date")+timedelta(hours=from_hours)
-        if to_hours:
-            filter_dict["exit_date__lt"] = F("access_date")+timedelta(hours=to_hours)
+        now = timezone.localtime()
         
-        value = value.filter(**filter_dict)
-        if last is not None:
-            last = last.filter(**filter_dict)
-            return value, last
+        q_filter = Q()
+        if from_hours:
+            q_filter = q_filter & (
+                (
+                    Q(exit_date__isnull=False) &
+                    Q(exit_date__gte = F("access_date")+timedelta(hours=from_hours))
+                ) |                
+                (
+                    Q(exit_date__isnull=True) &
+                    Q(access_date__lte=now-timedelta(hours=from_hours))
+                )
+            )
+        if to_hours:
+            q_filter = q_filter & (
+                (
+                    Q(exit_date__isnull=False) &
+                    Q(exit_date__lt = F("access_date")+timedelta(hours=to_hours))
+                ) |                
+                (
+                    Q(exit_date__isnull=True) &
+                    Q(access_date__gt=now-timedelta(hours=to_hours))
+                )
+            )
+        
+        return q_filter
+    
+    @classmethod
+    def filter_for_exit_interval(cls,value,from_hours=None,to_hours=None):
+        q_filter = cls.get_q_filter_for_exit_interval(from_hours=from_hours,to_hours=to_hours)
+        value = value.filter(q_filter)
         return value
     
     class Meta:
@@ -408,8 +481,6 @@ class PatientMeasureResult(models.Model):
             hresult["heart_rate"]["order"] = "%s%03d"%(0, 130-hresult["heart_rate"]["mean"])
         
         return hresult
-    
-    
     
 class MeasureLogger(models.Model):
     
