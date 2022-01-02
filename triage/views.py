@@ -64,11 +64,14 @@ class ReceptionsView(APIView):
         return render(request, self.template_name, {'form': form})
     
     def post(self, request, *args, **kwargs):
-        user = AppUser.get_or_create_from_parent(request.user)
-        totem = user.totem_logged
-        if not totem:
-            raise PermissionDenied("Solo gli utenti Totem sono abilitati all'inserimento dei dati. Effettura il login con un utente Totem o contattare l'assistenza.")
-        hospital = totem.hospital
+        user = AppUser.get_or_create_from_parent(request.user) if not request.user.is_anonymous else request.user
+        totem = None
+        if not request.user.is_anonymous:
+            totem = user.totem_logged
+            if not totem:
+                raise PermissionDenied("Solo gli utenti Totem sono abilitati all'inserimento dei dati. Effettura il login con un utente Totem o contattare l'assistenza.")
+        hospital = totem.hospital if totem else Hospital.objects.all().first()
+        
         if not hospital:
             raise PermissionDenied("Questo Totem non ha un hospedale associato. Associare un ospedale al Totem o contattare l'assistenza.")
 
@@ -80,10 +83,11 @@ class ReceptionsView(APIView):
             patient, created = Patient.objects.get_or_create(
                 fiscal_code=fiscal_code_decoded['code']
                 )
-            patient_user, c = AppUser.objects.get_or_create(
-                username=fiscal_code_decoded['code'],
-                patient_logged=patient,
-                )
+            if not request.user.is_anonymous:
+                patient_user, c = AppUser.objects.get_or_create(
+                    username=fiscal_code_decoded['code'],
+                    patient_logged=patient,
+                    )
             # hospital = Hospital.objects.all().first()
             # totem = Totem.objects.all().first()
             
