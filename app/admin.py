@@ -20,6 +20,7 @@ class AppUserAdmin(UserAdmin):
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
         (_('User parameters'), {'fields': ('_dashboard_hospital',)}),
         (_('Visualization'), {'fields': ('theme', '_dashboard_options')}),
+        (_('User type'), {'fields': ('totem_logged', 'patient_logged')}),
     )
 
 @admin.register(Permission)
