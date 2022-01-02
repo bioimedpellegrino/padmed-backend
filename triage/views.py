@@ -51,7 +51,7 @@ class TestDFXApiView(APIView):
         
         return Response(response, status=status.HTTP_200_OK)
     
-class ReceptionsView(View):
+class ReceptionsView(APIView):
     """[summary]
 
     Args:
