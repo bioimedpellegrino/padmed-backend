@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
+from django.views.generic import View
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -50,7 +51,7 @@ class TestDFXApiView(APIView):
         
         return Response(response, status=status.HTTP_200_OK)
     
-class ReceptionsView(APIView):
+class ReceptionsView(View):
     """[summary]
 
     Args:
@@ -64,13 +65,12 @@ class ReceptionsView(APIView):
         return render(request, self.template_name, {'form': form})
     
     def post(self, request, *args, **kwargs):
-        user = AppUser.get_or_create_from_parent(request.user) if not request.user.is_anonymous else request.user
-        totem = None
-        if not request.user.is_anonymous:
-            totem = user.totem_logged
-            if not totem:
-                raise PermissionDenied("Solo gli utenti Totem sono abilitati all'inserimento dei dati. Effettura il login con un utente Totem o contattare l'assistenza.")
-        hospital = totem.hospital if totem else Hospital.objects.all().first()
+        user = AppUser.get_or_create_from_parent(request.user)
+        totem = user.totem_logged
+        if not totem:
+            raise PermissionDenied("Solo gli utenti Totem sono abilitati all'inserimento dei dati. Effettura il login con un utente Totem o contattare l'assistenza.")
+        hospital = totem.hospital
+
         
         if not hospital:
             raise PermissionDenied("Questo Totem non ha un hospedale associato. Associare un ospedale al Totem o contattare l'assistenza.")
@@ -83,13 +83,13 @@ class ReceptionsView(APIView):
             patient, created = Patient.objects.get_or_create(
                 fiscal_code=fiscal_code_decoded['code']
                 )
-            if not request.user.is_anonymous:
-                patient_user, c = AppUser.objects.get_or_create(
-                    username=fiscal_code_decoded['code'],
-                    patient_logged=patient,
-                    )
-            # hospital = Hospital.objects.all().first()
-            # totem = Totem.objects.all().first()
+            patient_user, c = AppUser.objects.get_or_create(
+                username=fiscal_code_decoded['code'],
+                patient_logged=patient,
+                )
+            
+            hospital = Hospital.objects.all().first()
+            totem = Totem.objects.all().first()
             
             access = TriageAccess()
             access.patient = patient
