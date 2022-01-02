@@ -9,6 +9,9 @@ class GenericPlace(models.Model):
     class Meta:
         abstract = True
         
+    def __str__(self):
+        return "{} - {}".format(self.name, self.short_name)
+        
 class Country(GenericPlace):
     """
     Model Country

@@ -5,7 +5,7 @@ import pandas as pd
 import json
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from core.models import ConfigurationCountry
+from generic.models import City, Province, Country
 from logger.utils import add_log
 
 class Command(BaseCommand):
@@ -38,7 +38,7 @@ class Command(BaseCommand):
 
             add_log(level=2, message=5, custom_message='import_config_countries - IN - import_date %s - is_preview %s - local_file_name_with_ext %s' % (datetime.datetime.strftime(import_date, '%d/%m/%Y'), is_preview, local_file_name_with_ext))
 
-            source_file_path = 'core/management/commands/%s' % local_file_name_with_ext
+            source_file_path = 'generic/management/commands/%s' % local_file_name_with_ext
 
             data_factory = pd.read_csv(source_file_path, encoding='latin1', sep=';')
 
@@ -80,24 +80,25 @@ class Command(BaseCommand):
                     column_title = "Denominazione EN"
                 else:
                     column_title = "Denominazione IT"
-                    
+                
+                short_name_column = "Codice ISO 3166 alpha2"
                 try:
                     if item[column_title] and str(item[column_title]).lower() != 'nan':
                         country_title = item[column_title]
 
-                        c_item = ConfigurationCountry()
-                        c_item.title = country_title
-                        c_item.import_date = import_date
-                        c_item.language_code = language_code
+                        c_item = Country()
+                        c_item.name = country_title
+                        c_item.short_name = item[short_name_column]
+                        c_item.code = str(int(item['Codice ISTAT']))
                         
                         if not is_preview:
                             if is_debug:
-                                print('IMPORT COUNTRY - %s' % (c_item.title))
+                                print('IMPORT COUNTRY - %s - %s' % (c_item.name, c_item.short_name))
                             c_item.save()
                         else:
                             if is_debug:
-                                print('PREVIEW MODE: IMPORT COUNTRY - %s' % (c_item.title))
-                            countries_preview.append(c_item.title)
+                                print('PREVIEW MODE: IMPORT COUNTRY - %s - %s' % (c_item.name, c_item.short_name))
+                            countries_preview.append(c_item.name)
 
                 except Exception as ex:
                     add_log(level=5, message=5, custom_message='import_config_countries - INNER EXCEPTION: %s' % ex)
@@ -118,7 +119,7 @@ class Command(BaseCommand):
             print('data factory rows with data from input file: %s' % count_rows_with_data)
 
             if not is_preview:
-                imported_countries = ConfigurationCountry.objects.filter(import_date=import_date)
+                imported_countries = Country.objects.filter(import_date=import_date)
 
                 add_log(level=2, message=5, custom_message='import_config_countries - imported countries: %s' % imported_countries.count())
                 print('imported countries: %s' % imported_countries.count())
@@ -152,7 +153,7 @@ class Command(BaseCommand):
             add_log(level=2, message=5, custom_message='import_config_countries - DELETE ALL COUNTRIES with import_date < %s' % datetime.datetime.strftime(import_date, '%d/%m/%Y'))
             print('DELETE ALL COUNTRIES with import_date < %s' % datetime.datetime.strftime(import_date, '%d/%m/%Y'))
 
-            items_to_delete = ConfigurationCountry.objects.filter(import_date__lt=import_date)
+            items_to_delete = Country.objects.filter(import_date__lt=import_date)
 
             add_log(level=2, message=5, custom_message='import_config_countries - DELETE %s countries' % items_to_delete.count())
             print('DELETE %s countries' % items_to_delete.count())
@@ -169,7 +170,7 @@ class Command(BaseCommand):
             add_log(level=2, message=5, custom_message='import_config_countries - ROLLBACK ALL COUNTRIES with import_date = %s' % datetime.datetime.strftime(import_date, '%d/%m/%Y'))
             print('ROLLBACK ALL COUNTRIES with import_date = %s' % datetime.datetime.strftime(import_date, '%d/%m/%Y'))
 
-            items_to_delete = ConfigurationCountry.objects.filter(import_date=import_date)
+            items_to_delete = Country.objects.filter(import_date=import_date)
 
             add_log(level=2, message=5, custom_message='import_config_countries - DELETE %s countries' % items_to_delete.count())
             print('DELETE %s countries' % items_to_delete.count())
