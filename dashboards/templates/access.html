@@ -27,7 +27,7 @@
           <div class="card-body">
             <div>
               <h3 class="border-bottom">
-                Anagrafica
+                Anagrafica <a href="{% url 'patient' id=access.patient.id %}">paziente</a>
               </h3>
               <dl class="row">
                 <dt class="col-sm-3 col-md-2">Nome</dt>
@@ -82,30 +82,35 @@
                   {% if access.exit_date %}{{ access.exit_date }}{% endif %}
                 </dd>
               </dl>
-            </div><div>
+            </div>
+          </div>
+          
+          {% for result in access.result_set|dictsortreversed:"id" %}
+            <div class="card-body mt-2">
               <h3 class="border-bottom">
-                Ultimi parametri
+                Parametri (id: {{result.id}})
               </h3>
               <dl class="row">
                 <dt class="col-sm-3 col-md-2">Temperatura</dt>
                 <dd class="col-sm-9 col-md-4">
-                  {{ access.last_hresult.temperature.mean }} &#177; {{ access.last_hresult.temperature.stdev }} {{ access.last_hresult.temperature.unit }}
+                  {{ result.get_hresult.temperature.mean }} &#177; {{ result.get_hresult.temperature.stdev }} {{ result.get_hresult.temperature.unit }}
                 </dd>
                 <dt class="col-sm-3 col-md-2">Frequenza cardiaca</dt>
                 <dd class="col-sm-9 col-md-4">
-                  {{ access.last_hresult.heart_rate.mean }} &#177; {{ access.last_hresult.heart_rate.stdev }} {{ access.last_hresult.heart_rate.unit }}
+                  {{ result.get_hresult.heart_rate.mean }} &#177; {{ result.get_hresult.heart_rate.stdev }} {{ result.get_hresult.heart_rate.unit }}
                 </dd>
                 <dt class="col-sm-3 col-md-2">Pressione minima</dt>
                 <dd class="col-sm-9 col-md-4">
-                  {{ access.last_hresult.pressure.min.mean }} &#177; {{ access.last_hresult.pressure.min.stdev }} {{ access.last_hresult.pressure.min.unit }}
+                  {{ result.get_hresult.pressure.min.mean }} &#177; {{ result.get_hresult.pressure.min.stdev }} {{ result.get_hresult.pressure.min.unit }}
                 </dd>
                 <dt class="col-sm-3 col-md-2">Pressione massima</dt>
                 <dd class="col-sm-9 col-md-4">
-                  {{ access.last_hresult.pressure.max.mean }} &#177; {{ access.last_hresult.pressure.max.stdev }} {{ access.last_hresult.pressure.max.unit }}
+                  {{ result.get_hresult.pressure.max.mean }} &#177; {{ result.get_hresult.pressure.max.stdev }} {{ result.get_hresult.pressure.max.unit }}
                 </dd>
               </dl>
             </div>
-          </div>
+          {% endfor %}
+
         </div>
       </div>
     </div>

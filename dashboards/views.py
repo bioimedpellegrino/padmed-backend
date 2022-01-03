@@ -294,6 +294,235 @@ class HospitalEditView(View):
         else:
             raise PermissionDenied
 
+class PatientsView(View):
+    """[summary]
+
+    Args:
+        APIView ([type]): [description]
+    """
+    template_name = 'patients.html'
+    
+    def get(self, request, *args, **kwargs):
+        return self.GET_render(request,*args, **kwargs)
+    
+    def GET_render(self,request,*args, **kwargs):
+        from .forms import HospitalSelectForm
+        from triage.models import Hospital
+        
+        user = AppUser.get_or_create_from_parent(request.user)
+        if user.dashboard_hospital is None:
+            current_url = request.resolver_match.url_name
+            messages.add_message(request, messages.WARNING, _('Seleziona un ospedale per accedere alla sezione pazienti.'))
+            return HttpResponseRedirect('%s?next=%s' % (reverse('patients'), current_url))
+        
+        hospital = user.dashboard_hospital
+        
+        permission = hospital.has_view_permission(user=user)
+        if permission:
+            return render(request, self.template_name, {
+                "hospital":hospital,
+            })
+        else:
+            raise PermissionDenied
+
+class PatientView(View):
+    """[summary]
+
+    Args:
+        APIView ([type]): [description]
+    """
+    template_name = 'hospital_edit.html'
+    
+    def get(self, request, *args, **kwargs):
+        return self.GET_render(request,*args, **kwargs)
+    
+    def GET_render(self,request,*args, **kwargs):
+        from .forms import HospitalEditForm
+        from triage.models import Hospital
+        #### Objects from post ####
+        form = kwargs.get("form",None)
+        has_error = kwargs.get("has_error",False)
+        ###########################
+    
+        id = kwargs.get("id", None)
+        if id is not None:
+            obj = get_object_or_404(Hospital,pk=id)
+            permission = obj.has_change_permission(request)
+        else:
+            obj = None
+            permission = Hospital.has_global_add_permission(request)
+        if permission:
+            if not form:
+                form = HospitalEditForm(
+                    instance = obj,
+                )
+            return render(request, self.template_name, {
+                "form":form,
+                "has_error":has_error,
+            })
+        else:
+            raise PermissionDenied
+        
+    def post(self, request, *args, **kwargs):
+        from .forms import HospitalEditForm
+        from django.contrib import messages
+        from app.models import AppUser
+        id = kwargs.get("id", None)
+        if id is not None:
+            obj = get_object_or_404(Hospital,pk=id)
+            permission = obj.has_change_permission(request)
+        else:
+            obj = None
+            permission = Hospital.has_global_add_permission(request)
+        if permission:
+            form = HospitalEditForm(
+                request.POST or None,
+                request.FILES or None,
+                instance = obj,
+            )
+            if form.is_valid():
+                obj = form.save()
+                messages.add_message(request, messages.SUCCESS, _('Ospedale "%s" salvato con successo!'%(obj)))
+                return HttpResponseRedirect(reverse('hospitals'))
+            else:
+                kwargs["form"] = form
+                kwargs["has_error"] = True
+                return self.GET_render(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
+
+class PatientEditView(View):
+    """[summary]
+
+    Args:
+        APIView ([type]): [description]
+    """
+    template_name = 'hospital_edit.html'
+    
+    def get(self, request, *args, **kwargs):
+        return self.GET_render(request,*args, **kwargs)
+    
+    def GET_render(self,request,*args, **kwargs):
+        from .forms import HospitalEditForm
+        from triage.models import Hospital
+        #### Objects from post ####
+        form = kwargs.get("form",None)
+        has_error = kwargs.get("has_error",False)
+        ###########################
+    
+        id = kwargs.get("id", None)
+        if id is not None:
+            obj = get_object_or_404(Hospital,pk=id)
+            permission = obj.has_change_permission(request)
+        else:
+            obj = None
+            permission = Hospital.has_global_add_permission(request)
+        if permission:
+            if not form:
+                form = HospitalEditForm(
+                    instance = obj,
+                )
+            return render(request, self.template_name, {
+                "form":form,
+                "has_error":has_error,
+            })
+        else:
+            raise PermissionDenied
+        
+    def post(self, request, *args, **kwargs):
+        from .forms import HospitalEditForm
+        from django.contrib import messages
+        from app.models import AppUser
+        id = kwargs.get("id", None)
+        if id is not None:
+            obj = get_object_or_404(Hospital,pk=id)
+            permission = obj.has_change_permission(request)
+        else:
+            obj = None
+            permission = Hospital.has_global_add_permission(request)
+        if permission:
+            form = HospitalEditForm(
+                request.POST or None,
+                request.FILES or None,
+                instance = obj,
+            )
+            if form.is_valid():
+                obj = form.save()
+                messages.add_message(request, messages.SUCCESS, _('Ospedale "%s" salvato con successo!'%(obj)))
+                return HttpResponseRedirect(reverse('hospitals'))
+            else:
+                kwargs["form"] = form
+                kwargs["has_error"] = True
+                return self.GET_render(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
+
+class TotemEditView(View):
+    """[summary]
+
+    Args:
+        APIView ([type]): [description]
+    """
+    template_name = 'hospital_edit.html'
+    
+    def get(self, request, *args, **kwargs):
+        return self.GET_render(request,*args, **kwargs)
+    
+    def GET_render(self,request,*args, **kwargs):
+        from .forms import HospitalEditForm
+        from triage.models import Hospital
+        #### Objects from post ####
+        form = kwargs.get("form",None)
+        has_error = kwargs.get("has_error",False)
+        ###########################
+    
+        id = kwargs.get("id", None)
+        if id is not None:
+            obj = get_object_or_404(Hospital,pk=id)
+            permission = obj.has_change_permission(request)
+        else:
+            obj = None
+            permission = Hospital.has_global_add_permission(request)
+        if permission:
+            if not form:
+                form = HospitalEditForm(
+                    instance = obj,
+                )
+            return render(request, self.template_name, {
+                "form":form,
+                "has_error":has_error,
+            })
+        else:
+            raise PermissionDenied
+        
+    def post(self, request, *args, **kwargs):
+        from .forms import HospitalEditForm
+        from django.contrib import messages
+        from app.models import AppUser
+        id = kwargs.get("id", None)
+        if id is not None:
+            obj = get_object_or_404(Hospital,pk=id)
+            permission = obj.has_change_permission(request)
+        else:
+            obj = None
+            permission = Hospital.has_global_add_permission(request)
+        if permission:
+            form = HospitalEditForm(
+                request.POST or None,
+                request.FILES or None,
+                instance = obj,
+            )
+            if form.is_valid():
+                obj = form.save()
+                messages.add_message(request, messages.SUCCESS, _('Ospedale "%s" salvato con successo!'%(obj)))
+                return HttpResponseRedirect(reverse('hospitals'))
+            else:
+                kwargs["form"] = form
+                kwargs["has_error"] = True
+                return self.GET_render(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
+
 class GetStoricoData(APIView):
     
     def post(self, request, *args, **kwargs):

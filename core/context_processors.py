@@ -54,18 +54,7 @@ def side_menu_context(current_url_name):
         }
     side_menu.append(item)
     
-    url_name = "hospitals"
-    item = {
-        "type":"url",
-        "text":"Totem",
-        "url":url_name,
-        "active":current_url_name==url_name,
-        "icon_classes":"ni ni-camera-compact text-blue",
-        "childs":None,
-        }
-    side_menu.append(item)
-    
-    url_name = "hospitals"
+    url_name = "patients"
     item = {
         "type":"url",
         "text":"Pazienti",

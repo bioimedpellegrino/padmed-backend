@@ -1,0 +1,134 @@
+{% extends BASE_TEMPLATE %}
+
+{% block title %} Live Dashboard {% endblock title %}
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- Header -->
+    <div class="header bg-gradient-primary pb-8 pt-5 pt-md-8">
+      <div class="container-fluid">
+        <div class="header-body">
+
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid mt--7">
+
+      <!-- Table pending -->
+
+      <div class="row">
+        <div class="col">
+          <div class="card shadow">
+            <div class="card-header border-0">
+              <h3 class="mb-0">Lista pazienti</h3>
+            </div>
+            <div class="table-responsive">
+              <table id="data_table" class="table align-items-center table-flush">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col">Cognome</th>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Codice fiscale</th>
+                    <th scope="col">Data di nascita</th>
+                    <th scope="col">Residenza</th>
+                    <th scope="col">Accessi</th>
+                    <th scope="col"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in hospital.access_patient_set %}
+                    <tr>
+                      <td scope="row">
+                        <span>{{item.last_name}}</span>
+                      </td>
+
+                      <td scope="row">
+                        <span>{{item.first_name}} {{item.middle_name}}</span>
+                      </td>
+
+                      <td scope="row">
+                        <span>{{item.fiscal_code}}</span>
+                      </td>
+
+                      <td scope="row" data-order="{{item.birth_date|date:'Ymd'}}">
+                        <span>{{item.birth_date}}</span>
+                      </td>
+
+                      <td scope="row">
+                        <span>{{item.residence_city}} ({{item.residence_province}}) - {{item.residence_country}} </span>
+                      </td>
+
+                      <td scope="row">
+                        <span>{{item.accesses.count}}</span>
+                      </td>
+
+                      <td class="text-right">
+                        <div class="dropdown">
+                          <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v"></i>
+                          </a>
+                          <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                            <a class="dropdown-item" href="{% url 'patient' id=item.id %}">Dettaglio</a>
+                          </div>
+                        </div>
+                      </td>
+
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% include "includes/footer.html" %}
+
+    </div>
+    
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+  <script>
+    $(document).ready( function () {
+        $('#data_table').DataTable({
+            // "responsive": true,
+            "paging":   false,
+            "pageLength" : 10,
+            "aaSorting": [[0,"asc"],[3,"des"]],
+            "lengthChange": false,
+            "autoWidth": false,
+            "language": {
+              "sEmptyTable":     "Nessun dato presente nella tabella",
+              "sInfo":           "Vista da _START_ a _END_ di _TOTAL_ elementi",
+              "sInfoEmpty":      "Vista da 0 a 0 di 0 elementi",
+              "sInfoFiltered":   "(filtrati da _MAX_ elementi totali)",
+              "sInfoPostFix":    "",
+              "sInfoThousands":  ".",
+              "sLengthMenu":     "Visualizza _MENU_ elementi",
+              "sLoadingRecords": "Caricamento...",
+              "sProcessing":     "Elaborazione...",
+              "sSearch":         "Cerca:",
+              "sZeroRecords":    "La ricerca non ha portato alcun risultato.",
+              "oPaginate": {
+                "sFirst":      "Inizio",
+                "sPrevious":   "Precedente",
+                "sNext":       "Successivo",
+                "sLast":       "Fine"
+              },
+              "oAria": {
+                "sSortAscending":  ": attiva per ordinare la colonna in ordine crescente",
+                "sSortDescending": ": attiva per ordinare la colonna in ordine decrescente"
+              }
+            },
+          });
+      });
+  </script>
+
+{% endblock javascripts %}

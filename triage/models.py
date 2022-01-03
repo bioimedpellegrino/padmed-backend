@@ -70,6 +70,11 @@ class Hospital(RestrictedClass):
         if self.country:
             result += " - "+self.country
         return result
+    
+    @property
+    def access_patient_set(self):
+        patients_pk = self.accesses.values_list("patient__pk")
+        return Patient.objects.filter(pk__in=patients_pk)
         
 class Totem(models.Model):
     name = models.CharField(verbose_name="Nome",blank=True,null=True,max_length=512,default="")
@@ -252,7 +257,12 @@ class TriageAccess(models.Model):
             if measure:
                 last_result = measure.get_hresult
         return last_result
-                    
+    @property
+    def result_set(self):
+        videos = self.patientvideo_set.all()
+        result_set = PatientMeasureResult.objects.filter(patient_video__in=videos)
+        return result_set
+        
     @classmethod
     def whites(cls,*args,exclude=[],**kwargs)->QuerySet:
         objs = cls.objects.filter(triage_code=TriageCode.get_white())
