@@ -35,6 +35,7 @@
                     <th scope="col">Data di nascita</th>
                     <th scope="col">Residenza</th>
                     <th scope="col">Accessi</th>
+                    <th scope="col">Utlimo accesso</th>
                     <th scope="col"></th>
                   </tr>
                 </thead>
@@ -44,25 +45,23 @@
                       <td scope="row">
                         <span>{{item.last_name}}</span>
                       </td>
-
                       <td scope="row">
                         <span>{{item.first_name}} {{item.middle_name}}</span>
                       </td>
-
                       <td scope="row">
                         <span>{{item.fiscal_code}}</span>
                       </td>
-
                       <td scope="row" data-order="{{item.birth_date|date:'Ymd'}}">
                         <span>{{item.birth_date}}</span>
                       </td>
-
                       <td scope="row">
                         <span>{{item.residence_city}} ({{item.residence_province}}) - {{item.residence_country}} </span>
                       </td>
-
                       <td scope="row">
                         <span>{{item.accesses.count}}</span>
+                      </td>
+                      <td scope="row" data-order="{{item.accesses.last.access_date|date:'Ymd'}}">
+                        <span>{{item.accesses.last.access_date}}</span>
                       </td>
 
                       <td class="text-right">
