@@ -27,28 +27,28 @@
           <div class="card-body">
             <div>
               <h3 class="border-bottom">
-                Anagrafica <a href="{% url 'patient' id=access.patient.id %}">paziente</a>
+                Anagrafica &nbsp; <a href="{% url 'patient' id=access.patient.id %}">paziente</a>
               </h3>
               <dl class="row">
                 <dt class="col-sm-3 col-md-2">Nome</dt>
                 <dd class="col-sm-9 col-md-4">
-                  {{ access.patient.first_name }}&nbsp;{{ access.patient.middle_name }}
+                  {{ access.patient.first_name |default_if_none:""}}&nbsp;{{ access.patient.middle_name |default_if_none:""}}
                 </dd>
                 <dt class="col-sm-3 col-md-2">Cognome</dt>
                 <dd class="col-sm-9 col-md-4">
-                  {{ access.patient.last_name }}
+                  {{ access.patient.last_name |default_if_none:""}}
                 </dd>
                 <dt class="col-sm-3 col-md-2">Data nascita</dt>
                 <dd class="col-sm-9 col-md-4">
-                  {{ access.patient.birth_date }}
+                  {{ access.patient.birth_date |default_if_none:""}}
                 </dd>
                 <dt class="col-sm-3 col-md-2">Sesso</dt>
                 <dd class="col-sm-9 col-md-4">
-                  {{ access.patient.gender }}
+                  {{ access.patient.gender |default_if_none:""}}
                 </dd>
                 <dt class="col-sm-3 col-md-2">Codice fiscale</dt>
                 <dd class="col-sm-9 col-md-4">
-                  {{ access.patient.fiscal_code }}
+                  {{ access.patient.fiscal_code |default_if_none:""}}
                 </dd>
               </dl>
             </div>
@@ -59,36 +59,42 @@
               <dl class="row">
                 <dt class="col-sm-3 col-md-2">Ospedale</dt>
                 <dd class="col-sm-9 col-md-4">
-                  {{ access.hospital }}
+                  {{ access.hospital |default_if_none:""}}
                 </dd>
                 <dt class="col-sm-3 col-md-2">Totem</dt>
                 <dd class="col-sm-9 col-md-4">
-                  {{ access.totem }}
+                  {{ access.totem |default_if_none:""}}
                 </dd>
                 <dt class="col-sm-3 col-md-2">Motivo</dt>
                 <dd class="col-sm-9 col-md-4">
-                  {{ access.access_reason }}
+                  {{ access.access_reason |default_if_none:""}}
                 </dd>
                 <dt class="col-sm-3 col-md-2">Codice triage</dt>
                 <dd class="col-sm-9 col-md-4">
-                  {{ access.triage_code }}
+                  {{ access.triage_code |default_if_none:""}}
                 </dd>
                 <dt class="col-sm-3 col-md-2">Data entrata</dt>
                 <dd class="col-sm-9 col-md-4">
-                  {{ access.access_date }}
+                  {{ access.access_date |default_if_none:""}}
                 </dd>
                 <dt class="col-sm-3 col-md-2">Data uscita</dt>
                 <dd class="col-sm-9 col-md-4">
-                  {% if access.exit_date %}{{ access.exit_date }}{% endif %}
+                  {% if access.exit_date %}{{ access.exit_date |default_if_none:""}}{% endif %}
                 </dd>
               </dl>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
           
-          {% for result in access.result_set|dictsortreversed:"id" %}
-            <div class="card-body mt-2">
+    {% for result in access.result_set|dictsortreversed:"id" %}
+      <div class="row mt-2">
+        <div class="col-xl-12 order-xl-1">
+          <div class="card bg-secondary shadow">
+            <div class="card-body">
               <h3 class="border-bottom">
-                Parametri (id: {{result.id}})
+                Misura {{result.id}}
               </h3>
               <dl class="row">
                 <dt class="col-sm-3 col-md-2">Temperatura</dt>
@@ -109,11 +115,10 @@
                 </dd>
               </dl>
             </div>
-          {% endfor %}
-
+          </div>
         </div>
       </div>
-    </div>
+    {% endfor %}
 
     {% include "includes/footer.html" %}
 

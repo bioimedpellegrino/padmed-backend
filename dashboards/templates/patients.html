@@ -32,7 +32,7 @@
                     <th scope="col">Cognome</th>
                     <th scope="col">Nome</th>
                     <th scope="col">Codice fiscale</th>
-                    <th scope="col">Data di nascita</th>
+                    <th scope="col">Data nascita</th>
                     <th scope="col">Residenza</th>
                     <th scope="col">Accessi</th>
                     <th scope="col">Utlimo accesso</th>
@@ -43,25 +43,25 @@
                   {% for item in hospital.access_patient_set %}
                     <tr>
                       <td scope="row">
-                        <span>{{item.last_name}}</span>
+                        <span>{{item.last_name|default_if_none:""}}</span>
                       </td>
                       <td scope="row">
-                        <span>{{item.first_name}} {{item.middle_name}}</span>
+                        <span>{{item.first_name|default_if_none:""}} {{item.middle_name|default_if_none:""}}</span>
                       </td>
                       <td scope="row">
                         <span>{{item.fiscal_code}}</span>
                       </td>
                       <td scope="row" data-order="{{item.birth_date|date:'Ymd'}}">
-                        <span>{{item.birth_date}}</span>
+                        <span>{{item.birth_date|date:'d/m/Y'}}</span>
                       </td>
                       <td scope="row">
-                        <span>{{item.residence_city}} ({{item.residence_province}}) - {{item.residence_country}} </span>
+                        <span>{{item.residence_city|default_if_none:""}} {%if item.residence_province%}({{item.residence_province}}){%endif%} {%if item.residence_country%}- {{item.residence_country}}{%endif%} </span>
                       </td>
                       <td scope="row">
                         <span>{{item.accesses.count}}</span>
                       </td>
-                      <td scope="row" data-order="{{item.accesses.last.access_date|date:'Ymd'}}">
-                        <span>{{item.accesses.last.access_date}}</span>
+                      <td scope="row" data-order="{{item.accesses.last.access_date|date:'YmdHi'}}">
+                        <span>{{item.accesses.last.access_date|date:'d/m/Y, H:i'}}</span>
                       </td>
 
                       <td class="text-right">

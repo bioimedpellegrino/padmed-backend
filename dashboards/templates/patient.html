@@ -1,0 +1,67 @@
+{% extends 'layouts/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %} Profile {% endblock title %}
+
+{% block content %}
+
+<div class="header bg-gradient-primary pb-8 pt-5 pt-md-8">
+  <div class="container-fluid">
+    <div class="header-body">
+
+    </div>
+  </div>
+</div>
+
+  <div class="container-fluid mt--7">
+    <div class="row">
+      <div class="col-xl-12 order-xl-1">
+        <div class="card bg-secondary shadow">
+          <div class="card-header bg-white border-0">
+            <div class="row align-items-center">
+              <div class="col-8">
+                <h3 class="mb-0">Paziente {{patient.id}} - {{patient}}</h3>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div>
+              <h3 class="border-bottom">
+                Anagrafica
+              </h3>
+              <dl class="row">
+                <dt class="col-sm-3 col-md-2">Nome</dt>
+                <dd class="col-sm-9 col-md-4">
+                  {{ patient.first_name |default_if_none:""}}&nbsp;{{ patient.middle_name |default_if_none:""}}
+                </dd>
+                <dt class="col-sm-3 col-md-2">Cognome</dt>
+                <dd class="col-sm-9 col-md-4">
+                  {{ patient.last_name |default_if_none:""}}
+                </dd>
+                <dt class="col-sm-3 col-md-2">Data nascita</dt>
+                <dd class="col-sm-9 col-md-4">
+                  {{ patient.birth_date |default_if_none:""}}
+                </dd>
+                <dt class="col-sm-3 col-md-2">Sesso</dt>
+                <dd class="col-sm-9 col-md-4">
+                  {{ patient.gender |default_if_none:""}}
+                </dd>
+                <dt class="col-sm-3 col-md-2">Codice fiscale</dt>
+                <dd class="col-sm-9 col-md-4">
+                  {{ patient.fiscal_code |default_if_none:""}}
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% include "includes/footer.html" %}
+
+  </div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}{% endblock javascripts %}

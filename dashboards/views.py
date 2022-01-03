@@ -331,63 +331,31 @@ class PatientView(View):
     Args:
         APIView ([type]): [description]
     """
-    template_name = 'hospital_edit.html'
+    template_name = 'patient.html'
     
     def get(self, request, *args, **kwargs):
         return self.GET_render(request,*args, **kwargs)
     
     def GET_render(self,request,*args, **kwargs):
-        from .forms import HospitalEditForm
-        from triage.models import Hospital
-        #### Objects from post ####
-        form = kwargs.get("form",None)
-        has_error = kwargs.get("has_error",False)
-        ###########################
-    
-        id = kwargs.get("id", None)
-        if id is not None:
-            obj = get_object_or_404(Hospital,pk=id)
-            permission = obj.has_change_permission(request)
-        else:
-            obj = None
-            permission = Hospital.has_global_add_permission(request)
-        if permission:
-            if not form:
-                form = HospitalEditForm(
-                    instance = obj,
-                )
-            return render(request, self.template_name, {
-                "form":form,
-                "has_error":has_error,
-            })
-        else:
-            raise PermissionDenied
         
-    def post(self, request, *args, **kwargs):
-        from .forms import HospitalEditForm
-        from django.contrib import messages
-        from app.models import AppUser
         id = kwargs.get("id", None)
+        user = AppUser.get_or_create_from_parent(request.user)
+        if user.dashboard_hospital is None:
+            current_url = request.resolver_match.url_name
+            messages.add_message(request, messages.WARNING, _('Seleziona un ospedale per accedere alla sezione pazienti.'))
+            return HttpResponseRedirect('%s?next=%s' % (reverse('patient',id=id), current_url))
+        
         if id is not None:
-            obj = get_object_or_404(Hospital,pk=id)
-            permission = obj.has_change_permission(request)
+            patient = get_object_or_404(Patient,pk=id)
+            hospitals = Hospital.objects.filter(id__in=patient.accesses.all().values_list("hospital_id",flat=True))
+            permission = any([hospital.has_view_permission(user=user) for hospital in hospitals])
         else:
-            obj = None
-            permission = Hospital.has_global_add_permission(request)
+            patient = None
+            permission = True
         if permission:
-            form = HospitalEditForm(
-                request.POST or None,
-                request.FILES or None,
-                instance = obj,
-            )
-            if form.is_valid():
-                obj = form.save()
-                messages.add_message(request, messages.SUCCESS, _('Ospedale "%s" salvato con successo!'%(obj)))
-                return HttpResponseRedirect(reverse('hospitals'))
-            else:
-                kwargs["form"] = form
-                kwargs["has_error"] = True
-                return self.GET_render(request, *args, **kwargs)
+            return render(request, self.template_name, {
+                "patient":patient,
+            })
         else:
             raise PermissionDenied
 
