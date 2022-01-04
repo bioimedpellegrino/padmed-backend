@@ -122,6 +122,11 @@ class StoricoView(View):
             "storico_table":storico_table,
             })
 
+class ExitPatient(View):
+    
+    def post(self, request, *args, **kwargs):
+        pass
+    
 class UserProfileView(View):
     """[summary]
 
@@ -866,4 +871,5 @@ class GetStoricoData(APIView):
         table = re.sub(r'\s*\n\s*', ' ', table).strip()
         return str(table)
 
+        
     
