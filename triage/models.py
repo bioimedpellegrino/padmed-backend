@@ -74,7 +74,7 @@ class Hospital(RestrictedClass):
     @property
     def access_patient_set(self):
         patients_pk = self.accesses.values_list("patient__pk")
-        return Patient.objects.filter(pk__in=patients_pk)
+        return Patient.objects.filter(pk__in=patients_pk).order_by("last_name","first_name")
         
 class Totem(models.Model):
     name = models.CharField(verbose_name="Nome",blank=True,null=True,max_length=512,default="")

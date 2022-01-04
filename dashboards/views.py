@@ -319,8 +319,9 @@ class PatientsView(View):
         
         permission = hospital.has_view_permission(user=user)
         if permission:
+            patients = hospital.access_patient_set
             return render(request, self.template_name, {
-                "hospital":hospital,
+                "patients":patients,
             })
         else:
             raise PermissionDenied
@@ -344,17 +345,21 @@ class PatientView(View):
             current_url = request.resolver_match.url_name
             messages.add_message(request, messages.WARNING, _('Seleziona un ospedale per accedere alla sezione pazienti.'))
             return HttpResponseRedirect('%s?next=%s' % (reverse('patient',id=id), current_url))
-        
+        hospital = user.dashboard_hospital
         if id is not None:
             patient = get_object_or_404(Patient,pk=id)
             hospitals = Hospital.objects.filter(id__in=patient.accesses.all().values_list("hospital_id",flat=True))
-            permission = any([hospital.has_view_permission(user=user) for hospital in hospitals])
+            # permission = any([hospital.has_view_permission(user=user) for hospital in hospitals])
+            permission = hospital in hospitals
         else:
             patient = None
             permission = True
         if permission:
+            accesses = patient.accesses.filter(hospital=hospital).order_by("access_date")
+            accesses_table = GetStoricoData.get_table(accesses)
             return render(request, self.template_name, {
                 "patient":patient,
+                "accesses_table":accesses_table,
             })
         else:
             raise PermissionDenied
@@ -813,10 +818,7 @@ class GetStoricoData(APIView):
         return data
     
     @classmethod
-    def get_storico_table(cls,start:datetime.date,end:datetime.date,code=None,from_hours=None,to_hours=None,hospital:Hospital=None):
-        from django.template.loader import render_to_string
-        import re
-        
+    def get_storico_table(cls,start:datetime.date,end:datetime.date,code=None,from_hours=None,to_hours=None,hospital:Hospital=None):        
         if hospital is None:
             kwargs = {}
         else:
@@ -830,16 +832,25 @@ class GetStoricoData(APIView):
         }
         method = getattr(TriageAccess,name_methods[code])
 
-        units = {}
-        units["temperature"] = "°C"
-        units["pressure"] = "mmHg"
-        units["heartrate"] = "bpm"
                 
         data = method(access_date__gte=start,access_date__lte=end,**kwargs)
         data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
         data = data.order_by("access_date")
+        table = cls.get_table(data)
+        return table
+    
+    @classmethod
+    def get_table(cls,data):
+        import re
+        from django.template.loader import render_to_string
+        
+        units = {}
+        units["temperature"] = "°C"
+        units["pressure"] = "mmHg"
+        units["heartrate"] = "bpm"
+        
         for item in data:
-            item.access_date_cache = item.access_date.strftime("%d/%m/%Y %H:%M")
+            item.access_date_cache = item.access_date.strftime("%x %X")
             item.access_date_order_cache = int(item.access_date.strftime("%Y%m%d%H%M"))
             item.hresults = None
             video = item.patientvideo_set.last()
@@ -854,3 +865,5 @@ class GetStoricoData(APIView):
         })
         table = re.sub(r'\s*\n\s*', ' ', table).strip()
         return str(table)
+
+    

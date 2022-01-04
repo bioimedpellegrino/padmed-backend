@@ -37,7 +37,7 @@
                       <span class="h2 font-weight-bold mb-0">{{ cards.gialli.value }}</span>
                     </div>
                     <div class="col-auto">
-                      <div class="icon icon-shape bg-yellow text-white rounded-circle shadow">
+                      <div class="icon icon-shape bg-darkyellow text-white rounded-circle shadow">
                         <i class="far fa-user"></i>
                       </div>
                     </div>
@@ -67,7 +67,7 @@
                       <span class="h2 font-weight-bold mb-0">{{ cards.verdi.value }}</span>
                     </div>
                     <div class="col-auto">
-                      <div class="icon icon-shape bg-green text-white rounded-circle shadow">
+                      <div class="icon icon-shape bg-darkgreen text-white rounded-circle shadow">
                         <i class="far fa-user"></i>
                       </div>
                     </div>
@@ -184,9 +184,9 @@
                           {% if item.is_white %}
                             <div class="icon-sm bg-white rounded-circle border"></div>
                           {% elif item.is_green %}
-                            <div class="icon-sm bg-green rounded-circle border"></div>
+                            <div class="icon-sm bg-darkgreen rounded-circle border"></div>
                           {% elif item.is_yellow %}
-                            <div class="icon-sm bg-yellow rounded-circle border"></div>
+                            <div class="icon-sm bg-darkyellow rounded-circle border"></div>
                           {% endif %}
                         </div>
                       </td>
@@ -194,13 +194,13 @@
                       <td scope="row">
                         <div class="media align-items-center">
                           <div class="media-body">
-                            <span class="mb-0 text-sm">{{item.patient.last_name}} {{item.patient.first_name}}</span>
+                            <span class="mb-0 text-sm">{{item.patient.last_name|default_if_none:""}} {{item.patient.first_name|default_if_none:""}}</span>
                           </div>
                         </div>
                       </td>
 
                       <td scope="row">
-                        {{item.access_reason.reason}}
+                        {{item.access_reason.reason|default_if_none:""}}
                       </td>
 
                       <td scope="row" data-search="{{item.waiting_fmt_cache}}" data-order="{{item.waiting_minutes_cache}}">
@@ -210,9 +210,9 @@
                             <div>
                               <div class="progress">
                                 {% if item.waiting_range_cache <= 1 %}
-                                  <div class="progress-bar bg-green" role="progressbar" aria-valuenow="{{item.waiting_cache}}" aria-valuemin="0" aria-valuemax="100" style="width: {{item.waiting_cache}}%;"></div>
+                                  <div class="progress-bar bg-darkgreen" role="progressbar" aria-valuenow="{{item.waiting_cache}}" aria-valuemin="0" aria-valuemax="100" style="width: {{item.waiting_cache}}%;"></div>
                                 {% elif item.waiting_range_cache == 2 %}
-                                  <div class="progress-bar bg-yellow" role="progressbar" aria-valuenow="{{item.waiting_cache}}" aria-valuemin="0" aria-valuemax="100" style="width: {{item.waiting_cache}}%;"></div>
+                                  <div class="progress-bar bg-darkyellow" role="progressbar" aria-valuenow="{{item.waiting_cache}}" aria-valuemin="0" aria-valuemax="100" style="width: {{item.waiting_cache}}%;"></div>
                                 {% elif item.waiting_range_cache >= 3 %}
                                   <div class="progress-bar bg-warning" role="progressbar" aria-valuenow="{{item.waiting_cache}}" aria-valuemin="0" aria-valuemax="100" style="width: {{item.waiting_cache}}%;"></div>
                                 {% endif %}
@@ -225,19 +225,19 @@
                       <td scope="row" data-order="{{item.hresults.temperature.order}}">
                         <div class="media align-items-center">
                           {% if item.hresults.temperature.alarm == 0 %}
-                            <div class="icon-sm text-green">
+                            <div class="icon-sm text-darkgreen">
                               <i class="fas fa-thermometer-empty"></i>
                             </div>
                           {% elif item.hresults.temperature.alarm == 1 %}
-                            <div class="icon-sm text-yellow">
+                            <div class="icon-sm text-darkyellow">
                               <i class="fas fa-thermometer-half"></i>
                             </div>
                           {% elif item.hresults.temperature.alarm == 2 %}
-                            <div class="icon-sm text-red">
+                            <div class="icon-sm text-darkred">
                               <i class="fas fa-thermometer-full"></i>
                             </div>
                           {% elif item.hresults.temperature.alarm == 3 %}
-                            <div class="icon-sm text-red blinking">
+                            <div class="icon-sm text-darkred blinking">
                               <i class="fas fa-thermometer-full"></i>
                             </div>
                           {% endif %}
@@ -250,19 +250,19 @@
                       <td scope="row" data-order="{{item.hresults.pressure.order}}">
                         <div class="media align-items-center">
                           {% if item.hresults.pressure.alarm == 0 %}
-                            <div class="icon-sm text-green">
+                            <div class="icon-sm text-darkgreen">
                               <i class="fas fa-stopwatch"></i>
                             </div>
                           {% elif item.hresults.pressure.alarm == 1 %}
-                            <div class="icon-sm text-yellow">
+                            <div class="icon-sm text-darkyellow">
                               <i class="fas fa-stopwatch"></i>
                             </div>
                           {% elif item.hresults.pressure.alarm == 2 %}
-                            <div class="icon-sm text-red">
+                            <div class="icon-sm text-darkred">
                               <i class="fas fa-stopwatch"></i>
                             </div>
                           {% elif item.hresults.pressure.alarm == 3 %}
-                            <div class="icon-sm text-red blinking">
+                            <div class="icon-sm text-darkred blinking">
                               <i class="fas fa-stopwatch"></i>
                             </div>
                           {% endif %}
@@ -281,19 +281,19 @@
                       <td scope="row" data-order="{{item.hresults.heart_rate.order}}">
                         <div class="media align-items-center">
                           {% if item.hresults.heart_rate.alarm == 0 %}
-                            <div class="icon-sm text-green">
+                            <div class="icon-sm text-darkgreen">
                               <i class="fas fa-heartbeat"></i>
                             </div>
                           {% elif item.hresults.heart_rate.alarm == 1 %}
-                            <div class="icon-sm text-yellow">
+                            <div class="icon-sm text-darkyellow">
                               <i class="fas fa-heartbeat"></i>
                             </div>
                           {% elif item.hresults.heart_rate.alarm == 2 %}
-                            <div class="icon-sm text-red">
+                            <div class="icon-sm text-darkred">
                               <i class="fas fa-heartbeat"></i>
                             </div>
                           {% elif item.hresults.heart_rate.alarm == 3 %}
-                            <div class="icon-sm text-red blinking">
+                            <div class="icon-sm text-darkred blinking">
                               <i class="fas fa-heartbeat"></i>
                             </div>
                           {% endif %}

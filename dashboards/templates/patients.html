@@ -40,7 +40,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {% for item in hospital.access_patient_set %}
+                  {% for item in patients %}
                     <tr>
                       <td scope="row">
                         <span>{{item.last_name|default_if_none:""}}</span>
@@ -100,7 +100,7 @@
             // "responsive": true,
             "paging":   false,
             "pageLength" : 10,
-            "aaSorting": [[0,"asc"],[3,"des"]],
+            // "aaSorting": [[0,"asc"],[3,"des"]],
             "lengthChange": false,
             "autoWidth": false,
             "language": {
