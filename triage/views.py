@@ -166,6 +166,7 @@ class RecordVideoView(APIView):
         # Retrive comprehensive measurement informations
         result = asyncio.run(get_measurement(config=config, measurement_id=measurement_id))
         p_measure_result.result = result
+        p_measure_result.save()
         p_measure_result.measure_short = unpack_result_deepaffex(result)
         p_measure_result.save()
         
