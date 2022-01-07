@@ -17,6 +17,7 @@ import asyncio
 import datetime
 import os
 import json
+import time
 
 from app.models import AppUser
 from .forms import PatientForm
@@ -164,6 +165,7 @@ class RecordVideoView(APIView):
         p_measure_result.patient_video = patient_video
         p_measure_result.measurement_id = measurement_id
         # Retrive comprehensive measurement informations
+        time.sleep(2)
         result = asyncio.run(get_measurement(config=config, measurement_id=measurement_id))
         p_measure_result.result = result
         p_measure_result.save()
