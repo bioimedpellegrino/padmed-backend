@@ -496,12 +496,17 @@ class GetLiveData(APIView):
             access.exit_date = timezone.localtime()
         access.save()
         ## Rebuild the table
+        
+        now = timezone.localtime()
+        one_hour_ago = relativedelta(hours=1)
+        cards = self.get_live_cards(start=None,end=now,diff_period=one_hour_ago,hospital=hospital)
         live_table = self.get_live_table(
             request,
             hospital,
             )
         return JsonResponse({
             'success': True,
+            "cards":cards,
             "live_table":live_table,
             })
         
