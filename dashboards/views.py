@@ -25,7 +25,6 @@ class LiveView(View):
     template_name = 'live_dash.html'
     
     def get(self, request, *args, **kwargs):
-        from .utils import get_max_waiting_time
         user = AppUser.get_or_create_from_parent(request.user)
         if user.dashboard_hospital is None:
             current_url = request.resolver_match.url_name
@@ -37,29 +36,12 @@ class LiveView(View):
         now = timezone.localtime()
         one_hour_ago = relativedelta(hours=1)
 
-        cards = GetStoricoData.get_live_cards(start=None,end=now,diff_period=one_hour_ago,hospital=hospital)
-
-        units = {}
-        units["temperature"] = "°C"
-        units["pressure"] = "mmHg"
-        units["heartrate"] = "bpm"
-                
-        items = TriageAccess.ordered_items(exit_date__isnull=True,hospital=hospital)
-        max_waiting_time = get_max_waiting_time()
-        max_waiting = max_waiting_time.hours*60 + max_waiting_time.minutes
-        for item in items:
-            item_waiting_time = item.waiting_time
-            item.waiting_cache = min(100*(item_waiting_time.days*24*60 + item_waiting_time.hours*60 + item_waiting_time.minutes)/max_waiting,100)
-            item.waiting_fmt_cache = "%sh:%smin"%(item_waiting_time.days*24+item_waiting_time.hours,item_waiting_time.minutes)
-            item.waiting_range_cache = min(int(item.waiting_cache/33.3),3)
-            item.waiting_minutes_cache = item_waiting_time.days*24*60 + item_waiting_time.hours*60 + item_waiting_time.minutes
-            
-            item.hresults = item.last_hresult
+        cards = GetLiveData.get_live_cards(start=None,end=now,diff_period=one_hour_ago,hospital=hospital)
+        live_table = GetLiveData.get_live_table(hospital=hospital)
                     
         return render(request, self.template_name, {
             "cards":cards,
-            "items":items,
-            "units":units,
+            "live_table":live_table,
             })
 
 class AccessView(View):
@@ -89,7 +71,6 @@ class StoricoView(View):
     template_name = 'storico.html'
     
     def get(self, request, *args, **kwargs):
-        from .utils import get_max_waiting_time
         from .forms import DateRangeForm
         
         user = AppUser.get_or_create_from_parent(request.user)
@@ -121,11 +102,6 @@ class StoricoView(View):
             "bar_graph":bar_graph,
             "storico_table":storico_table,
             })
-
-class ExitPatient(View):
-    
-    def post(self, request, *args, **kwargs):
-        pass
     
 class UserProfileView(View):
     """[summary]
@@ -501,7 +477,7 @@ class TotemEditView(View):
         else:
             raise PermissionDenied
 
-class GetStoricoData(APIView):
+class GetLiveData(APIView):
     
     def post(self, request, *args, **kwargs):
         from .forms import DateRangeForm
@@ -514,31 +490,7 @@ class GetStoricoData(APIView):
         
         if form.is_valid():
             # You could actually save through AJAX and return a success code here
-            cards = self.get_storico_advanced_cards(
-                form.cleaned_data["start"],
-                form.cleaned_data["end"],
-                code = form.cleaned_data["code"],
-                from_hours = form.cleaned_data["from_hours"],
-                to_hours = form.cleaned_data["to_hours"],
-                hospital=hospital,
-                )
-            big_graph = self.get_storico_big_graph(
-                form.cleaned_data["start"],
-                form.cleaned_data["end"],
-                code = form.cleaned_data["code"],
-                from_hours = form.cleaned_data["from_hours"],
-                to_hours = form.cleaned_data["to_hours"],
-                hospital=hospital,
-                )
-            bar_graph = self.get_storico_bar_graph(
-                form.cleaned_data["start"],
-                form.cleaned_data["end"],
-                code = form.cleaned_data["code"],
-                from_hours = form.cleaned_data["from_hours"],
-                to_hours = form.cleaned_data["to_hours"],
-                hospital=hospital,
-                )
-            storico_table = self.get_storico_table(
+            storico_table = self.get_live_table(
                 form.cleaned_data["start"],
                 form.cleaned_data["end"],
                 code = form.cleaned_data["code"],
@@ -548,9 +500,6 @@ class GetStoricoData(APIView):
                 )
             return JsonResponse({
                 'success': True,
-                "cards":cards,
-                "big_graph":big_graph,
-                "bar_graph":bar_graph,
                 "storico_table":storico_table,
                 })
         else:
@@ -623,6 +572,100 @@ class GetStoricoData(APIView):
         }
         
         return cards
+
+    @classmethod
+    def get_live_table(cls,hospital:Hospital=None):
+        data = TriageAccess.ordered_items(exit_date__isnull=True,hospital=hospital)
+        table = cls.get_table(data)
+        return table
+    
+    @classmethod
+    def get_table(cls,data):
+        import re
+        from django.template.loader import render_to_string
+        from .utils import get_max_waiting_time
+        
+        units = {}
+        units["temperature"] = "°C"
+        units["pressure"] = "mmHg"
+        units["heartrate"] = "bpm"
+        
+        max_waiting_time = get_max_waiting_time()
+        max_waiting = max_waiting_time.hours*60 + max_waiting_time.minutes
+        for item in data:
+            item_waiting_time = item.waiting_time
+            item.waiting_cache = min(100*(item_waiting_time.days*24*60 + item_waiting_time.hours*60 + item_waiting_time.minutes)/max_waiting,100)
+            item.waiting_fmt_cache = "%sh:%smin"%(item_waiting_time.days*24+item_waiting_time.hours,item_waiting_time.minutes)
+            item.waiting_range_cache = min(int(item.waiting_cache/33.3),3)
+            item.waiting_minutes_cache = item_waiting_time.days*24*60 + item_waiting_time.hours*60 + item_waiting_time.minutes
+            
+            item.hresults = item.last_hresult
+        
+        table = render_to_string("includes/live_table.html",{
+            "items":data,
+            "units":units,            
+        })
+        table = re.sub(r'\s*\n\s*', ' ', table).strip()
+        return str(table)
+        
+class GetStoricoData(APIView):
+    
+    def post(self, request, *args, **kwargs):
+        from .forms import DateRangeForm
+        
+        user = AppUser.get_or_create_from_parent(request.user)        
+        hospital = user.dashboard_hospital
+        
+        ## Here it will need a timezone conversion https://stackoverflow.com/questions/18622007/runtimewarning-datetimefield-received-a-naive-datetime
+        form = DateRangeForm(request.POST or None)
+        
+        if form.is_valid():
+            # You could actually save through AJAX and return a success code here
+            cards = self.get_storico_advanced_cards(
+                form.cleaned_data["start"],
+                form.cleaned_data["end"],
+                code = form.cleaned_data["code"],
+                from_hours = form.cleaned_data["from_hours"],
+                to_hours = form.cleaned_data["to_hours"],
+                hospital=hospital,
+                )
+            big_graph = self.get_storico_big_graph(
+                form.cleaned_data["start"],
+                form.cleaned_data["end"],
+                code = form.cleaned_data["code"],
+                from_hours = form.cleaned_data["from_hours"],
+                to_hours = form.cleaned_data["to_hours"],
+                hospital=hospital,
+                )
+            bar_graph = self.get_storico_bar_graph(
+                form.cleaned_data["start"],
+                form.cleaned_data["end"],
+                code = form.cleaned_data["code"],
+                from_hours = form.cleaned_data["from_hours"],
+                to_hours = form.cleaned_data["to_hours"],
+                hospital=hospital,
+                )
+            storico_table = self.get_storico_table(
+                form.cleaned_data["start"],
+                form.cleaned_data["end"],
+                code = form.cleaned_data["code"],
+                from_hours = form.cleaned_data["from_hours"],
+                to_hours = form.cleaned_data["to_hours"],
+                hospital=hospital,
+                )
+            return JsonResponse({
+                'success': True,
+                "cards":cards,
+                "big_graph":big_graph,
+                "bar_graph":bar_graph,
+                "storico_table":storico_table,
+                })
+        else:
+            ctx = {}
+            ctx.update(csrf(request))
+            form_html = render_crispy_form(form, context=ctx)
+            
+            return JsonResponse({'success': False, 'form_html': form_html})
 
     @classmethod
     def get_storico_advanced_cards(cls,start:datetime.datetime,end:datetime.datetime,code=None,from_hours=None,to_hours=None,hospital:Hospital=None)->dict():
@@ -870,6 +913,3 @@ class GetStoricoData(APIView):
         })
         table = re.sub(r'\s*\n\s*', ' ', table).strip()
         return str(table)
-
-        
-    

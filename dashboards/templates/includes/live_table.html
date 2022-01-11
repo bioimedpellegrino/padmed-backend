@@ -1,5 +1,5 @@
-<div class="card-header bg-transparent border-0">
-  <h3 class="mb-0">Lista accessi</h3>
+<div class="card-header border-0">
+  <h3 class="mb-0">In attesa</h3>
 </div>
 <div class="table-responsive">
   <table id="data_table" class="table align-items-center table-flush">
@@ -8,7 +8,7 @@
         <th scope="col">Codice</th>
         <th scope="col">Nome</th>
         <th scope="col">Ragione</th>
-        <th scope="col">Data accesso</th>
+        <th scope="col">In attesa da</th>
         <th scope="col">Temperatura ({{units.temperature}})</th>
         <th scope="col">Pressione ({{units.pressure}})</th>
         <th scope="col">Battito ({{units.heartrate}})</th>
@@ -23,9 +23,9 @@
               {% if item.is_white %}
                 <div class="icon-sm bg-white rounded-circle border"></div>
               {% elif item.is_green %}
-                <div class="icon-sm bg-darkgreen rounded-circle border"></div>
+                <div class="icon-sm bg-green rounded-circle border"></div>
               {% elif item.is_yellow %}
-                <div class="icon-sm bg-darkyellow rounded-circle border"></div>
+                <div class="icon-sm bg-yellow rounded-circle border"></div>
               {% endif %}
             </div>
           </td>
@@ -42,9 +42,22 @@
             {{item.access_reason.reason|default_if_none:""}}
           </td>
 
-          <td scope="row" data-search="{{item.access_date_cache}}" data-order="{{item.access_date_order_cache}}">
+          <td scope="row" data-search="{{item.waiting_fmt_cache}}" data-order="{{item.waiting_minutes_cache}}">
             <div class="d-flex align-items-center">
-              <span class="mr-2">{{item.access_date_cache}}</span>
+              <div>
+                <span class="mr-2">{{item.waiting_fmt_cache}}</span>
+                <div>
+                  <div class="progress">
+                    {% if item.waiting_range_cache <= 1 %}
+                      <div class="progress-bar bg-green" role="progressbar" aria-valuenow="{{item.waiting_cache}}" aria-valuemin="0" aria-valuemax="100" style="width: {{item.waiting_cache}}%;"></div>
+                    {% elif item.waiting_range_cache == 2 %}
+                      <div class="progress-bar bg-yellow" role="progressbar" aria-valuenow="{{item.waiting_cache}}" aria-valuemin="0" aria-valuemax="100" style="width: {{item.waiting_cache}}%;"></div>
+                    {% elif item.waiting_range_cache >= 3 %}
+                      <div class="progress-bar bg-warning" role="progressbar" aria-valuenow="{{item.waiting_cache}}" aria-valuemin="0" aria-valuemax="100" style="width: {{item.waiting_cache}}%;"></div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
             </div>
           </td>
 
@@ -135,12 +148,18 @@
                 <i class="fas fa-ellipsis-v"></i>
               </a>
               <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                <a class="dropdown-item" href="{% url 'access' id=item.id %}">Dettaglio</a>
-                {% if item.exit_date %}
-                  <a id="enter_patient_{{item.id}}" class="dropdown-item enter-patient" href="#">Segna come non completato</a>
-                {% else %}
-                  <a id="exit_patient_{{item.id}}" class="dropdown-item exit-patient" href="#">Segna come completato</a>
-                {% endif %}
+                <a class="dropdown-item" href="{% url "access" id=item.id %}">Dettaglio</a>
+                <form class="date-form" name="date-form-{{item.id}}" method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="access_id" value={{item.id}}>
+                  {% if item.exit_date %}
+                    <input type="submit" class="dropdown-item enter-patient" value="Segna come non completato">
+                    <input type="hidden" name="action" value="enter">
+                  {% else %}
+                    <input type="submit" class="dropdown-item enter-patient" value="Segna come completato">
+                    <input type="hidden" name="action" value="exit">
+                  {% endif %}
+                </form>
                 {% comment %} <a class="dropdown-item" href="#">Stampa scheda</a> {% endcomment %}
               </div>
             </div>
@@ -148,5 +167,5 @@
         </tr>
       {% endfor %}
     </tbody>
-  </table> 
+  </table>
 </div>

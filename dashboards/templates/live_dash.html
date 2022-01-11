@@ -37,7 +37,7 @@
                       <span class="h2 font-weight-bold mb-0">{{ cards.gialli.value }}</span>
                     </div>
                     <div class="col-auto">
-                      <div class="icon icon-shape bg-darkyellow text-white rounded-circle shadow">
+                      <div class="icon icon-shape bg-yellow text-white rounded-circle shadow">
                         <i class="far fa-user"></i>
                       </div>
                     </div>
@@ -67,7 +67,7 @@
                       <span class="h2 font-weight-bold mb-0">{{ cards.verdi.value }}</span>
                     </div>
                     <div class="col-auto">
-                      <div class="icon icon-shape bg-darkgreen text-white rounded-circle shadow">
+                      <div class="icon icon-shape bg-green text-white rounded-circle shadow">
                         <i class="far fa-user"></i>
                       </div>
                     </div>
@@ -155,171 +155,10 @@
     <div class="container-fluid mt--7">
 
       <!-- Table pending -->
-
       <div class="row">
         <div class="col">
-          <div class="card shadow">
-            <div class="card-header border-0">
-              <h3 class="mb-0">In attesa</h3>
-            </div>
-            <div class="table-responsive">
-              <table id="data_table" class="table align-items-center table-flush">
-                <thead class="thead-light">
-                  <tr>
-                    <th scope="col">Codice</th>
-                    <th scope="col">Nome</th>
-                    <th scope="col">Ragione</th>
-                    <th scope="col">In attesa da</th>
-                    <th scope="col">Temperatura ({{units.temperature}})</th>
-                    <th scope="col">Pressione ({{units.pressure}})</th>
-                    <th scope="col">Battito ({{units.heartrate}})</th>
-                    <th scope="col"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for item in items %}
-                    <tr>
-                      <td scope="row" data-search="{%if item.is_white %}white{%elif item.is_green%}green{%elif item.is_yellow%}yellow{%endif%}" data-order="{%if item.is_white %}3{%elif item.is_green%}2{%elif item.is_yellow%}1{%endif%}">
-                        <div class="media align-items-center">
-                          {% if item.is_white %}
-                            <div class="icon-sm bg-white rounded-circle border"></div>
-                          {% elif item.is_green %}
-                            <div class="icon-sm bg-darkgreen rounded-circle border"></div>
-                          {% elif item.is_yellow %}
-                            <div class="icon-sm bg-darkyellow rounded-circle border"></div>
-                          {% endif %}
-                        </div>
-                      </td>
-
-                      <td scope="row">
-                        <div class="media align-items-center">
-                          <div class="media-body">
-                            <span class="mb-0 text-sm">{{item.patient.last_name|default_if_none:""}} {{item.patient.first_name|default_if_none:""}}</span>
-                          </div>
-                        </div>
-                      </td>
-
-                      <td scope="row">
-                        {{item.access_reason.reason|default_if_none:""}}
-                      </td>
-
-                      <td scope="row" data-search="{{item.waiting_fmt_cache}}" data-order="{{item.waiting_minutes_cache}}">
-                        <div class="d-flex align-items-center">
-                          <div>
-                            <span class="mr-2">{{item.waiting_fmt_cache}}</span>
-                            <div>
-                              <div class="progress">
-                                {% if item.waiting_range_cache <= 1 %}
-                                  <div class="progress-bar bg-darkgreen" role="progressbar" aria-valuenow="{{item.waiting_cache}}" aria-valuemin="0" aria-valuemax="100" style="width: {{item.waiting_cache}}%;"></div>
-                                {% elif item.waiting_range_cache == 2 %}
-                                  <div class="progress-bar bg-darkyellow" role="progressbar" aria-valuenow="{{item.waiting_cache}}" aria-valuemin="0" aria-valuemax="100" style="width: {{item.waiting_cache}}%;"></div>
-                                {% elif item.waiting_range_cache >= 3 %}
-                                  <div class="progress-bar bg-warning" role="progressbar" aria-valuenow="{{item.waiting_cache}}" aria-valuemin="0" aria-valuemax="100" style="width: {{item.waiting_cache}}%;"></div>
-                                {% endif %}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-
-                      <td scope="row" data-order="{{item.hresults.temperature.order}}">
-                        <div class="media align-items-center">
-                          {% if item.hresults.temperature.alarm == 0 %}
-                            <div class="icon-sm text-darkgreen">
-                              <i class="fas fa-thermometer-empty"></i>
-                            </div>
-                          {% elif item.hresults.temperature.alarm == 1 %}
-                            <div class="icon-sm text-darkyellow">
-                              <i class="fas fa-thermometer-half"></i>
-                            </div>
-                          {% elif item.hresults.temperature.alarm == 2 %}
-                            <div class="icon-sm text-darkred">
-                              <i class="fas fa-thermometer-full"></i>
-                            </div>
-                          {% elif item.hresults.temperature.alarm == 3 %}
-                            <div class="icon-sm text-darkred blinking">
-                              <i class="fas fa-thermometer-full"></i>
-                            </div>
-                          {% endif %}
-                          <div class="media-body">
-                            <span class="mr-2">{{item.hresults.temperature.mean}} {% if item.hresults.temperature.stdev %}&#177;{% endif %} {{item.hresults.temperature.stdev}}</span>
-                          </div>
-                        </div>
-                      </td>
-
-                      <td scope="row" data-order="{{item.hresults.pressure.order}}">
-                        <div class="media align-items-center">
-                          {% if item.hresults.pressure.alarm == 0 %}
-                            <div class="icon-sm text-darkgreen">
-                              <i class="fas fa-stopwatch"></i>
-                            </div>
-                          {% elif item.hresults.pressure.alarm == 1 %}
-                            <div class="icon-sm text-darkyellow">
-                              <i class="fas fa-stopwatch"></i>
-                            </div>
-                          {% elif item.hresults.pressure.alarm == 2 %}
-                            <div class="icon-sm text-darkred">
-                              <i class="fas fa-stopwatch"></i>
-                            </div>
-                          {% elif item.hresults.pressure.alarm == 3 %}
-                            <div class="icon-sm text-darkred blinking">
-                              <i class="fas fa-stopwatch"></i>
-                            </div>
-                          {% endif %}
-                          <div class="media-body">
-                            <span class="mr-2">
-                              {{item.hresults.pressure.min.mean}} {% if item.hresults.pressure.min.stdev %}&#177;{% endif %} {{item.hresults.pressure.min.stdev}}
-                            </span>
-                            /
-                            <span class="mr-2">
-                              {{item.hresults.pressure.max.mean}} {% if item.hresults.pressure.max.stdev %}&#177;{% endif %} {{item.hresults.pressure.max.stdev}}
-                            </span>
-                          </div>
-                        </div>
-                      </td>
-
-                      <td scope="row" data-order="{{item.hresults.heart_rate.order}}">
-                        <div class="media align-items-center">
-                          {% if item.hresults.heart_rate.alarm == 0 %}
-                            <div class="icon-sm text-darkgreen">
-                              <i class="fas fa-heartbeat"></i>
-                            </div>
-                          {% elif item.hresults.heart_rate.alarm == 1 %}
-                            <div class="icon-sm text-darkyellow">
-                              <i class="fas fa-heartbeat"></i>
-                            </div>
-                          {% elif item.hresults.heart_rate.alarm == 2 %}
-                            <div class="icon-sm text-darkred">
-                              <i class="fas fa-heartbeat"></i>
-                            </div>
-                          {% elif item.hresults.heart_rate.alarm == 3 %}
-                            <div class="icon-sm text-darkred blinking">
-                              <i class="fas fa-heartbeat"></i>
-                            </div>
-                          {% endif %}
-                          <div class="media-body">
-                            <span class="mr-2">{{item.hresults.heart_rate.mean}} {% if item.hresults.heart_rate.stdev %}&#177;{% endif %} {{item.hresults.heart_rate.stdev}}</span>
-                          </div>
-                        </div>
-                      </td>
-
-                      <td class="text-right">
-                        <div class="dropdown">
-                          <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v"></i>
-                          </a>
-                          <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                            <a class="dropdown-item" href="{% url 'access' id=item.id %}">Dettaglio</a>
-                            <a class="dropdown-item" href="#">Segna come completato</a>
-                            <a class="dropdown-item" href="#">Stampa scheda</a>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
+          <div class="card shadow" id="id_table_container">
+            
           </div>
         </div>
       </div>
@@ -336,38 +175,81 @@
 
   <script>
     $(document).ready( function () {
-        $('#data_table').DataTable({
-            // "responsive": true,
-            "paging":   false,
-            "pageLength" : 10,
-            "aaSorting": [[0,"asc"],[3,"des"]],
-            "lengthChange": false,
-            "autoWidth": false,
-            "language": {
-              "sEmptyTable":     "Nessun dato presente nella tabella",
-              "sInfo":           "Vista da _START_ a _END_ di _TOTAL_ elementi",
-              "sInfoEmpty":      "Vista da 0 a 0 di 0 elementi",
-              "sInfoFiltered":   "(filtrati da _MAX_ elementi totali)",
-              "sInfoPostFix":    "",
-              "sInfoThousands":  ".",
-              "sLengthMenu":     "Visualizza _MENU_ elementi",
-              "sLoadingRecords": "Caricamento...",
-              "sProcessing":     "Elaborazione...",
-              "sSearch":         "Cerca:",
-              "sZeroRecords":    "La ricerca non ha portato alcun risultato.",
-              "oPaginate": {
-                "sFirst":      "Inizio",
-                "sPrevious":   "Precedente",
-                "sNext":       "Successivo",
-                "sLast":       "Fine"
-              },
-              "oAria": {
-                "sSortAscending":  ": attiva per ordinare la colonna in ordine crescente",
-                "sSortDescending": ": attiva per ordinare la colonna in ordine decrescente"
-              }
-            },
-          });
+      // Responsive table
+      update_active_responsive_table('{{live_table|safe}}');
+      set_submit_form();
+    });
+
+    // AJAX Function //
+    function set_submit_form() {
+      // ADDING AJAX DATE POST
+      // if you have problem with csrf see https://django-crispy-forms.readthedocs.io/en/latest/crispy_tag_forms.html#ajax-validation-recipe
+      // or https://stackoverflow.com/questions/19333098/403-forbidden-error-when-making-an-ajax-post-request-in-django-framework
+      $(".date-form").submit(function (event) {
+        event.preventDefault();
+        var formData = getFormData($(this));
+        $.ajax({
+          type: "POST",
+          url: "{% url 'post_access_status' %}",
+          dataType: "json",
+          data: formData,
+          //{
+            //"csrfmiddlewaretoken": window.CSRF_TOKEN,
+          //},
+          complete: function() {
+          },
+          success: function (data) {
+            update_active_responsive_table(data.live_table);
+          },
+          error: function() {
+            alert( "Un errore ha impedito la comunicazione con il server. I dati non saranno aggiornati." );
+          }
+        });
+        return false;
       });
+    }
+
+    function build_active_responsive_table(){
+      var data_table = $('#data_table').DataTable({
+        // "responsive": true,
+        "paging":   false,
+        "pageLength" : 10,
+        "aaSorting": [[0,"asc"],[3,"des"]],
+        "lengthChange": false,
+        "autoWidth": false,
+        "language": {
+          "sEmptyTable":     "Nessun dato presente nella tabella",
+          "sInfo":           "Vista da _START_ a _END_ di _TOTAL_ elementi",
+          "sInfoEmpty":      "Vista da 0 a 0 di 0 elementi",
+          "sInfoFiltered":   "(filtrati da _MAX_ elementi totali)",
+          "sInfoPostFix":    "",
+          "sInfoThousands":  ".",
+          "sLengthMenu":     "Visualizza _MENU_ elementi",
+          "sLoadingRecords": "Caricamento...",
+          "sProcessing":     "Elaborazione...",
+          "sSearch":         "Cerca:",
+          "sZeroRecords":    "La ricerca non ha portato alcun risultato.",
+          "oPaginate": {
+            "sFirst":      "Inizio",
+            "sPrevious":   "Precedente",
+            "sNext":       "Successivo",
+            "sLast":       "Fine"
+          },
+          "oAria": {
+            "sSortAscending":  ": attiva per ordinare la colonna in ordine crescente",
+            "sSortDescending": ": attiva per ordinare la colonna in ordine decrescente"
+          }
+        },
+      });
+    }
+
+    function update_active_responsive_table(live_table){
+      $("#id_table_container").empty()
+      $("#id_table_container").append(live_table);
+      build_active_responsive_table();
+    }
+    
+
   </script>
 
 {% endblock javascripts %}

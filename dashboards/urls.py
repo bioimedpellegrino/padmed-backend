@@ -8,7 +8,7 @@ urlpatterns=[
     path('live', LiveView.as_view(), name='live_dash'),
     path('access/<int:id>', AccessView.as_view(), name='access'),
     path('storico', StoricoView.as_view(), name='storico_dash'),
-    path('exit_patient', ExitPatient.as_view(), name='exit_patient'),
+    path('post_access_status', GetLiveData.as_view(), name='post_access_status'),
     
     ## User ## 
     path('user-profile', UserProfileView.as_view(), name='user_profile'),
