@@ -37,7 +37,10 @@ class LiveView(View):
         one_hour_ago = relativedelta(hours=1)
 
         cards = GetLiveData.get_live_cards(start=None,end=now,diff_period=one_hour_ago,hospital=hospital)
-        live_table = GetLiveData.get_live_table(hospital=hospital)
+        live_table = GetLiveData.get_live_table(
+            request,
+            hospital
+            )
                     
         return render(request, self.template_name, {
             "cards":cards,
@@ -94,7 +97,7 @@ class StoricoView(View):
         cards = GetStoricoData.get_storico_advanced_cards(one_day_ago,now,hospital=hospital)
         big_graph = GetStoricoData.get_storico_big_graph(one_day_ago,now,hospital=hospital)
         bar_graph = GetStoricoData.get_storico_bar_graph(one_day_ago,now,hospital=hospital)
-        storico_table = GetStoricoData.get_storico_table(one_day_ago,now,hospital=hospital)
+        storico_table = GetStoricoData.get_storico_table(request,one_day_ago,now,hospital=hospital)
         return render(request, self.template_name, {
             "cards":cards,
             "form":form,
@@ -337,7 +340,7 @@ class PatientView(View):
             permission = True
         if permission:
             accesses = patient.accesses.filter(hospital=hospital).order_by("access_date")
-            accesses_table = GetStoricoData.get_table(accesses)
+            accesses_table = GetStoricoData.get_table(request,accesses)
             return render(request, self.template_name, {
                 "patient":patient,
                 "accesses_table":accesses_table,
@@ -479,35 +482,28 @@ class TotemEditView(View):
 
 class GetLiveData(APIView):
     
-    def post(self, request, *args, **kwargs):
-        from .forms import DateRangeForm
-        
+    def post(self, request, *args, **kwargs):        
         user = AppUser.get_or_create_from_parent(request.user)        
         hospital = user.dashboard_hospital
         
-        ## Here it will need a timezone conversion https://stackoverflow.com/questions/18622007/runtimewarning-datetimefield-received-a-naive-datetime
-        form = DateRangeForm(request.POST or None)
+        access_id = request.POST.get("access_id")
+        action = request.POST.get("action")
         
-        if form.is_valid():
-            # You could actually save through AJAX and return a success code here
-            storico_table = self.get_live_table(
-                form.cleaned_data["start"],
-                form.cleaned_data["end"],
-                code = form.cleaned_data["code"],
-                from_hours = form.cleaned_data["from_hours"],
-                to_hours = form.cleaned_data["to_hours"],
-                hospital=hospital,
-                )
-            return JsonResponse({
-                'success': True,
-                "storico_table":storico_table,
-                })
-        else:
-            ctx = {}
-            ctx.update(csrf(request))
-            form_html = render_crispy_form(form, context=ctx)
-            
-            return JsonResponse({'success': False, 'form_html': form_html})
+        access = get_object_or_404(TriageAccess,id=access_id)
+        if action=="enter":
+            access.exit_date = None
+        elif action=="exit":
+            access.exit_date = timezone.localtime()
+        access.save()
+        ## Rebuild the table
+        live_table = self.get_live_table(
+            request,
+            hospital,
+            )
+        return JsonResponse({
+            'success': True,
+            "live_table":live_table,
+            })
         
     @classmethod
     def get_live_cards(cls,start:datetime.datetime=None,end:datetime.datetime=None,diff_period:datetime.datetime=None,hospital:Hospital=None)->dict():
@@ -574,13 +570,13 @@ class GetLiveData(APIView):
         return cards
 
     @classmethod
-    def get_live_table(cls,hospital:Hospital=None):
+    def get_live_table(cls,request,hospital:Hospital):
         data = TriageAccess.ordered_items(exit_date__isnull=True,hospital=hospital)
-        table = cls.get_table(data)
+        table = cls.get_table(request,data)
         return table
     
     @classmethod
-    def get_table(cls,data):
+    def get_table(cls,request,data):
         import re
         from django.template.loader import render_to_string
         from .utils import get_max_waiting_time
@@ -604,7 +600,7 @@ class GetLiveData(APIView):
         table = render_to_string("includes/live_table.html",{
             "items":data,
             "units":units,            
-        })
+        }, request=request)
         table = re.sub(r'\s*\n\s*', ' ', table).strip()
         return str(table)
         
@@ -646,6 +642,7 @@ class GetStoricoData(APIView):
                 hospital=hospital,
                 )
             storico_table = self.get_storico_table(
+                request,
                 form.cleaned_data["start"],
                 form.cleaned_data["end"],
                 code = form.cleaned_data["code"],
@@ -866,7 +863,7 @@ class GetStoricoData(APIView):
         return data
     
     @classmethod
-    def get_storico_table(cls,start:datetime.date,end:datetime.date,code=None,from_hours=None,to_hours=None,hospital:Hospital=None):        
+    def get_storico_table(cls,request,start:datetime.date,end:datetime.date,code=None,from_hours=None,to_hours=None,hospital:Hospital=None):        
         if hospital is None:
             kwargs = {}
         else:
@@ -884,11 +881,11 @@ class GetStoricoData(APIView):
         data = method(access_date__gte=start,access_date__lte=end,**kwargs)
         data = TriageAccess.filter_for_exit_interval(data,from_hours=from_hours,to_hours=to_hours)
         data = data.order_by("access_date")
-        table = cls.get_table(data)
+        table = cls.get_table(request,data)
         return table
     
     @classmethod
-    def get_table(cls,data):
+    def get_table(cls,request,data):
         import re
         from django.template.loader import render_to_string
         
@@ -910,6 +907,6 @@ class GetStoricoData(APIView):
         table = render_to_string("includes/storico_table.html",{
             "items":data,
             "units":units,            
-        })
+        },request=request)
         table = re.sub(r'\s*\n\s*', ' ', table).strip()
         return str(table)

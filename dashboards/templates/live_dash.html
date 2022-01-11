@@ -187,7 +187,8 @@
       // or https://stackoverflow.com/questions/19333098/403-forbidden-error-when-making-an-ajax-post-request-in-django-framework
       $(".date-form").submit(function (event) {
         event.preventDefault();
-        var formData = getFormData($(this));
+        var form = $(this);
+        var formData = getFormData(form);
         $.ajax({
           type: "POST",
           url: "{% url 'post_access_status' %}",
@@ -199,7 +200,13 @@
           complete: function() {
           },
           success: function (data) {
-            update_active_responsive_table(data.live_table);
+            if (data.success) {
+              // update_active_responsive_table(data.live_table); //if you whant to reload the entire table
+              var row = form.closest('tr');
+              $("#data_table").DataTable().row(row).remove().draw();
+            } else {
+              alert( "Un errore ha impedito l'aggiornamento dei dati." );
+            }
           },
           error: function() {
             alert( "Un errore ha impedito la comunicazione con il server. I dati non saranno aggiornati." );
@@ -208,9 +215,8 @@
         return false;
       });
     }
-
     function build_active_responsive_table(){
-      var data_table = $('#data_table').DataTable({
+      $('#data_table').DataTable({
         // "responsive": true,
         "paging":   false,
         "pageLength" : 10,
