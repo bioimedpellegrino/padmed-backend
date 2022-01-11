@@ -191,7 +191,7 @@
         var formData = getFormData(form);
         $.ajax({
           type: "POST",
-          url: "{% url 'post_access_status' %}",
+          url: "{% url 'post_live_access_status' %}",
           dataType: "json",
           data: formData,
           //{
@@ -217,90 +217,91 @@
         return false;
       });
     }
-    function build_active_responsive_table(){
-      $('#data_table').DataTable({
-        // "responsive": true,
-        "paging":   false,
-        "pageLength" : 10,
-        "aaSorting": [[0,"asc"],[3,"des"]],
-        "lengthChange": false,
-        "autoWidth": false,
-        "language": {
-          "sEmptyTable":     "Nessun dato presente nella tabella",
-          "sInfo":           "Vista da _START_ a _END_ di _TOTAL_ elementi",
-          "sInfoEmpty":      "Vista da 0 a 0 di 0 elementi",
-          "sInfoFiltered":   "(filtrati da _MAX_ elementi totali)",
-          "sInfoPostFix":    "",
-          "sInfoThousands":  ".",
-          "sLengthMenu":     "Visualizza _MENU_ elementi",
-          "sLoadingRecords": "Caricamento...",
-          "sProcessing":     "Elaborazione...",
-          "sSearch":         "Cerca:",
-          "sZeroRecords":    "La ricerca non ha portato alcun risultato.",
-          "oPaginate": {
-            "sFirst":      "Inizio",
-            "sPrevious":   "Precedente",
-            "sNext":       "Successivo",
-            "sLast":       "Fine"
-          },
-          "oAria": {
-            "sSortAscending":  ": attiva per ordinare la colonna in ordine crescente",
-            "sSortDescending": ": attiva per ordinare la colonna in ordine decrescente"
-          }
-        },
-      });
-    }
 
-    function update_active_responsive_table(live_table){
-      $("#id_table_container").empty()
-      $("#id_table_container").append(live_table);
-      build_active_responsive_table();
+  function build_active_responsive_table(){
+    $('#data_table').DataTable({
+      // "responsive": true,
+      "paging":   false,
+      "pageLength" : 10,
+      "aaSorting": [[0,"asc"],[3,"des"]],
+      "lengthChange": false,
+      "autoWidth": false,
+      "language": {
+        "sEmptyTable":     "Nessun dato presente nella tabella",
+        "sInfo":           "Vista da _START_ a _END_ di _TOTAL_ elementi",
+        "sInfoEmpty":      "Vista da 0 a 0 di 0 elementi",
+        "sInfoFiltered":   "(filtrati da _MAX_ elementi totali)",
+        "sInfoPostFix":    "",
+        "sInfoThousands":  ".",
+        "sLengthMenu":     "Visualizza _MENU_ elementi",
+        "sLoadingRecords": "Caricamento...",
+        "sProcessing":     "Elaborazione...",
+        "sSearch":         "Cerca:",
+        "sZeroRecords":    "La ricerca non ha portato alcun risultato.",
+        "oPaginate": {
+          "sFirst":      "Inizio",
+          "sPrevious":   "Precedente",
+          "sNext":       "Successivo",
+          "sLast":       "Fine"
+        },
+        "oAria": {
+          "sSortAscending":  ": attiva per ordinare la colonna in ordine crescente",
+          "sSortDescending": ": attiva per ordinare la colonna in ordine decrescente"
+        }
+      },
+    });
+  }
+
+  function update_active_responsive_table(live_table){
+    $("#id_table_container").empty()
+    $("#id_table_container").append(live_table);
+    build_active_responsive_table();
+  }
+  
+  function update_cards(cards) {
+    $("#gialli-value").html(cards.gialli.value);
+    if (cards.verdi.diff == 0){
+      $("#gialli-diff").html(cards.gialli.diff_formatted);
+      $("#gialli-diff").removeClass(["text-warning","text-success"]).addClass("text-success");
+    } else {
+      if (cards.verdi.positive_trend){
+        $("#gialli-diff").html("<i class='fas fa-arrow-up'></i>" + cards.gialli.diff_formatted);
+        $("#gialli-diff").removeClass(["text-warning","text-success"]).addClass("text-warning");
+      } else {
+        $("#gialli-diff").html("<i class='fas fa-arrow-down'></i>" + cards.gialli.diff_formatted);
+        $("#gialli-diff").removeClass(["text-warning","text-success"]).addClass("text-success");
+      }
     }
     
-    function update_cards(cards) {
-      $("#gialli-value").html(cards.gialli.value);
-      if (cards.verdi.diff == 0){
-        $("#gialli-diff").html(cards.gialli.diff_formatted);
-        $("#gialli-diff").removeClass(["text-warning","text-success"]).addClass("text-success");
+    $("#verdi-value").html(cards.verdi.value);
+    if (cards.verdi.diff == 0){
+      $("#verdi-diff").html(cards.verdi.diff_formatted);
+      $("#verdi-diff").removeClass(["text-warning","text-success"]).addClass("text-success");
+    } else {
+      if (cards.verdi.positive_trend){
+        $("#verdi-diff").html("<i class='fas fa-arrow-up'></i>" + cards.verdi.diff_formatted);
+        $("#verdi-diff").removeClass(["text-warning","text-success"]).addClass("text-warning");
       } else {
-        if (cards.verdi.positive_trend){
-          $("#gialli-diff").html("<i class='fas fa-arrow-up'></i>" + cards.gialli.diff_formatted);
-          $("#gialli-diff").removeClass(["text-warning","text-success"]).addClass("text-warning");
-        } else {
-          $("#gialli-diff").html("<i class='fas fa-arrow-down'></i>" + cards.gialli.diff_formatted);
-          $("#gialli-diff").removeClass(["text-warning","text-success"]).addClass("text-success");
-        }
-      }
-      
-      $("#verdi-value").html(cards.verdi.value);
-      if (cards.verdi.diff == 0){
-        $("#verdi-diff").html(cards.verdi.diff_formatted);
+        $("#verdi-diff").html("<i class='fas fa-arrow-down'></i>" + cards.verdi.diff_formatted);
         $("#verdi-diff").removeClass(["text-warning","text-success"]).addClass("text-success");
-      } else {
-        if (cards.verdi.positive_trend){
-          $("#verdi-diff").html("<i class='fas fa-arrow-up'></i>" + cards.verdi.diff_formatted);
-          $("#verdi-diff").removeClass(["text-warning","text-success"]).addClass("text-warning");
-        } else {
-          $("#verdi-diff").html("<i class='fas fa-arrow-down'></i>" + cards.verdi.diff_formatted);
-          $("#verdi-diff").removeClass(["text-warning","text-success"]).addClass("text-success");
-        }
-      }
-
-      $("#bianchi-value").html(cards.bianchi.value);
-      $("#bianchi-diff").html(cards.bianchi.diff_formatted);
-      if (cards.bianchi.diff == 0){
-        $("#bianchi-diff").html(cards.bianchi.diff_formatted);
-        $("#bianchi-diff").removeClass(["text-warning","text-success"]).addClass("text-success");
-      } else {
-        if (cards.bianchi.positive_trend){
-          $("#bianchi-diff").html("<i class='fas fa-arrow-up'></i>" + cards.bianchi.diff_formatted);
-          $("#bianchi-diff").removeClass(["text-warning","text-success"]).addClass("text-warning");
-        } else {
-          $("#bianchi-diff").html("<i class='fas fa-arrow-down'></i>" + cards.bianchi.diff_formatted);
-          $("#bianchi-diff").removeClass(["text-warning","text-success"]).addClass("text-success");
-        }
       }
     }
+
+    $("#bianchi-value").html(cards.bianchi.value);
+    $("#bianchi-diff").html(cards.bianchi.diff_formatted);
+    if (cards.bianchi.diff == 0){
+      $("#bianchi-diff").html(cards.bianchi.diff_formatted);
+      $("#bianchi-diff").removeClass(["text-warning","text-success"]).addClass("text-success");
+    } else {
+      if (cards.bianchi.positive_trend){
+        $("#bianchi-diff").html("<i class='fas fa-arrow-up'></i>" + cards.bianchi.diff_formatted);
+        $("#bianchi-diff").removeClass(["text-warning","text-success"]).addClass("text-warning");
+      } else {
+        $("#bianchi-diff").html("<i class='fas fa-arrow-down'></i>" + cards.bianchi.diff_formatted);
+        $("#bianchi-diff").removeClass(["text-warning","text-success"]).addClass("text-success");
+      }
+    }
+  }
 
   </script>
 

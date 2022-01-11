@@ -480,35 +480,7 @@ class TotemEditView(View):
         else:
             raise PermissionDenied
 
-class GetLiveData(APIView):
-    
-    def post(self, request, *args, **kwargs):        
-        user = AppUser.get_or_create_from_parent(request.user)        
-        hospital = user.dashboard_hospital
-        
-        access_id = request.POST.get("access_id")
-        action = request.POST.get("action")
-        
-        access = get_object_or_404(TriageAccess,id=access_id)
-        if action=="enter":
-            access.exit_date = None
-        elif action=="exit":
-            access.exit_date = timezone.localtime()
-        access.save()
-        ## Rebuild the table
-        
-        now = timezone.localtime()
-        one_hour_ago = relativedelta(hours=1)
-        cards = self.get_live_cards(start=None,end=now,diff_period=one_hour_ago,hospital=hospital)
-        live_table = self.get_live_table(
-            request,
-            hospital,
-            )
-        return JsonResponse({
-            'success': True,
-            "cards":cards,
-            "live_table":live_table,
-            })
+class GetLiveData():
         
     @classmethod
     def get_live_cards(cls,start:datetime.datetime=None,end:datetime.datetime=None,diff_period:datetime.datetime=None,hospital:Hospital=None)->dict():
@@ -915,3 +887,50 @@ class GetStoricoData(APIView):
         },request=request)
         table = re.sub(r'\s*\n\s*', ' ', table).strip()
         return str(table)
+
+class SetLiveAccessStatus(APIView):
+    def post(self, request, *args, **kwargs):        
+        user = AppUser.get_or_create_from_parent(request.user)        
+        hospital = user.dashboard_hospital
+        
+        access_id = request.POST.get("access_id")
+        action = request.POST.get("action")
+        
+        access = get_object_or_404(TriageAccess,id=access_id)
+        if action=="enter":
+            access.exit_date = None
+        elif action=="exit":
+            access.exit_date = timezone.localtime()
+        access.save()
+        
+        ## Rebuild the table
+        
+        now = timezone.localtime()
+        one_hour_ago = relativedelta(hours=1)
+        cards = GetLiveData.get_live_cards(start=None,end=now,diff_period=one_hour_ago,hospital=hospital)
+        live_table = GetLiveData.get_live_table(
+            request,
+            hospital,
+            )
+        return JsonResponse({
+            'success': True,
+            "cards":cards,
+            "live_table":live_table,
+            })
+
+class SetStoricoAccessStatus(APIView):
+    def post(self, request, *args, **kwargs):
+        
+        access_id = request.POST.get("access_id")
+        action = request.POST.get("action")
+        
+        access = get_object_or_404(TriageAccess,id=access_id)
+        if action=="enter":
+            access.exit_date = None
+        elif action=="exit":
+            access.exit_date = timezone.localtime()
+        access.save()
+        print("access",access)
+        return JsonResponse({
+            'success': True,
+            })

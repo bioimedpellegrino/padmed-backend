@@ -136,11 +136,17 @@
               </a>
               <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                 <a class="dropdown-item" href="{% url 'access' id=item.id %}">Dettaglio</a>
-                {% if item.exit_date %}
-                  <a id="enter_patient_{{item.id}}" class="dropdown-item enter-patient" href="#">Segna come non completato</a>
-                {% else %}
-                  <a id="exit_patient_{{item.id}}" class="dropdown-item exit-patient" href="#">Segna come completato</a>
-                {% endif %}
+                <form class="access-date-form" name="date-form-{{item.id}}" method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="access_id" value={{item.id}}>
+                  {% if item.exit_date %}
+                    <input type="submit" class="dropdown-item enter-patient" value="Segna come non completato">
+                    <input type="hidden" name="action" value="enter">
+                  {% else %}
+                    <input type="submit" class="dropdown-item enter-patient" value="Segna come completato">
+                    <input type="hidden" name="action" value="exit">
+                  {% endif %}
+                </form>
                 {% comment %} <a class="dropdown-item" href="#">Stampa scheda</a> {% endcomment %}
               </div>
             </div>

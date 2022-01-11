@@ -76,9 +76,9 @@
                   <div class="row">
                     <div class="col">
                       <h5 class="card-title text-uppercase text-muted mb-0">Codici Gialli</h5>
-                      <table class="table table-borderless table-hover table-condensed mt-2">
+                      <table class="table table-borderless table-condensed mt-2">
                         <tbody>
-                          <tr id="id_y_all" class="clickable-1">
+                          <tr id="id_y_all">
                             <td>
                               <span id="gialli-value" class="h2 font-weight-bold mb-0">{{ cards.gialli.value }}</span>
                               {% comment %} <span id="gialli-diff" class="{{ cards.gialli.diff_class }} mr-2 pl-2">{{ cards.gialli.diff_formatted }}</span> {% endcomment %}
@@ -107,9 +107,9 @@
                   <div class="row">
                     <div class="col">
                       <h5 class="card-title text-uppercase text-muted mb-0">Codici Verdi</h5>
-                      <table class="table table-borderless table-hover table-condensed mt-2">
+                      <table class="table table-borderless table-condensed mt-2">
                         <tbody>
-                          <tr id="id_g_all" class="clickable-1">
+                          <tr id="id_g_all">
                             <td>
                               <span id="verdi-value" class="h2 font-weight-bold mb-0">{{ cards.verdi.value }}</span>
                               {% comment %} <span id="verdi-diff" class="{{ cards.verdi.diff_class }} mr-2 pl-2">{{ cards.verdi.diff_formatted }}</span> {% endcomment %}
@@ -138,9 +138,9 @@
                   <div class="row">
                     <div class="col">
                       <h5 class="card-title text-uppercase text-muted mb-0">Codici Bianchi</h5>
-                      <table class="table table-borderless table-hover table-condensed mt-2">
+                      <table class="table table-borderless table-condensed mt-2">
                         <tbody>
-                          <tr id="id_w_all" class="clickable-1">
+                          <tr id="id_w_all">
                             <td>
                               <span id="bianchi-value" class="h2 font-weight-bold mb-0">{{ cards.bianchi.value }}</span>
                               {% comment %} <span id="bianchi-diff" class="{{ cards.bianchi.diff_class }} mr-2 pl-2">{{ cards.bianchi.diff_formatted }}</span> {% endcomment %}
@@ -251,6 +251,7 @@
 
     $(document).ready(function () {
       set_submit_form();
+      set_access_status_submit_form();
       // define_clickable();
       // define_hidden_input_behaviour();
       // Funciton Charts funncitons //
@@ -273,9 +274,50 @@
       $("#date-form").submit(function (event) {
         event.preventDefault();
         var formData = getFormData($("#date-form"));
+        update_all_charts_ajax(formData);
+        return false;
+      });
+    }
+
+    function update_all_charts_ajax(formData,except_table=false) {
+      $.ajax({
+        type: "POST",
+        url: "{% url 'get_storico_data' %}",
+        dataType: "json",
+        data: formData,
+        //{
+          //"csrfmiddlewaretoken": window.CSRF_TOKEN,
+        //},
+        complete: function() {
+        },
+        success: function (data) {
+          if (data.success) {
+            update_cards(data.cards);
+            update_function_chart(data.big_graph);
+            update_bar_chart(data.bar_graph);
+            if (!except_table){
+              update_active_responsive_table(data.storico_table);
+            }
+          } else {
+            $('#date-form').html(data.form_html);
+          }
+        },
+        error: function() {
+          alert( "Un errore ha impedito la comunicazione con il server. I dati non saranno aggiornati." );
+        }
+      });
+    }
+
+    // AJAX Function //
+    function set_access_status_submit_form() {
+      $(".access-date-form").submit(function () {
+        event.preventDefault();
+        var form = $(this);
+        var formData = getFormData(form);
+        console.log(form)
         $.ajax({
           type: "POST",
-          url: "{% url 'get_storico_data' %}",
+          url: "{% url 'post_storico_access_status' %}",
           dataType: "json",
           data: formData,
           //{
@@ -285,12 +327,14 @@
           },
           success: function (data) {
             if (data.success) {
-              update_cards(data.cards);
-              update_function_chart(data.big_graph);
-              update_bar_chart(data.bar_graph);
-              update_active_responsive_table(data.storico_table);
+              // update_active_responsive_table(data.live_table); //if you whant to reload the entire table
+              // var row = form.closest('tr');
+              // $("#data_table").DataTable().row(row).remove().draw();
+              // update carts
+              var formData = getFormData($("#date-form"));
+              update_all_charts_ajax(formData);
             } else {
-              $('#date-form').html(data.form_html);
+              alert( "Un errore ha impedito l'aggiornamento dei dati." );
             }
           },
           error: function() {
@@ -565,6 +609,7 @@
       $("#id_table_container").empty()
       $("#id_table_container").append(table);
       build_active_responsive_table();
+      set_access_status_submit_form();
     }
 
 
