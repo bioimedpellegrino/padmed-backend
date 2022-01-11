@@ -930,7 +930,6 @@ class SetStoricoAccessStatus(APIView):
         elif action=="exit":
             access.exit_date = timezone.localtime()
         access.save()
-        print("access",access)
         return JsonResponse({
             'success': True,
             })

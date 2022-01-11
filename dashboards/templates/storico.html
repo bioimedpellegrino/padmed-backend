@@ -314,7 +314,6 @@
         event.preventDefault();
         var form = $(this);
         var formData = getFormData(form);
-        console.log(form)
         $.ajax({
           type: "POST",
           url: "{% url 'post_storico_access_status' %}",

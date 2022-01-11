@@ -91,10 +91,11 @@
     $(document).ready(function () {
       // Responsive update_active_responsive_table
       update_active_responsive_table('{{accesses_table|safe}}');
+      set_submit_form();
     });
 
     function build_active_responsive_table(){
-      var data_table = $('#data_table').DataTable({
+      $('#data_table').DataTable({
           // "responsive": true,
           "destroy": true,
           "paging":   true,
@@ -132,6 +133,47 @@
       $("#id_table_container").empty()
       $("#id_table_container").append(table);
       build_active_responsive_table();
+    }
+
+    // AJAX Function //
+    function set_submit_form() {
+      // ADDING AJAX DATE POST
+      // if you have problem with csrf see https://django-crispy-forms.readthedocs.io/en/latest/crispy_tag_forms.html#ajax-validation-recipe
+      // or https://stackoverflow.com/questions/19333098/403-forbidden-error-when-making-an-ajax-post-request-in-django-framework
+      $(".access-date-form").submit(function (event) {
+        event.preventDefault();
+        var form = $(this);
+        var formData = getFormData(form);
+        $.ajax({
+          type: "POST",
+          url: "{% url 'post_storico_access_status' %}",
+          dataType: "json",
+          data: formData,
+          //{
+            //"csrfmiddlewaretoken": window.CSRF_TOKEN,
+          //},
+          complete: function() {
+          },
+          success: function (data) {
+            if (data.success) {
+              if (form.find('input[name=action]').val()=="exit"){
+                form.find('input[name=action]').val("enter");
+                form.find(':submit').val("Segna come non completato");
+              } else {
+                form.find('input[name=action]').val("exit");
+                form.find(':submit').val("Segna come completato");
+              }
+              
+            } else {
+              alert( "Un errore ha impedito l'aggiornamento dei dati." );
+            }
+          },
+          error: function() {
+            alert( "Un errore ha impedito la comunicazione con il server. I dati non saranno aggiornati." );
+          }
+        });
+        return false;
+      });
     }
 
   </script>
