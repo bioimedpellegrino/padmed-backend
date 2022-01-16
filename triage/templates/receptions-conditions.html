@@ -43,14 +43,18 @@
             <form action="" method="post" enctype='multipart/form-data'>
                 {% csrf_token %}
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2">
-                    <label class="form-check-label" style="color: #21561e;" for="flexRadioDefault2">
+                    <button type="submit" class="button-check-input" name="input_true" id="id_input_true">
+                        <img class="image-check v-image-check" src="/static/assets/img/icons/v_button.png">
+                    </button>
+                    <label class="form-check-label" style="color: #21561e;" for="id_input_true">
                         ACCONSENTO
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-                    <label class="form-check-label" style="color: #7e0000;" for="flexRadioDefault1">
+                    <button type="submit" class="button-check-input" name="input_false" id="id_input_false">
+                        <img class="image-check x-image-check" src="/static/assets/img/icons/x_button.png">
+                    </button>
+                    <label class="form-check-label" style="color: #7e0000;" for="id_input_false">
                         NON ACCONSENTO
                     </label>
                 </div>

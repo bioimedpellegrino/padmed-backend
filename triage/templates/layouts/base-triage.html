@@ -28,6 +28,25 @@
   <script type="text/javascript" src="/static/assets/js/onscan.js"></script>
   <!-- Specific CSS goes HERE -->
   <style>
+    /* Header bar style */
+
+    .com-triangle-right {
+
+      border-top: 45px solid transparent;
+      border-bottom: 45px solid transparent;
+      
+      border-right: 35px solid #7e7e7e;
+    }
+
+    .com-triangle-left {
+
+      border-top: 45px solid transparent;
+      border-bottom: 45px solid transparent;
+      
+      border-left: 35px solid #7e7e7e;
+    }
+
+    /* ---------------- */
     
     /* Main communication areas style */
     
@@ -64,12 +83,14 @@
       padding: 15px;
       color: black;
     }
+
     /*---------------------*/
 
     /* Double border buttons style */
+
     .form-check {
       display: flex;
-      margin-bottom: 50px;
+      margin-bottom: 0px;
       {% comment %} align-items: center;
       justify-content:center; {% endcomment %}
     }
@@ -79,30 +100,45 @@
       margin-left: 40px;
       color: black;
     }
-    .form-check-input {
+
+    .image-check {
+      content: url("/static/assets/img/icons/v_button_pressed.png");
+      width: 115px;
+      height: 115px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+    }
+    .v-image-check {
+      content: url("/static/assets/img/icons/v_button.png");
+    }
+    .v-image-check:active {
+      content: url("/static/assets/img/icons/v_button_pressed.png");
+    }
+    .x-image-check {
+      content: url("/static/assets/img/icons/x_button.png");
+    }
+    .x-image-check:active {
+      content: url("/static/assets/img/icons/x_button_pressed.png");
+    }
+    .button-check-input {
+      border: 0;
+      background-color: #e7e7e7;
+      outline: none;
+    }
+    .button-check-input:active {
+      outline: none;
+    }
+    .button-check-input:focus {
+      outline: none;
+    }
+    {% comment %} .form-check-input {
       position: relative;
       width: 105px;
       height: 105px;
       border: 7px solid #404040;
       border-radius: 50%;
     }
-
-    .com-triangle-right {
-
-      border-top: 45px solid transparent;
-      border-bottom: 45px solid transparent;
-      
-      border-right: 35px solid #7e7e7e;
-    }
-
-    .com-triangle-left {
-
-      border-top: 45px solid transparent;
-      border-bottom: 45px solid transparent;
-      
-      border-left: 35px solid #7e7e7e;
-    }
-    {% comment %} .form-check-input-checked::after {
+    .form-check-input-checked::after {
       content: '';
       width: 105px;
       height: 105px;
@@ -111,6 +147,7 @@
       display: block;
       margin: -4px 2px;
     } {% endcomment %}
+    
     /*-----------------------------*/
 
   </style>
