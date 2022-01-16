@@ -18,6 +18,17 @@
   
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+  <link href="//db.onlinewebfonts.com/c/066ce24dae3730ed6c648b09efaea93a?family=Acumin+Variable+Concept" rel="stylesheet" type="text/css"/>
+  <style>
+    @font-face {font-family: AcuminVariableConcept;
+      src: url("/static/assets/fonts/Acumin Variable Concept/Acumin Variable Concept/@font-face/066ce24dae3730ed6c648b09efaea93a.eot"); /* IE9*/
+      src: url("/static/assets/fonts/Acumin Variable Concept/Acumin Variable Concept/@font-face/066ce24dae3730ed6c648b09efaea93a.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
+      url("/static/assets/fonts/Acumin Variable Concept/Acumin Variable Concept/@font-face/066ce24dae3730ed6c648b09efaea93a.woff2") format("woff2"), /* chrome、firefox */
+      url("/static/assets/fonts/Acumin Variable Concept/Acumin Variable Concept/@font-face/066ce24dae3730ed6c648b09efaea93a.woff") format("woff"), /* chrome、firefox */
+      url("/static/assets/fonts/Acumin Variable Concept/Acumin Variable Concept/@font-face/066ce24dae3730ed6c648b09efaea93a.ttf") format("truetype"), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+      url("/static/assets/fonts/Acumin Variable Concept/Acumin Variable Concept/@font-face/066ce24dae3730ed6c648b09efaea93a.svg#Acumin Variable Concept") format("svg"); /* iOS 4.1- */
+    }
+  </style>  
   <!-- Icons -->
   <link href="/static/assets/js/plugins/nucleo/css/nucleo.css" rel="stylesheet" />
   <link href="/static/assets/js/plugins/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet" />
@@ -28,6 +39,14 @@
   <script type="text/javascript" src="/static/assets/js/onscan.js"></script>
   <!-- Specific CSS goes HERE -->
   <style>
+    /* Body font */
+
+    {% comment %} body {
+      font-family: AcuminVariableConcept !important;
+    } {% endcomment %}
+
+    /*-----------*/
+
     /* Header bar style */
 
     .com-triangle-right {
@@ -37,7 +56,6 @@
       
       border-right: 35px solid #7e7e7e;
     }
-
     .com-triangle-left {
 
       border-top: 45px solid transparent;
@@ -77,10 +95,13 @@
       text-align: justify;
       color: black;
     }
+    .normal-text {
+      font: 21px/125% AcuminVariableConcept, sans-serif;
+    }
     .com-area-in {
-      margin: 30px;
+      margin: 0px;
       background-color: #e7e7e7;
-      padding: 15px;
+      padding: 0px;
       color: black;
     }
 
@@ -94,19 +115,23 @@
       {% comment %} align-items: center;
       justify-content:center; {% endcomment %}
     }
-    .form-check-label {
+    .label-check {
       margin-top: auto;
       margin-bottom: auto;
-      margin-left: 40px;
-      color: black;
+      margin-left: 20px;
+      font-size: 25px;
+    }
+    .v-label-check {
+      color: #21561e;
+    }
+    .x-label-check {
+      color: #7e0000;
     }
 
     .image-check {
       content: url("/static/assets/img/icons/v_button_pressed.png");
       width: 115px;
       height: 115px;
-      -webkit-appearance: none;
-      -moz-appearance: none;
     }
     .v-image-check {
       content: url("/static/assets/img/icons/v_button.png");
@@ -131,22 +156,6 @@
     .button-check-input:focus {
       outline: none;
     }
-    {% comment %} .form-check-input {
-      position: relative;
-      width: 105px;
-      height: 105px;
-      border: 7px solid #404040;
-      border-radius: 50%;
-    }
-    .form-check-input-checked::after {
-      content: '';
-      width: 105px;
-      height: 105px;
-      border: 1px solid #fff;
-      border-radius: 50%;
-      display: block;
-      margin: -4px 2px;
-    } {% endcomment %}
     
     /*-----------------------------*/
 
