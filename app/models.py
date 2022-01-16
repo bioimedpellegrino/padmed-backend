@@ -430,7 +430,8 @@ class AppUser(User):
     theme = models.CharField(verbose_name=_("Tema"),max_length=512, choices=THEMES,default="light")
     img = models.ImageField(verbose_name=_("Immagine del profilo"),null=True,blank=True,upload_to='app/appuser/imgs')
     _dashboard_options = models.TextField(verbose_name=_("Opzioni Dashboard"),default="{}")
-    _dashboard_hospital = models.ForeignKey(Hospital,verbose_name=_("Ospedalle attualmente loggato"),on_delete=models.SET_NULL,blank=True,null=True)
+    _dashboard_hospital = models.ForeignKey(Hospital,verbose_name=_("Ospedale attualmente loggato"),on_delete=models.SET_NULL,blank=True,null=True)
+    _has_accepted_tec = models.BooleanField(verbose_name="Ha accettato i termini e condizioni", default=False)
     
     ## Other types of users
     totem_logged = models.OneToOneField(Totem,verbose_name=_("Totem"),on_delete=models.CASCADE,blank=True,null=True)
@@ -454,6 +455,12 @@ class AppUser(User):
     def dashboard_options(self,value):
         import json
         self._dashboard_options = json.dumps(value)
+    @property
+    def has_accepted_tec(self):
+        return self._has_accepted_tec
+    @has_accepted_tec.setter
+    def has_accepted_tec(self,value):
+        self._has_accepted_tec = value
     
     @property
     def logged_profile(self):

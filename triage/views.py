@@ -1,9 +1,11 @@
 from django.shortcuts import render
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.core.files.storage import default_storage
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.views.generic import View
+from django.http import HttpResponseRedirect
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -213,3 +215,14 @@ class UserConditions(APIView):
             pass
         
         return render(request,'receptions-conditions.html', {'user': user}) # receptions-conditions.html
+
+    def post(self, request, *args, **kwargs):
+        
+        user = None
+        
+        try:
+            user = AppUser.get_or_create_from_parent(request.user)
+        except:
+            pass
+        
+        return HttpResponseRedirect(reverse('receptions'))

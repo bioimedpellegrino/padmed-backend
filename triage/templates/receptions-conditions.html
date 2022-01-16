@@ -44,21 +44,21 @@
                 {% csrf_token %}
                 <div class="form-check">
                     <button type="submit" class="button-check-input" name="input_true" id="id_input_true">
-                        <img class="image-check v-image-check" src="/static/assets/img/icons/v_button.png">
+                        <img class="image-check v-image-check">
                     </button>
                     <label class="label-check v-label-check" for="id_input_true">
                         ACCONSENTO
                     </label>
                 </div>
-                <div class="form-check">
-                    <button type="submit" class="button-check-input" name="input_false" id="id_input_false">
-                        <img class="image-check x-image-check" src="/static/assets/img/icons/x_button.png">
-                    </button>
-                    <label class="label-check x-label-check" for="id_input_false">
-                        NON ACCONSENTO
-                    </label>
-                </div>
             </form>
+            <div class="form-check">
+                <button type="checkbox" class="button-check-input" name="input_false" id="id_input_false">
+                    <img class="image-check x-image-check">
+                </button>
+                <label class="label-check x-label-check" for="id_input_false">
+                    NON ACCONSENTO
+                </label>
+            </div>
         </div>
     </div>
     <!-- Main communication div -->

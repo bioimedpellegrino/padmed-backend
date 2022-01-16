@@ -129,20 +129,21 @@
     }
 
     .image-check {
-      content: url("/static/assets/img/icons/v_button_pressed.png");
       width: 115px;
       height: 115px;
     }
     .v-image-check {
       content: url("/static/assets/img/icons/v_button.png");
     }
-    .v-image-check:active {
+    .v-image-check:active,
+    .v-image-check:checked {
       content: url("/static/assets/img/icons/v_button_pressed.png");
     }
     .x-image-check {
       content: url("/static/assets/img/icons/x_button.png");
     }
-    .x-image-check:active {
+    .x-image-check:active,
+    .x-image-check:checked {
       content: url("/static/assets/img/icons/x_button_pressed.png");
     }
     .button-check-input {
@@ -150,10 +151,9 @@
       background-color: #e7e7e7;
       outline: none;
     }
-    .button-check-input:active {
-      outline: none;
-    }
-    .button-check-input:focus {
+    .button-check-input:active,
+    .button-check-input:focus,
+    .button-check-input:checked {
       outline: none;
     }
     
