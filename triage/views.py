@@ -196,3 +196,13 @@ class TestNFC(APIView):
     def get(self, request, *args, **kwargs):
 
         return render(request,'testnfc.html') # receptions-conditions.html
+    
+class UserConditions(APIView):
+    """[summary]
+
+    Args:
+        APIView ([type]): [description]
+    """
+    def get(self, request, *args, **kwargs):
+
+        return render(request,'receptions-conditions.html') # receptions-conditions.html
