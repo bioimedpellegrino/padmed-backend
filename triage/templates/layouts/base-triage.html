@@ -28,6 +28,9 @@
   <script type="text/javascript" src="/static/assets/js/onscan.js"></script>
   <!-- Specific CSS goes HERE -->
   <style>
+    
+    /* Main communication areas style */
+    
     .com-area {
       background-color: #e7e7e7;
       border-radius: 25px;
@@ -55,6 +58,45 @@
       text-align: justify;
       color: black;
     }
+    .com-area-in {
+      margin: 30px;
+      background-color: #e7e7e7;
+      padding: 15px;
+      color: black;
+    }
+    /*---------------------*/
+
+    /* Double border buttons style */
+    .form-check {
+      display: flex;
+      margin-bottom: 50px;
+      {% comment %} align-items: center;
+      justify-content:center; {% endcomment %}
+    }
+    .form-check-label {
+      margin-top: auto;
+      margin-bottom: auto;
+      margin-left: 40px;
+      color: black;
+    }
+    .form-check-input {
+      position: relative;
+      width: 105px;
+      height: 105px;
+      border: 7px solid #404040;
+      border-radius: 50%;
+    }
+    {% comment %} .form-check-input-checked::after {
+      content: '';
+      width: 105px;
+      height: 105px;
+      border: 1px solid #fff;
+      border-radius: 50%;
+      display: block;
+      margin: -4px 2px;
+    } {% endcomment %}
+    /*-----------------------------*/
+
   </style>
   {% block stylesheets %}{% endblock stylesheets %}
 

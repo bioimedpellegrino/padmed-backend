@@ -34,6 +34,21 @@
             </p>
         </div>
         <div class="com-area-in">
+            <form action="" method="post" enctype='multipart/form-data'>
+                {% csrf_token %}
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2">
+                    <label class="form-check-label" style="color: #21561e;" for="flexRadioDefault2">
+                        ACCONSENTO
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                    <label class="form-check-label" style="color: #7e0000;" for="flexRadioDefault1">
+                        NON ACCONSENTO
+                    </label>
+                </div>
+            </form>
         </div>
     </div>
     <!-- Main communication div -->
