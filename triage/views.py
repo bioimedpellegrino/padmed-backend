@@ -204,5 +204,12 @@ class UserConditions(APIView):
         APIView ([type]): [description]
     """
     def get(self, request, *args, **kwargs):
-
-        return render(request,'receptions-conditions.html') # receptions-conditions.html
+        
+        user = None
+        
+        try:
+            user = AppUser.get_or_create_from_parent(request.user)
+        except:
+            pass
+        
+        return render(request,'receptions-conditions.html', {'user': user}) # receptions-conditions.html
