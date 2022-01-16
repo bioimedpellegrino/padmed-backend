@@ -1,19 +1,13 @@
-
 <!-- Footer -->
 <footer class="footer">
-  <div class="logo" style="background-image: url(/static/assets/img/triage/doctor-group.png); background-size: cover;"></div>
-  <div class="container-fluid">
-      <div class="row" style="margin:auto;border: 2px solid #b3b3b3;">
-          <div class="col-md-1 "></div>
-          <div class="col-md-1"></div>
-          <div class="col-md-1"></div>
-          <div class="col-md-6" style="margin:auto; text-align:center;">
-              <span style="color: black;">{{ user.totem_logged.hospital }}</span>
-          </div>
-          <div class="col-md-1"></div>
-          <div class="col-md-1"></div>
-          <div class="col-md-1"></div>
-      </div>
-  </div>
+    <div class="footer-logo-div">   
+        <img class="footer-logo-img" src="/static/assets/img/brand/logo-white.png">
+    </div>
+    <div>
+        <h2 class="footer-bar-h2">
+            {{ user.totem_logged.hospital }}
+            {% comment %} <span class="normal-text" style="color: black;">{{ user.totem_logged.hospital }}</span> {% endcomment %}
+        </h2>
+    </div>
 </footer>
 

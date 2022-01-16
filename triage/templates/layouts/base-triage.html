@@ -98,6 +98,9 @@
     .normal-text {
       font: 21px/125% AcuminVariableConcept, sans-serif;
     }
+    .normal-text-b {
+      font: 45px/125% AcuminVariableConcept, sans-serif;
+    }
     .com-area-in {
       margin: 0px;
       background-color: #e7e7e7;
@@ -158,7 +161,39 @@
     }
     
     /*-----------------------------*/
+    
+    /* Footer styles */ 
+    .main-content {
+      height: 960px;
+      padding: 0px;
+      margin: auto;
+    }
 
+    .footer {
+      height: 960px;
+      padding: 0px;
+      margin: auto;
+    }
+    .footer-logo-div {
+      width: 50%;
+      margin: auto;
+      margin-top: 150px;
+      margin-bottom: 350px;
+    }
+    .footer-logo-img {
+      width: 100%;
+    }
+    .footer-bar-h2 {
+      margin: 2px;
+      margin-bottom: 180px;
+      padding-top: 7px;
+      text-align: center;
+      font: 70px/125% AcuminVariableConcept, sans-serif;
+      color: #030303;
+      border: 2px solid #c5c5c5;
+    }
+
+    /* ------------- */
   </style>
   {% block stylesheets %}{% endblock stylesheets %}
 
@@ -173,9 +208,9 @@
 
   </div>
   
-  <div class="footer">
-    {% include "includes/footer-triage.html" %}
-  </div>
+  
+  {% include "includes/footer-triage.html" %}
+
   {% include "includes/scripts-triage.html" %}
 
   <!-- Specific JS goes HERE --> 
