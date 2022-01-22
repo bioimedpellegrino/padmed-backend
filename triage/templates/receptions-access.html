@@ -96,14 +96,20 @@
 <!-- Specific JS goes HERE --> 
 {% block javascripts %}
 <script>
+  const regex = /^[a-zA-Z]{6}[0-9]{2}[abcdehlmprstABCDEHLMPRST]{1}[0-9]{2}([a-zA-Z]{1}[0-9]{3})[a-zA-Z]{1}$/g;
   try{
     onScan.attachTo(document, {
       suffixKeyCodes: [13], // enter-key expected at the end of a scan
       reactToPaste: true, // Compatibility to built-in scanners in paste-mode (as opposed to keyboard-mode)
       onScan: function(sCode, iQty) { // Alternative to document.addEventListener('scan')
           if(sCode.startsWith("%")){
+            document.getElementById("id_fiscal_code").value = "";
             var fiscal_code = sCode.substring(1,17);
-            document.getElementById("id_fiscal_code").value = fiscal_code;
+            const fiscal_code_found = fiscal_code.match(regex);
+            console.log(sCode, fiscal_code_found)
+            if (fiscal_code_found){
+              document.getElementById("id_fiscal_code").value = fiscal_code_found[0];
+            }
           }
           else{
             document.getElementById("id_fiscal_code").value = sCode.replace(/\s/g, '');
