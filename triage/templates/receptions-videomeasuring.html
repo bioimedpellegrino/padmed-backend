@@ -181,7 +181,7 @@
                 return new Promise(resolve => preview.onplaying = resolve);
               }).then(() => startRecording(preview.captureStream(), recordingTimeMS))
               .then (recordedChunks => {
-                console.log(recordedChunks, typeof recordedChunks)
+                //console.log(recordedChunks, typeof recordedChunks)
                 let recordedBlob = new Blob(recordedChunks, { type: 'video/webm' });
                 recording.src = URL.createObjectURL(recordedBlob);  
                 var url = "/triage/recordvideo/" + '{{access_id}}' + "/";

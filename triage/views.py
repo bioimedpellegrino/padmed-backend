@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.core.files.storage import default_storage
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
@@ -27,21 +29,6 @@ from .models import Hospital, Patient, TriageCode, TriageAccessReason, TriageAcc
     PatientVideo, PatientMeasureResult, MeasureLogger, Totem
 from .utils import generate_video_measure, unpack_result_deepaffex
 
-class DecodeFiscalCodeView(APIView):
-    """[summary]
-
-        Args:
-            request ([type]): [description]
-
-        Returns:
-            [type]: [description]
-    """
-    def post(self, request, *args, **kwargs):
-        
-        return Response(
-            codicefiscale.decode(request.data['fiscal_code']), 
-            status=status.HTTP_200_OK)
-        
 class TestDFXApiView(APIView):
     """[summary]
 
@@ -61,12 +48,12 @@ class ReceptionsView(APIView):
         APIView ([type]): [description]
     """
     template_name = 'receptions-access.html'
-    
+    @method_decorator(login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
         
         form = PatientForm()
         return render(request, self.template_name, {'form': form})
-    
+    @method_decorator(login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
         user = AppUser.get_or_create_from_parent(request.user)
         totem = user.totem_logged
@@ -115,7 +102,7 @@ class ReceptionsReasonsView(APIView):
         APIView ([type]): [description]
     """
     template_name = 'receptions-accessreason.html'
-    
+    @method_decorator(login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
         
         access_id = kwargs.get('access_id', None)
@@ -137,7 +124,7 @@ class RecordVideoView(APIView):
     """
     
     parser_classes = (MultiPartParser,)
-
+    @method_decorator(login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
 
         video = request.FILES['video']
@@ -181,7 +168,7 @@ class PatientResults(APIView):
     Args:
         ApiView ([type]): [description]
     """
-    
+    @method_decorator(login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
         
         patient_result = PatientMeasureResult.objects.get(pk=int(request.POST.get('p_measure_result')))
@@ -195,6 +182,7 @@ class TestNFC(APIView):
     Args:
         APIView ([type]): [description]
     """
+    @method_decorator(login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
 
         return render(request,'testnfc.html')
@@ -205,6 +193,7 @@ class UserConditions(APIView):
     Args:
         APIView ([type]): [description]
     """
+    @method_decorator(login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
         
         user = None
@@ -215,7 +204,8 @@ class UserConditions(APIView):
             pass
         
         return render(request,'receptions-conditions.html', {'user': user}) # receptions-conditions.html
-
+    
+    @method_decorator(login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
         
         user = None

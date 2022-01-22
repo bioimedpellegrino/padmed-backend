@@ -24,9 +24,13 @@ def login_view(request):
             username = form.cleaned_data.get("username")
             password = form.cleaned_data.get("password")
             user = authenticate(username=username, password=password)
+            next = request.GET.get("next", None)
             if user is not None:
                 login(request, user)
-                return redirect("/")
+                if next:
+                    return redirect(next)
+                else:
+                    return redirect("/")
             else:    
                 msg = 'Invalid credentials'    
         else:
