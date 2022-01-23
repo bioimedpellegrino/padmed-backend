@@ -102,19 +102,10 @@
       suffixKeyCodes: [13], // enter-key expected at the end of a scan
       reactToPaste: true, // Compatibility to built-in scanners in paste-mode (as opposed to keyboard-mode)
       onScan: function(sCode, iQty) { // Alternative to document.addEventListener('scan')
-          if(sCode.startsWith("%")){
             document.getElementById("id_fiscal_code").value = "";
             var fiscal_code = sCode.substring(1,17);
             const fiscal_code_found = fiscal_code.match(regex);
             console.log(sCode, fiscal_code_found)
-            if (fiscal_code_found){
-              document.getElementById("id_fiscal_code").value = fiscal_code_found[0];
-            }
-          }
-          else{
-            document.getElementById("id_fiscal_code").value = "";
-            const fiscal_code_found = fiscal_code.match(regex);
-            document.getElementById("id_fiscal_code").value = sCode.replace(/\s/g, '');
             if (fiscal_code_found){
               document.getElementById("id_fiscal_code").value = fiscal_code_found[0];
             }
