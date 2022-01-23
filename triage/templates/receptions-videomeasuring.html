@@ -44,7 +44,7 @@
                   <div class="col-sm">
                       <div id="startButton" class="button"></div>
                       <div style="width:800px border-radius:10px; overflow:hidden">
-                        <video id="preview" width="800" height="800" autoplay muted></video>
+                        <video id="preview" autoplay muted></video>
                       </div>
                       <div style="display:none">
                         <div id="stopButton" class="button"></div>
@@ -173,6 +173,7 @@
                   height: { min: 720, max: 1280 },
                   width: { min: 1080, max: 1920 },
                   frameRate: { min: 15, ideal: 24, max: 30 },
+                  tilt: -90
                 },
               audio: false
         }).then(stream => {
