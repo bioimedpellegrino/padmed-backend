@@ -43,7 +43,7 @@
                   <div class="col-sm"></div>
                   <div class="col-sm">
                       <div id="startButton" class="button"></div>
-                      <div style="width:800px border-radius:10px; overflow:hidden">
+                      <div style="border-radius:10px; overflow:hidden">
                         <video id="preview" autoplay muted></video>
                       </div>
                       <div style="display:none">
@@ -170,10 +170,9 @@
           navigator.mediaDevices.getUserMedia({
               video: {
                   deviceId: { exact: devId },
-                  height: { min: 720, max: 1280 },
-                  width: { min: 1080, max: 1920 },
+                  height: { min: 720, max: 1920 },
+                  width: { min: 360, max: 360 },
                   frameRate: { min: 15, ideal: 24, max: 30 },
-                  tilt: -90
                 },
               audio: false
         }).then(stream => {
