@@ -6,28 +6,109 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
-<!-- Header -->
-<div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center" 
-        style="min-height: 600px; background-image: url(/static/assets/img/triage/doctor-group.png); background-size: cover; background-position: center top;">
-    <!-- Mask -->
-    <span class="mask bg-gradient-default opacity-4"></span>
-    <!-- Header container -->
-    <div class="container-fluid d-flex align-items-center">
-        <div class="row">
-            <div class="col-lg-7 col-md-10">
-                <h1 class="display-2 text-white">Benvenuto</h1>
-                <p class="text-white lead mt-0 mb-5">
-                    <b>
-                        Questo è PadMed. 
-                        Per ottenere il tuo codice di accesso al pronto soccorso usa la 
-                        tua tessera sanitaria oppure inserisci il tuo codice fiscale
-                    </b>
-                </p>
-            </div>
+<!-- Header container -->
+<div class="container-fluid">
+  <div class="row"><div class="col-md-12 mb-5"></div></div>
+  <div class="row" style="background-color: #00a99d; box-shadow: 0px 10px 10px; position: relative; z-index:10;">
+      <div class="col-md-1 "></div>
+      <div class="col-md-1"></div>
+      <div class="col-md-1">
+          <div class="com-triangle-left"></div>
+      </div>
+      <div class="col-md-6" style="margin:auto; text-align:center;">
+          <span style="color: white;"><b>SELEZIONARE CAUSA CHECK UP</b></span>
+      </div>
+      <div class="col-md-1">
+          <div class="com-triangle-right"></div>
+      </div>
+      <div class="col-md-1"></div>
+      <div class="col-md-1"></div>
+  </div>
+</div>
+<!-- Header container -->
+<!-- Main communication div -->
+<div class="com-area">
+  <div class="com-area-triangle"></div>
+        <div class="row mt-5">
+          <div class="col-md-4" style="text-align:center;">
+            <button type="submit" class="button-check-input" name="reason" id="reason" onclick="location.href='{% url 'receptions_accessreason' access_id=access_id reason_id=reasons.0.id %}'">
+              <img class="button-circle">
+            </button>
+            <label for="reason" style="margin: auto;">
+              <b>{{ reasons.0.label }}</b>
+            </label>
+          </div>
+          <div class="col-md-4"></div>
+          <div class="col-md-4" style="text-align:center;">
+            <button type="submit" class="button-check-input" name="reason" id="reason" onclick="location.href='{% url 'receptions_accessreason' access_id=access_id reason_id=reasons.1.id %}'">
+              <img class="button-circle">
+            </button>
+            <label for="reason" style="margin: auto;">
+              <b>{{ reasons.1.label }}</b>
+            </label>
+          </div>
         </div>
-    </div>
+        <div class="row mt-5">
+          <div class="col-md-4" style="text-align:center;">
+            <button type="submit" class="button-check-input" name="reason" id="reason" onclick="location.href='{% url 'receptions_accessreason' access_id=access_id reason_id=reasons.2.id %}'">
+              <img class="button-circle">
+            </button>
+            <label for="reason" style="margin: auto;">
+              <b>{{ reasons.2.label }}</b>
+            </label>
+          </div>
+          <div class="col-md-4"></div>
+          <div class="col-md-4" style="text-align:center;">
+            <button type="submit" class="button-check-input" name="reason" id="reason" onclick="location.href='{% url 'receptions_accessreason' access_id=access_id reason_id=reasons.3.id %}'">
+              <img class="button-circle">
+            </button>
+            <label for="reason" style="margin: auto;">
+              <b>{{ reasons.3.label }}</b>
+            </label>
+          </div>
+        </div>
+        <div class="row mt-5">
+          <div class="col-md-4" style="text-align:center;">
+            <button type="submit" class="button-check-input" name="reason" id="reason" onclick="location.href='{% url 'receptions_accessreason' access_id=access_id reason_id=reasons.4.id %}'">
+              <img class="button-circle">
+            </button>
+            <label for="reason" style="margin: auto;">
+              <b>{{ reasons.4.label }}</b>
+            </label>
+          </div>
+          <div class="col-md-4"></div>
+          <div class="col-md-4" style="text-align:center;">
+            <button type="submit" class="button-check-input" name="reason" id="reason" onclick="location.href='{% url 'receptions_accessreason' access_id=access_id reason_id=reasons.5.id %}'">
+              <img class="button-circle">
+            </button>
+            <label for="reason" style="margin: auto;">
+              <b>{{ reasons.5.label }}</b>
+            </label>
+          </div>
+        </div>
+        <div class="row mt-5">
+          <div class="col-md-4" style="text-align:center;">
+            <button type="submit" class="button-check-input" name="reason" id="reason" onclick="location.href='{% url 'receptions_accessreason' access_id=access_id reason_id=reasons.6.id %}'">
+              <img class="button-circle">
+            </button>
+            <label for="reason" style="margin: auto;">
+              <b>{{ reasons.6.label }}</b>
+            </label>
+          </div>
+          <div class="col-md-4"></div>
+          <div class="col-md-4" style="text-align:center;">
+            <button type="submit" class="button-check-input" name="reason" id="reason" onclick="location.href='{% url 'receptions_accessreason' access_id=access_id reason_id=reasons.7.id %}'">
+              <img class="button-circle">
+            </button>
+            <label for="reason" style="margin: auto;">
+              <b>{{ reasons.7.label }}</b>
+            </label>
+          </div>
+        </div>
 </div>
 
+<!-- Main communication div -->
+<!--
     <div class="container-fluid mt--7">
       <div class="row justify-content-center">
         <div class="col-xl-12 order-xl-1">
@@ -100,6 +181,7 @@
         </div>
       </div>
     </div>
+  -->
 {% endblock content %}
 
 <!-- Specific JS goes HERE --> 
