@@ -6,29 +6,64 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
-<!-- Header -->
-<div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center" 
-        style="min-height: 600px; background-image: url(/static/assets/img/triage/doctor-group.png); background-size: cover; background-position: center top;">
-    <!-- Mask -->
-    <span class="mask bg-gradient-default opacity-4"></span>
-    <!-- Header container -->
-    <div class="container-fluid d-flex align-items-center">
-        <div class="row">
-            <div class="col-lg-7 col-md-10">
-                <h1 class="display-2 text-white">Benvenuto</h1>
-                <p class="text-white lead mt-0 mb-5">
-                    <b>
-                        Questo è PadMed. 
-                        Per ottenere il tuo codice di accesso al pronto soccorso usa la 
-                        tua tessera sanitaria oppure inserisci il tuo codice fiscale
-                    </b>
-                </p>
-            </div>
+<!-- Header container -->
+  <div class="container-fluid">
+    <div class="row"><div class="col-md-12 mb-5"></div></div>
+    <div class="row" style="background-color: #00a99d; box-shadow: 0px 10px 10px; position: relative; z-index:10;">
+        <div class="col-md-1 "></div>
+        <div class="col-md-1"></div>
+        <div class="col-md-1">
+            <div class="com-triangle-left"></div>
         </div>
+        <div class="col-md-6" style="margin:auto; text-align:center;">
+            <span style="color: white;"><b>PASSARE LA TESSERA SANITARIA NEL LETTORE</b></span>
+        </div>
+        <div class="col-md-1">
+            <div class="com-triangle-right"></div>
+        </div>
+        <div class="col-md-1"></div>
+        <div class="col-md-1"></div>
     </div>
-</div>
+  </div>
+  <!-- Header container -->
+  <!-- Main communication div -->
+  <div class="com-area">
+    <div class="com-area-triangle"></div>
+    <div class="com-area-out" style="text-align:center;">
+      <img src="/static/assets/img/triage/TS.png">
+    </div>
+  </div>
+  <div class="com-area" style="margin: -30px auto auto auto; width: 540px; height: 70px;" >
+    <div class="row">
+      <div class="col-md-4"></div>
+      <div class="col-md-4">
+        <p id="id_fiscal_code"><b>CODICE FISCALE</b></p>
+      </div>
+      <div class="col-md-4"></div>
+    </div>
+  </div>
+  <div class="full-right">
+    <img src="/static/assets/img/triage/arrow.png">
+  </div>
+      <!-- 
 
-    <div class="container-fluid mt--7">
+      <form action="{% url 'receptions' %}" method="post" enctype='multipart/form-data'>
+        {% csrf_token %}
+            <div class="row">
+              <div class="col-md-4"></div>
+              <div class="col-m4-4">
+                {{ form.fiscal_code }}
+              </div>
+              <div class="col-md-4"></div>
+            </div>
+              <span class="text-error"> {{ errors }} </span>
+          <button type="submit" id="submitButton" class="btn btn-primary" style="display: none">Continua</button>
+      </form>
+  </div>
+  -->
+  <!-- Main communication div -->
+  <!-- 
+    <div class="container-fluid mt7">
       <div class="row justify-content-center">
         <div class="col-xl-4 order-xl-1 mb-5 mb-xl-0">
           <div class="card card-profile shadow">
@@ -91,6 +126,7 @@
         </div>
       </div>
     </div>
+  -->
 {% endblock content %}
 
 <!-- Specific JS goes HERE --> 
@@ -108,11 +144,11 @@
             const fiscal_code_found = fiscal_code.match(regex);
             console.log(sCode, fiscal_code_found)
             if (fiscal_code_found){
-              document.getElementById("id_fiscal_code").value = fiscal_code_found[0];
+              document.getElementById("id_fiscal_code").innerHTML = "<b>"+fiscal_code_found[0]+"</b>";
             }
           }
           else{
-            document.getElementById("id_fiscal_code").value = sCode.replace(/\s/g, '');
+            document.getElementById("id_fiscal_code").innerHTML = sCode.replace(/\s/g, '');
           }
       },
       onKeyDetect: function(iKeyCode){ // output all potentially relevant key events - great for debugging!
