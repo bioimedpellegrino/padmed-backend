@@ -45,98 +45,33 @@
   <div class="full-right">
     <img src="/static/assets/img/triage/arrow.png">
   </div>
-      <!-- 
-
-      <form action="{% url 'receptions' %}" method="post" enctype='multipart/form-data'>
-        {% csrf_token %}
-            <div class="row">
-              <div class="col-md-4"></div>
-              <div class="col-m4-4">
-                {{ form.fiscal_code }}
-              </div>
-              <div class="col-md-4"></div>
-            </div>
-              <span class="text-error"> {{ errors }} </span>
-          <button type="submit" id="submitButton" class="btn btn-primary" style="display: none">Continua</button>
-      </form>
-  </div>
-  -->
-  <!-- Main communication div -->
-  <!-- 
-    <div class="container-fluid mt7">
-      <div class="row justify-content-center">
-        <div class="col-xl-4 order-xl-1 mb-5 mb-xl-0">
-          <div class="card card-profile shadow">
-            <div class="row justify-content-center">
-              <div class="col-lg-3 order-lg-2">
-                <div class="card-profile-image">
-                  <a href="#">
-                    <img src="/static/assets/img/triage/tessera-sanitaria.png" class="rounded-circle">
-                  </a>
-                </div>
-              </div>
-            </div>
-            <div class="card-header text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
-              <div class="d-flex justify-content-between">
-              </div>
-            </div>
-            <div class="card-body pt-0 pt-md-4">
-              <div class="row">
-                <div class="col">
-                  <div class="card-profile-stats d-flex justify-content-center mt-md-5">
-                    <div>
-                        <button class="btn btn-primary">Inserisci la tessera nel lettore</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="d-flex justify-content-left mt-md-5">
-                <div>
-                  <i class="fas fa-arrow-down fa-4x" style="color: #78ceb5;"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-4 order-xl-2">
-          <div class="card bg-secondary shadow">
-            <div class="card-header bg-white border-0">
-              <div class="row align-items-center">
-                <div class="col-8">
-                  <h3 class="mb-0">Oppure digita il tuo Codice Fiscale</h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <form action="{% url 'receptions' %}" method="post" enctype='multipart/form-data'>
-              {% csrf_token %}
-                <h6 class="heading-small text-muted mb-4">Codice Fiscale</h6>
-                <div class="pl-lg-4">
-                  <div class="row">
-                    <div class="col-lg-6">
-                      {{ form.fiscal_code }}
-                    </div>
-                    <span class="text-error"> {{ errors }} </span>
-                  </div>
-                <hr class="my-4" />
-                <button type="submit" class="btn btn-primary">Continua</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  -->
+  
 {% endblock content %}
 
 <!-- Specific JS goes HERE --> 
 {% block javascripts %}
 <script>
   const regex = /^[a-zA-Z]{6}[0-9]{2}[abcdehlmprstABCDEHLMPRST]{1}[0-9]{2}([a-zA-Z]{1}[0-9]{3})[a-zA-Z]{1}$/g;
+
+  function getCookie (name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+  }
+
   try{
     onScan.attachTo(document, {
       suffixKeyCodes: [13], // enter-key expected at the end of a scan
-      reactToPaste: true, // Compatibility to built-in scanners in paste-mode (as opposed to keyboard-mode)
+      reactToPaste: false, // Compatibility to built-in scanners in paste-mode (as opposed to keyboard-mode)
       onScan: function(sCode, iQty) { // Alternative to document.addEventListener('scan')
           if(sCode.startsWith("%")){
             document.getElementById("id_fiscal_code").value = "";
@@ -145,6 +80,21 @@
             console.log(sCode, fiscal_code_found)
             if (fiscal_code_found){
               document.getElementById("id_fiscal_code").innerHTML = "<b>"+fiscal_code_found[0]+"</b>";
+              const form = document.createElement('form');
+              form.method = "post";
+              form.action = "{% url 'receptions' %}";
+              const csfrtoken = document.createElement('input');
+              csfrtoken.name = "csrfmiddlewaretoken";
+              csfrtoken.type = "hidden";
+              csfrtoken.value = getCookie('csrftoken');
+              form.appendChild(csfrtoken);
+              const hiddenField = document.createElement('input');
+              hiddenField.type = 'hidden';
+              hiddenField.name = 'fiscal_code';
+              hiddenField.value = fiscal_code_found[0];
+              form.appendChild(hiddenField);
+              document.body.appendChild(form);
+              form.submit();
             }
           }
           else{
