@@ -95,13 +95,20 @@ class ReceptionsView(APIView):
             form = PatientForm()
             return render(request, self.template_name, {'form': form, 'errors': 'Il codice fiscale inserito non è valido'})
         
+class AccessReasonTestView(View):
+    template_name = 'receptions-access.html'
+    @method_decorator(login_required(login_url="/login/"))
+    def get(self, request, *args, **kwargs):
+        reasons = TriageAccessReason.objects.all()
+        res = [{ 'label': reason.reason, 'id': reason.id } for reason in reasons]
+        return render(request, 'receptions-accessreason.html', {'access_id': 0, 'reasons': res})
+    
 class ReceptionsReasonsView(APIView):
     """[summary]
 
     Args:
         APIView ([type]): [description]
     """
-    template_name = 'receptions-accessreason.html'
     @method_decorator(login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
         

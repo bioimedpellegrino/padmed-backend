@@ -39,6 +39,10 @@ if [ -f .padmed.env ]
 then
     source .padmed.env
 fi
+if [ -f env_files/.padmed.env ]
+then
+    source env_files/.padmed.env
+fi
 if [ -f .env ]
 then
     source .env

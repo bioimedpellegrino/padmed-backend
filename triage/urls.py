@@ -11,8 +11,9 @@ urlpatterns=[
     path('recordvideo/<int:access_id>/', RecordVideoView.as_view(), name='record_video'),
     path('patientresults/', PatientResults.as_view(), name='patient_results'),
     
-    #NFC
+    #NFC and test Pages
     path('testnfc/', TestNFC.as_view(), name='test'),
+    path('testreasons/', AccessReasonTestView.as_view(), name='testreasons'),
     
     # DFXAPI
     path('testdfxapi/', TestDFXApiView.as_view(), name='test_dfx_api'),
