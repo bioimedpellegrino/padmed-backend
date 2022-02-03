@@ -52,7 +52,8 @@ class ReceptionsView(APIView):
     def get(self, request, *args, **kwargs):
         
         form = PatientForm()
-        return render(request, self.template_name, {'form': form})
+        user = AppUser.get_or_create_from_parent(request.user)
+        return render(request, self.template_name, {'form': form, 'user': user})
     @method_decorator(login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
         user = AppUser.get_or_create_from_parent(request.user)
@@ -90,10 +91,10 @@ class ReceptionsView(APIView):
             
             reasons = TriageAccessReason.objects.filter(hospital=hospital)
             res = [{ 'label': reason.reason, 'id': reason.id } for reason in reasons]
-            return render(request, 'receptions-accessreason.html', {'access_id': access.id, 'reasons': res})
+            return render(request, 'receptions-accessreason.html', {'access_id': access.id, 'reasons': res, 'user': user})
         else:
             form = PatientForm()
-            return render(request, self.template_name, {'form': form, 'errors': 'Il codice fiscale inserito non è valido'})
+            return render(request, self.template_name, {'form': form, 'errors': 'Il codice fiscale inserito non è valido', 'user': user})
         
 class AccessReasonTestView(View):
     template_name = 'receptions-access.html'

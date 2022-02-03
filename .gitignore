@@ -12,6 +12,8 @@ media/*
 !media/tmp/.gitkeep
 !media/debug_chunks/.gitkeep
 
+config.json
+
 .sass-cache/
 node_modules/
 !bower.json
