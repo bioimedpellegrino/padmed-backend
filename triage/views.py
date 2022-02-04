@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -47,13 +47,15 @@ class ReceptionsView(APIView):
     Args:
         APIView ([type]): [description]
     """
-    template_name = 'receptions-access.html'
+    TEMPLATE_NAME = 'receptions-access.html'
+    
     @method_decorator(login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
         
         form = PatientForm()
         user = AppUser.get_or_create_from_parent(request.user)
-        return render(request, self.template_name, {'form': form, 'user': user})
+        return render(request, self.TEMPLATE_NAME, {'form': form, 'user': user})
+    
     @method_decorator(login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
         user = AppUser.get_or_create_from_parent(request.user)
@@ -79,8 +81,8 @@ class ReceptionsView(APIView):
                 patient_logged=patient,
                 )
             
-            hospital = Hospital.objects.all().first()
-            totem = Totem.objects.all().first()
+            hospital = Hospital.objects.all().first() #TODO
+            totem = Totem.objects.all().first() #TODO
             
             access = TriageAccess()
             access.patient = patient
@@ -88,48 +90,64 @@ class ReceptionsView(APIView):
             access.totem = totem
             access.access_date = datetime.datetime.now()
             access.save()
-            
-            reasons = TriageAccessReason.objects.filter(hospital=hospital)
-            res = [{ 'label': reason.reason, 'id': reason.id } for reason in reasons]
-            return render(request, 'receptions-accessreason.html', {'access_id': access.id, 'reasons': res, 'user': user})
+            return HttpResponseRedirect(reverse('accessreason',kwargs={"access_id":access.id}))
         else:
+            # TODO
             form = PatientForm()
             return render(request, self.template_name, {'form': form, 'errors': 'Il codice fiscale inserito non è valido', 'user': user})
         
-class AccessReasonTestView(View):
-    template_name = 'receptions-access.html'
-    @method_decorator(login_required(login_url="/login/"))
-    def get(self, request, *args, **kwargs):
-        reasons = TriageAccessReason.objects.all()
-        res = [{ 'label': reason.reason, 'id': reason.id } for reason in reasons]
-        return render(request, 'receptions-accessreason.html', {'access_id': 0, 'reasons': res})
-    
 class ReceptionsReasonsView(APIView):
     """[summary]
 
     Args:
         APIView ([type]): [description]
     """
+    
+    TEMPLATE_NAME = 'receptions-accessreason.html'
+    
     @method_decorator(login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
         
-        access_id = kwargs.get('access_id', None)
-        reason_id = kwargs.get('reason_id', None)
+        access_id = int(kwargs.get('access_id', None))
+        access = get_object_or_404(TriageAccess,pk=access_id)
+        
+        reasons = TriageAccessReason.objects.filter(hospital=access.hospital) #TODO: filter by "enable" (to be defined)
 
-        access = TriageAccess.objects.get(pk=access_id)
-        reason = TriageAccessReason.objects.get(pk=reason_id)
+        return render(request, self.TEMPLATE_NAME, {'access_id': access_id, 'reasons': reasons})
+    
+    @method_decorator(login_required(login_url="/login/"))
+    def post(self, request, *args, **kwargs):
+        from .forms import ReasonsForm
         
-        access.access_reason = reason
-        access.triage_code = reason.related_code
-        access.save()
+        access_id = kwargs.get('access_id', None)
+        access = get_object_or_404(TriageAccess,pk=access_id)
         
-        return render(request, 'receptions-videomeasuring.html', {'access_id': access_id })
+        form = ReasonsForm(request.POST)
+        if form.is_valid():
+            reason = form.cleaned_data["reason"]
+
+            access.access_reason = reason
+            access.triage_code = reason.related_code
+            access.save()
+            
+            return HttpResponseRedirect(reverse('record_video',kwargs={"access_id":access_id}))
+        else:
+            pass #TODO
         
 class RecordVideoView(APIView):
     """
     Args:
         APIView ([type]): [description]
     """
+    TEMPLATE_NAME = "receptions-videomeasuring.html"
+    
+    @method_decorator(login_required(login_url="/login/"))
+    def get(self, request, *args, **kwargs):
+        
+        access_id = kwargs.get('access_id', None)
+        access = get_object_or_404(TriageAccess,pk=access_id)
+        
+        return render(request, self.TEMPLATE_NAME, {'access_id': access_id })
     
     parser_classes = (MultiPartParser,)
     @method_decorator(login_required(login_url="/login/"))

@@ -10,8 +10,7 @@
 <div class="container-fluid">
   <div class="row"><div class="col-md-12 mb-5"></div></div>
   <div class="row" style="background-color: #00a99d; box-shadow: 0px 10px 10px; position: relative; z-index:10;">
-      <div class="col-md-1 "></div>
-      <div class="col-md-1"></div>
+      <div class="col-md-2 "></div>
       <div class="col-md-1">
           <div class="com-triangle-left"></div>
       </div>
@@ -21,95 +20,78 @@
       <div class="col-md-1">
           <div class="com-triangle-right"></div>
       </div>
-      <div class="col-md-1"></div>
-      <div class="col-md-1"></div>
+      <div class="col-md-2"></div>
   </div>
 </div>
 <!-- Header container -->
 <!-- Main communication div -->
-<div class="com-area">
-  <div class="com-area-triangle"></div>
-        <div class="row mt-5">
-          <div class="col-md-4" style="text-align:center;">
-            <button type="submit" class="button-check-input" name="reason" id="reason" onclick="location.href='{% url 'receptions_accessreason' access_id=access_id reason_id=reasons.0.id %}'">
-              <img class="button-circle">
-            </button>
-            <label for="reason" style="margin: auto;">
-              <b>{{ reasons.0.label }}</b>
+<form action="" method="post" enctype='multipart/form-data'>
+  {% csrf_token %}
+  <div class="row cit-main-row">
+    <div class="col-md-3 cit-area-label">
+      {% for reason in reasons %}
+        {% if not forloop.counter|divisibleby:2 %}
+          <div class="cit-label-l">
+            <label for="id_{{reason.id}}">
+              <b>{{reason.reason}}</b>
             </label>
           </div>
-          <div class="col-md-4"></div>
-          <div class="col-md-4" style="text-align:center;">
-            <button type="submit" class="button-check-input" name="reason" id="reason" onclick="location.href='{% url 'receptions_accessreason' access_id=access_id reason_id=reasons.1.id %}'">
-              <img class="button-circle">
-            </button>
-            <label for="reason" style="margin: auto;">
-              <b>{{ reasons.1.label }}</b>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class="col-md-6 cit-area">
+      <div class="com-area-triangle"></div>
+      {% for reason in reasons %}
+        {% if not forloop.counter|divisibleby:2 %}
+          <div class="row cit-line">
+            <div class="col-md-6 cit-command-l">
+              <div class="cit-triangle-l"></div>
+              <button type="submit" class="button-check-input cit-button-l" name="{{reason.id}}" id="id_{{reason.id}}">
+                <img class="button-circle">
+              </button>
+            </div>
+        {% else %}
+            <div class="col-md-6 cit-command-r">
+              <div class="cit-triangle-r"></div>
+              <button type="submit" class="button-check-input cit-button-r" name="{{reason.id}}" id="id_{{reason.id}}">
+                <img class="button-circle">
+              </button>
+              {% comment %} <label for="id_{{reason.id}}" class="label-check">
+                <b>{{ reason.reason }}</b>
+              </label> {% endcomment %}
+            </div>
+          </div>
+        {% endif %}
+        {% if forloop.last %}
+          {% if not forloop.counter|divisibleby:2 %}
+              <div class="col-md-4 cit-command-r" style="visibility:hidden;">
+                <button class="button-check-input" name="hiddenbutton" id="id_hiddenbutton">
+                  <img class="button-circle">
+                </button>
+                <div class="cit-triangle-r"></div>
+              </div>
+            </div>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class="col-md-3 cit-area-label">
+      {% for reason in reasons %}
+        {% if forloop.counter|divisibleby:2 %}
+          <div class="cit-label-r">
+            <label for="id_{{reason.id}}">
+              <b>{{reason.reason}}</b>
             </label>
           </div>
-        </div>
-        <div class="row mt-5">
-          <div class="col-md-4" style="text-align:center;">
-            <button type="submit" class="button-check-input" name="reason" id="reason" onclick="location.href='{% url 'receptions_accessreason' access_id=access_id reason_id=reasons.2.id %}'">
-              <img class="button-circle">
-            </button>
-            <label for="reason" style="margin: auto;">
-              <b>{{ reasons.2.label }}</b>
-            </label>
-          </div>
-          <div class="col-md-4"></div>
-          <div class="col-md-4" style="text-align:center;">
-            <button type="submit" class="button-check-input" name="reason" id="reason" onclick="location.href='{% url 'receptions_accessreason' access_id=access_id reason_id=reasons.3.id %}'">
-              <img class="button-circle">
-            </button>
-            <label for="reason" style="margin: auto;">
-              <b>{{ reasons.3.label }}</b>
-            </label>
-          </div>
-        </div>
-        <div class="row mt-5">
-          <div class="col-md-4" style="text-align:center;">
-            <button type="submit" class="button-check-input" name="reason" id="reason" onclick="location.href='{% url 'receptions_accessreason' access_id=access_id reason_id=reasons.4.id %}'">
-              <img class="button-circle">
-            </button>
-            <label for="reason" style="margin: auto;">
-              <b>{{ reasons.4.label }}</b>
-            </label>
-          </div>
-          <div class="col-md-4"></div>
-          <div class="col-md-4" style="text-align:center;">
-            <button type="submit" class="button-check-input" name="reason" id="reason" onclick="location.href='{% url 'receptions_accessreason' access_id=access_id reason_id=reasons.5.id %}'">
-              <img class="button-circle">
-            </button>
-            <label for="reason" style="margin: auto;">
-              <b>{{ reasons.5.label }}</b>
-            </label>
-          </div>
-        </div>
-        <div class="row mt-5">
-          <div class="col-md-4" style="text-align:center;">
-            <button type="submit" class="button-check-input" name="reason" id="reason" onclick="location.href='{% url 'receptions_accessreason' access_id=access_id reason_id=reasons.6.id %}'">
-              <img class="button-circle">
-            </button>
-            <label for="reason" style="margin: auto;">
-              <b>{{ reasons.6.label }}</b>
-            </label>
-          </div>
-          <div class="col-md-4"></div>
-          <div class="col-md-4" style="text-align:center;">
-            <button type="submit" class="button-check-input" name="reason" id="reason" onclick="location.href='{% url 'receptions_accessreason' access_id=access_id reason_id=reasons.7.id %}'">
-              <img class="button-circle">
-            </button>
-            <label for="reason" style="margin: auto;">
-              <b>{{ reasons.7.label }}</b>
-            </label>
-          </div>
-        </div>
-</div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</form>
 
 <!-- Main communication div -->
-<!--
-    <div class="container-fluid mt--7">
+
+    {% comment %} <div class="container-fluid mt--7">
       <div class="row justify-content-center">
         <div class="col-xl-12 order-xl-1">
           <div class="card bg-secondary shadow">
@@ -124,7 +106,7 @@
               <div class="row triage-reasons">
                 {% for reason in reasons %}
                     <div class="col-lg-4 col-md-6 m-3">
-                    <a class="btn btn-lg btn-primary" style="width: 250px;" href="{% url 'receptions_accessreason' access_id=access_id reason_id=reason.id %}">
+                    <a class="btn btn-lg btn-primary" style="width: 250px;" href="{% url 'accessreason' access_id=access_id %}">
                         
                         {% if reason.label == 'INCIDENTE' %}
                         <div>
@@ -180,8 +162,7 @@
           </div>
         </div>
       </div>
-    </div>
-  -->
+    </div> {% endcomment %}
 {% endblock content %}
 
 <!-- Specific JS goes HERE --> 
