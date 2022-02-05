@@ -56,6 +56,12 @@
   </div>
   <button id="printer" onclick="sendToQuickPrinterChrome();" style="display:none">Stampa risultati</button>
   <button id="returnHome" action ="{% url 'receptions'%}" style="display:none">Procedi con una nuova misurazione</button>
+  {% if show_arrow %}
+  <div class="row full-bottom-left">
+      <img src="/static/assets/img/triage/arrow90.png" onclick="sendToQuickPrinterChrome();">
+    </div>
+  {% endif %}
+
 <!-- Main communication div -->
 {% endblock content %}
 
