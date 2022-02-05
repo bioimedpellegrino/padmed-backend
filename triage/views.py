@@ -211,7 +211,7 @@ class TestNFC(APIView):
     @method_decorator(login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
 
-        return render(request,'testnfc.html')
+        return render(request,'receptions-results.html', {'show_arrow': True})
     
 class UserConditions(APIView):
     """[summary]

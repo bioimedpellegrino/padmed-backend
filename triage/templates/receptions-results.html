@@ -6,112 +6,63 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
-<!-- Header -->
-<div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center" 
-        style="min-height: 600px; background-image: url(/static/assets/img/triage/doctor-group.png); background-size: cover; background-position: center top;">
-    <!-- Mask -->
-    <span class="mask bg-gradient-default opacity-4"></span>
-    <!-- Header container -->
-    <div class="container-fluid d-flex align-items-center">
-        <div class="row">
-            <div class="col-lg-7 col-md-10">
-                <h1 class="display-2 text-white">Benvenuto</h1>
-                <p class="text-white lead mt-0 mb-5">
-                    <b>
-                        Questo è PadMed. 
-                        Per ottenere il tuo codice di accesso al pronto soccorso usa la 
-                        tua tessera sanitaria oppure inserisci il tuo codice fiscale
-                    </b>
-                </p>
-            </div>
+<!-- Header container -->
+<div class="container-fluid">
+    <div class="row"><div class="col-md-12 mb-5"></div></div>
+    <div class="row" style="background-color: #00a99d; box-shadow: 0px 10px 10px; position: relative; z-index:10;">
+        <div class="col-md-1 "></div>
+        <div class="col-md-1"></div>
+        <div class="col-md-1">
+            <div class="com-triangle-left"></div>
         </div>
-    </div>
-</div>
-
-<div class="container-fluid mt--7">
-  <div class="row justify-content-center">
-    <div class="col-xl-12 order-xl-1">
-      <div class="card bg-secondary shadow">
-        <div class="card-header bg-white border-0">
-          <div class="row align-items-center">
-            <div class="col-sm" align="center">              
-                <h3 class="mb-0">Esito misurazione:</h3>
-            </div>
-          </div>
+        <div class="col-md-6" style="margin:auto; text-align:center;">
+            <span style="color: white;"><b>RITIRA I TUOI RISULTATI!</b></span>
         </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-xl-3 col-lg-6">
-              <div class="card card-stats mb-4 mb-xl-0">
-                <div class="card-body">
-                  <div class="row">
-                    <div class="col">
-                      <h5 class="card-title text-uppercase text-muted mb-0">Frequenza cardiaca</h5>
-                      <span class="h2 font-weight-bold mb-0">{{measure.measure.HB_BPM.value}}</span>
-                    </div>
-                    <div class="col-auto">
-                      <div class="icon icon-shape bg-danger text-white rounded-circle shadow">
-                        <i class="fas fa-heartbeat"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <p class="mt-3 mb-0 text-muted text-sm">
-                      <span class="text-success mr-2"><i class="fa fa-arrow-up"></i>{{measure.measure.HB_BPM.unit}}</span>
-                      <span class="text-nowrap">Unità di misura</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="col-xl-3 col-lg-6">
-              <div class="card card-stats mb-4 mb-xl-0">
-                <div class="card-body">
-                  <div class="row">
-                    <div class="col">
-                      <h5 class="card-title text-uppercase text-muted mb-0">SNR</h5>
-                      <span class="h2 font-weight-bold mb-0">{{measure.measure.SNR.value}}</span>
-                    </div>
-                    <div class="col-auto">
-                      <div class="icon icon-shape bg-warning text-white rounded-circle shadow">
-                        <i class="fas fa-wave-square"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <p class="mt-3 mb-0 text-muted text-sm">
-                      <span class="text-success mr-2"><i class="fa fa-arrow-up"></i>{{measure.measure.SNR.unit}}</span>
-                      <span class="text-nowrap">Unità di misura</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-xl-3 col-lg-6">
-              <div class="card-body">
-                <div class="row">
-                  <a class="btn btn-lg btn-primary" onclick="sendToQuickPrinterChrome();">Stampa risultati</a>
-                </div>
-              </div>
-            </div>
-            <div class="col-xl-3 col-lg-6">
-              <div class="card-body">
-                <div class="row">
-                  <a class="btn btn-lg btn-primary" id="returnHome" href="{% url 'receptions'%}">Procedi con una nuova misurazione</a>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div class="col-md-1">
+            <div class="com-triangle-right"></div>
         </div>
-      </div>
+        <div class="col-md-1"></div>
+        <div class="col-md-1"></div>
     </div>
   </div>
-</div>
+<!-- Header container -->
+<!-- Main communication div -->
+  <div class="com-area">
+    <div class="com-area-triangle"></div>
+    <div class="com-area-out" style="text-align:center;">
+      <img src="/static/assets/img/triage/Print.png">
+    </div>
+    <div class="row">
+      <div class="col-md-4"></div>
+      <div class="col-md-4" style="text-align:center;">
+        <h3>I TUOI RISULTATI VERRANNO STAMPATI A BREVE</h3>
+      </div>
+      <div class="col-md-4"></div>
+    </div>
+    <div class="row">
+      <div class="col-md-4"></div>
+      <div class="col-md-4" style="text-align:center;">
+        <h1>GRAZIE!</h1>
+      </div>
+      <div class="col-md-4"></div>
+    </div>
+    <div class="row">
+      <div class="col-md-4"></div>
+      <div class="col-md-4" style="text-align:center;">
+        <img src="/static/assets/img/triage/smile.png">
+      </div>
+      <div class="col-md-4"></div>
+    </div>
+  </div>
+  <button id="printer" onclick="sendToQuickPrinterChrome();" style="display:none">Stampa risultati</button>
+  <button id="returnHome" action ="{% url 'receptions'%}" style="display:none">Procedi con una nuova misurazione</button>
+<!-- Main communication div -->
 {% endblock content %}
 
 <!-- Specific JS goes HERE --> 
 {% block javascripts %}
 
 <script>
-
   function sendToQuickPrinterChrome(){
     var commandsToPrint =
                          "<BIG><BOLD><CENTER> PADMED <BR>\n" +
@@ -128,6 +79,20 @@
      var textEncoded = encodeURI(commandsToPrint);
      window.location.href="intent://"+textEncoded+"#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;";
  }
+
+ function printResult(){
+  printer = document.getElementById("printer");
+  printer.click();
+ }
+
+ function returnHome(){
+  returnHome = document.getElementById("returnHome");
+  returnHome.click();
+ }
+
+ const printerTimeout = setTimeout(printResult, 7000);
+ const returnHomeTimeout = setTimeout(returnHome, 30000);
+
 </script>
 
 {% endblock javascripts %}
