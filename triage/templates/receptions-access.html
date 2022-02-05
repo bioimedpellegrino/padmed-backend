@@ -80,7 +80,7 @@
             const fiscal_code_found = fiscal_code.match(regex);
             console.log(sCode, fiscal_code_found)
             if (fiscal_code_found){
-              document.getElementById("id_fiscal_code").innerHTML = "<b>"+fiscal_code_found[0]+"</b>";
+              document.getElementById("id_fiscal_code").value = fiscal_code_found[0];
               const form = document.createElement('form');
               form.method = "post";
               form.action = "{% url 'receptions' %}";

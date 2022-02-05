@@ -1,0 +1,133 @@
+{% extends 'layouts/base-triage.html' %}
+
+{% block title %} Receptions {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<!-- Header -->
+<div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center" 
+        style="min-height: 600px; background-image: url(/static/assets/img/triage/doctor-group.png); background-size: cover; background-position: center top;">
+    <!-- Mask -->
+    <span class="mask bg-gradient-default opacity-4"></span>
+    <!-- Header container -->
+    <div class="container-fluid d-flex align-items-center">
+        <div class="row">
+            <div class="col-lg-7 col-md-10">
+                <h1 class="display-2 text-white">Benvenuto</h1>
+                <p class="text-white lead mt-0 mb-5">
+                    <b>
+                        Questo è PadMed. 
+                        Per ottenere il tuo codice di accesso al pronto soccorso usa la 
+                        tua tessera sanitaria oppure inserisci il tuo codice fiscale
+                    </b>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--7">
+  <div class="row justify-content-center">
+    <div class="col-xl-12 order-xl-1">
+      <div class="card bg-secondary shadow">
+        <div class="card-header bg-white border-0">
+          <div class="row align-items-center">
+            <div class="col-sm" align="center">              
+                <h3 class="mb-0">Esito misurazione:</h3>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-xl-3 col-lg-6">
+              <div class="card card-stats mb-4 mb-xl-0">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-0">Frequenza cardiaca</h5>
+                      <span class="h2 font-weight-bold mb-0">{{measure.measure.HB_BPM.value}}</span>
+                    </div>
+                    <div class="col-auto">
+                      <div class="icon icon-shape bg-danger text-white rounded-circle shadow">
+                        <i class="fas fa-heartbeat"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="mt-3 mb-0 text-muted text-sm">
+                      <span class="text-success mr-2"><i class="fa fa-arrow-up"></i>{{measure.measure.HB_BPM.unit}}</span>
+                      <span class="text-nowrap">Unità di misura</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-lg-6">
+              <div class="card card-stats mb-4 mb-xl-0">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-0">SNR</h5>
+                      <span class="h2 font-weight-bold mb-0">{{measure.measure.SNR.value}}</span>
+                    </div>
+                    <div class="col-auto">
+                      <div class="icon icon-shape bg-warning text-white rounded-circle shadow">
+                        <i class="fas fa-wave-square"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="mt-3 mb-0 text-muted text-sm">
+                      <span class="text-success mr-2"><i class="fa fa-arrow-up"></i>{{measure.measure.SNR.unit}}</span>
+                      <span class="text-nowrap">Unità di misura</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-3 col-lg-6">
+              <div class="card-body">
+                <div class="row">
+                  <a class="btn btn-lg btn-primary" onclick="sendToQuickPrinterChrome();">Stampa risultati</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-lg-6">
+              <div class="card-body">
+                <div class="row">
+                  <a class="btn btn-lg btn-primary" id="returnHome" href="{% url 'receptions'%}">Procedi con una nuova misurazione</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+<script>
+
+  function sendToQuickPrinterChrome(){
+    var commandsToPrint =
+                         "<BIG><BOLD><CENTER> PADMED <BR>\n" +
+                         "<CENTER>Esito misurazione<BR>\n" +
+                         "<CENTER>Data:" + '{{date}}' +"<BR>\n" +
+                         "<BOLD>Misurazione:" +
+                         "<BR>\n" +
+                         "<LEFT><BOLD>Battito cardiaco:" + '{{measure.measure.HB_BPM.value}}' + '{{measure.measure.HB_BPM.unit}}' +
+                         "<BR>\n" +
+                         "<LEFT><BOLD>SNR:" +'{{measure.measure.SNR.value}}' + '{{measure.measure.SNR.unit}}' +
+                         "<BR>\n" +
+                         "<CUT>\n"
+                 ;
+     var textEncoded = encodeURI(commandsToPrint);
+     window.location.href="intent://"+textEncoded+"#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;";
+ }
+</script>
+
+{% endblock javascripts %}
