@@ -29,7 +29,7 @@
     <div class="com-area com-area-video">
         <div class="com-area-triangle"></div>
         <div id="startButton" class="button"></div>
-        <div class="com-area-out com-area-out-video">
+        <div class="com-area-out com-area-out-video"> <!--rot-90-->
             
           <video id="preview" width="800" autoplay muted></video>
           <div style="display:none">
@@ -39,7 +39,12 @@
 
         </div>
         <div class="com-area-in">
-            
+          <div id="progressBar">
+            <div class="bar"></div>
+          </div>
+          <div id="progressComplete">
+            <span></span>
+          </div>
         </div>
     </div>
     <!-- Main communication div -->
