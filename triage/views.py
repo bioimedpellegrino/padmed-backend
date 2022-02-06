@@ -94,7 +94,7 @@ class ReceptionsView(APIView):
         else:
             # TODO
             form = PatientForm()
-            return render(request, self.template_name, {'form': form, 'errors': 'Il codice fiscale inserito non è valido', 'user': user})
+            return render(request, self.TEMPLATE_NAME, {'form': form, 'errors': 'Il codice fiscale inserito non è valido', 'user': user})
         
 class ReceptionsReasonsView(APIView):
     """[summary]

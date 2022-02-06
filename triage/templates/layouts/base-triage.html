@@ -41,14 +41,26 @@
   <style>
     /* Body font */
 
-    {% comment %} body {
-      font-family: AcuminVariableConcept !important;
-    } {% endcomment %}
-
+    body {
+      {% comment %} font-family: AcuminVariableConcept !important; {% endcomment %}
+      font: 30px/100% AcuminVariableConcept, sans-serif;
+    }
+    
     /*-----------*/
 
     /* Header bar style */
-
+    .header-bar {
+      background-color: #00a99d; 
+      box-shadow: 0px 10px 10px; 
+      position: relative; 
+      z-index:10;
+      font-size: 1.5rem;
+    }
+    .header-bar div {
+      margin:auto;
+      text-align: center;
+      color: white;
+    }
     .com-triangle-right {
       border-top: 45px solid transparent;
       border-bottom: 45px solid transparent;
@@ -69,7 +81,6 @@
       border-radius: 25px;
       margin: 0 240px 0 240px;
       padding: 30px 50px 30px 50px;
-      font: 70px/125% AcuminVariableConcept, sans-serif;
     }
 
     .com-area-triangle {
@@ -138,8 +149,6 @@
     .form-check {
       display: flex;
       margin-bottom: 0px;
-      {% comment %} align-items: center;
-      justify-content:center; {% endcomment %}
     }
     .label-check {
       margin-top: auto;
@@ -194,9 +203,6 @@
     
     /*-----------------------------*/
     /* Citofono styles */
-    .cit-main-row {
-
-    }
     .cit-area-label {
       margin:0;
       margin-top: 40px;
@@ -204,13 +210,13 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      font: 30px/125% AcuminVariableConcept, sans-serif;
     }
     .cit-label-l {
       margin:0;
       height: 150px;
       display: flex;
       direction: rtl;
+      text-align:right;
     }
     .cit-label-r {
       margin:0;
@@ -305,7 +311,6 @@
       margin-bottom: 180px;
       padding-top: 7px;
       text-align: center;
-      font: 70px/125% AcuminVariableConcept, sans-serif;
       color: #030303;
       border: 2px solid #c5c5c5;
     }
