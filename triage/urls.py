@@ -13,7 +13,7 @@ urlpatterns=[
     
     #NFC and test Pages
     path('testnfc/', TestNFC.as_view(), name='test'),
-    
+    path('videoselecting/', VideoSelecting.as_view(), name='videoselecting'),
     # DFXAPI
     path('testdfxapi/', TestDFXApiView.as_view(), name='test_dfx_api'),
 

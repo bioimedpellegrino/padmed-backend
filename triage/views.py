@@ -208,7 +208,18 @@ class TestNFC(APIView):
     def get(self, request, *args, **kwargs):
 
         return render(request,'testnfc.html', {'show_arrow': True})
-    
+
+class VideoSelecting(APIView):
+    """[summary]
+
+    Args:
+        APIView ([type]): [description]
+    """
+    @method_decorator(login_required(login_url="/login/"))
+    def get(self, request, *args, **kwargs):
+
+        return render(request,'videoselecting.html')
+
 class UserConditions(APIView):
     """[summary]
 
