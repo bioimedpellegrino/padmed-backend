@@ -11,6 +11,8 @@ from django.views.generic import View
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 from crispy_forms.utils import render_crispy_form
 from rest_framework.views import APIView
@@ -24,6 +26,7 @@ class LiveView(View):
     
     template_name = 'live_dash.html'
     
+    @method_decorator(login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
         user = AppUser.get_or_create_from_parent(request.user)
         if user.dashboard_hospital is None:
@@ -50,6 +53,7 @@ class LiveView(View):
 class AccessView(View):
     template_name = 'access.html'
     
+    @method_decorator(login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):        
         user = AppUser.get_or_create_from_parent(request.user)
         id = kwargs.get("id", None)
@@ -73,6 +77,7 @@ class StoricoView(View):
     """
     template_name = 'storico.html'
     
+    @method_decorator(login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
         from .forms import DateRangeForm
         
@@ -114,6 +119,7 @@ class UserProfileView(View):
     """
     template_name = 'profile.html'
     
+    @method_decorator(login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
         return self.GET_render(request,*args, **kwargs)
     
@@ -135,7 +141,8 @@ class UserProfileView(View):
             "form":form,
             "has_error":has_error,
         })
-        
+    
+    @method_decorator(login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
         from .forms import AppUserEditForm
         from django.contrib import messages
@@ -164,6 +171,7 @@ class HospitalsView(View):
     template_name = 'hospitals.html'
     default_post_page = "hospitals"
     
+    @method_decorator(login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
         return self.GET_render(request,*args, **kwargs)
     
@@ -191,7 +199,8 @@ class HospitalsView(View):
             "editable_hospitals":editable_hospitals,
             "logged_hospital":logged_hospital,
         })
-        
+    
+    @method_decorator(login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
         from .forms import HospitalSelectForm
         user = AppUser.get_or_create_from_parent(request.user)
@@ -220,6 +229,7 @@ class HospitalEditView(View):
     """
     template_name = 'hospital_edit.html'
     
+    @method_decorator(login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
         return self.GET_render(request,*args, **kwargs)
     
@@ -249,7 +259,8 @@ class HospitalEditView(View):
             })
         else:
             raise PermissionDenied
-        
+    
+    @method_decorator(login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
         from .forms import HospitalEditForm
         from django.contrib import messages
@@ -286,6 +297,7 @@ class PatientsView(View):
     """
     template_name = 'patients.html'
     
+    @method_decorator(login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
         return self.GET_render(request,*args, **kwargs)
     
@@ -318,6 +330,7 @@ class PatientView(View):
     """
     template_name = 'patient.html'
     
+    @method_decorator(login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
         return self.GET_render(request,*args, **kwargs)
     
@@ -356,6 +369,7 @@ class PatientEditView(View):
     """
     template_name = 'hospital_edit.html'
     
+    @method_decorator(login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
         return self.GET_render(request,*args, **kwargs)
     
@@ -385,7 +399,8 @@ class PatientEditView(View):
             })
         else:
             raise PermissionDenied
-        
+    
+    @method_decorator(login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
         from .forms import HospitalEditForm
         from django.contrib import messages
@@ -422,6 +437,7 @@ class TotemEditView(View):
     """
     template_name = 'hospital_edit.html'
     
+    @method_decorator(login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
         return self.GET_render(request,*args, **kwargs)
     
@@ -451,7 +467,8 @@ class TotemEditView(View):
             })
         else:
             raise PermissionDenied
-        
+    
+    @method_decorator(login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
         from .forms import HospitalEditForm
         from django.contrib import messages
