@@ -89,7 +89,7 @@ class ReceptionsView(APIView):
             access.totem = totem
             access.access_date = datetime.datetime.now()
             access.save()
-            return HttpResponseRedirect(reverse('accessreason', kwargs={"access_id":access.id}))
+            return HttpResponseRedirect(reverse('accessreason',kwargs={"access_id":access.id, 'user': user}))
         else:
             # TODO
             form = PatientForm()

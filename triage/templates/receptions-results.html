@@ -52,8 +52,6 @@
       <div class="col-md-4"></div>
     </div>
   </div>
-  <button id="printer" onclick="sendToQuickPrinterChrome();" style="display:none">Stampa risultati</button>
-  <button id="returnHome" action ="{% url 'user_conditions'%}" style="display:none">Procedi con una nuova misurazione</button>
   {% if show_arrow %}
   <div class="row full-bottom-left">
       <img src="/static/assets/img/triage/arrow90.png" onclick="sendToQuickPrinterChrome();">
@@ -84,17 +82,11 @@
      window.location.href="intent://"+textEncoded+"#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;";
  }
 
- function printResult(){
-  printer = document.getElementById("printer");
-  printer.click();
+ function sendHome(){
+  location.href="{% url 'user_conditions' %}";
  }
 
- function returnHome(){
-  returnHome = document.getElementById("returnHome");
-  returnHome.click();
- }
-
- const printerTimeout = setTimeout(printResult, 7000);
+ const printerTimeout = setTimeout(sendToQuickPrinterChrome, 7000);
  const returnHomeTimeout = setTimeout(returnHome, 30000);
 
 </script>
