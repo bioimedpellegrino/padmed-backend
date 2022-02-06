@@ -47,7 +47,7 @@
     <div class="row">
       <div class="col-md-4"></div>
       <div class="col-md-4" style="text-align:center;">
-        <img src="/static/assets/img/triage/smile.png">
+        <img src="/static/assets/img/triage/smile.png" onclick="sendHome()">
       </div>
       <div class="col-md-4"></div>
     </div>
@@ -83,11 +83,10 @@
  }
 
  function sendHome(){
-  window.location.href="{% url 'user_conditions' %}";
+  location.href="{% url 'user_conditions' %}";
  }
 
  const printerTimeout = setTimeout(sendToQuickPrinterChrome, 7000);
- const returnHomeTimeout = setTimeout(returnHome, 30000);
 
 </script>
 

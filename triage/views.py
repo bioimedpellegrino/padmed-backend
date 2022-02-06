@@ -196,7 +196,7 @@ class PatientResults(APIView):
         patient_result = PatientMeasureResult.objects.get(pk=int(request.POST.get('p_measure_result')))
         measure = eval(patient_result.measure_short)
         today_date = datetime.datetime.today().strftime('%Y-%m-%d')
-        return render(request,'receptions-results.html', {'measure': measure, 'date': today_date, 'user': user})
+        return render(request,'receptions-results.html', {'measure': measure, 'date': today_date, 'user': user, 'show_arrow': True})
 
 class TestNFC(APIView):
     """[summary]
