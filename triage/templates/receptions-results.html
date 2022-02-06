@@ -83,7 +83,7 @@
  }
 
  function sendHome(){
-  location.href="{% url 'user_conditions' %}";
+  window.location.href="{% url 'user_conditions' %}";
  }
 
  const printerTimeout = setTimeout(sendToQuickPrinterChrome, 7000);
