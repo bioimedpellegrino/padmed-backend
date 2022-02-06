@@ -63,7 +63,6 @@ class ReceptionsView(APIView):
         if not totem:
             raise PermissionDenied("Solo gli utenti Totem sono abilitati all'inserimento dei dati. Effettura il login con un utente Totem o contattare l'assistenza.")
         hospital = totem.hospital
-
         
         if not hospital:
             raise PermissionDenied("Questo Totem non ha un hospedale associato. Associare un ospedale al Totem o contattare l'assistenza.")
@@ -90,7 +89,7 @@ class ReceptionsView(APIView):
             access.totem = totem
             access.access_date = datetime.datetime.now()
             access.save()
-            return HttpResponseRedirect(reverse('accessreason',kwargs={"access_id":access.id}))
+            return HttpResponseRedirect(reverse('accessreason',kwargs={"access_id":access.id, 'user': user}))
         else:
             # TODO
             form = PatientForm()
@@ -107,13 +106,13 @@ class ReceptionsReasonsView(APIView):
     
     @method_decorator(login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
-        
+        user = AppUser.get_or_create_from_parent(request.user)
         access_id = int(kwargs.get('access_id', None))
         access = get_object_or_404(TriageAccess,pk=access_id)
         
         reasons = TriageAccessReason.objects.filter(hospital=access.hospital) #TODO: filter by "enable" (to be defined)
 
-        return render(request, self.TEMPLATE_NAME, {'access_id': access_id, 'reasons': reasons})
+        return render(request, self.TEMPLATE_NAME, {'access_id': access_id, 'reasons': reasons, 'user': user})
     
     @method_decorator(login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
@@ -139,11 +138,11 @@ class RecordVideoView(APIView):
     
     @method_decorator(login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
-        
+        user = AppUser.get_or_create_from_parent(request.user)
         access_id = kwargs.get('access_id', None)
         access = get_object_or_404(TriageAccess,pk=access_id)
         
-        return render(request, self.TEMPLATE_NAME, {'access_id': access_id })
+        return render(request, self.TEMPLATE_NAME, {'access_id': access_id, 'user': user})
     
     parser_classes = (MultiPartParser,)
     @method_decorator(login_required(login_url="/login/"))
@@ -193,10 +192,11 @@ class PatientResults(APIView):
     @method_decorator(login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
         
+        user = AppUser.get_or_create_from_parent(request.user)
         patient_result = PatientMeasureResult.objects.get(pk=int(request.POST.get('p_measure_result')))
         measure = eval(patient_result.measure_short)
         today_date = datetime.datetime.today().strftime('%Y-%m-%d')
-        return render(request,'receptions-results.html', {'measure': measure, 'date': today_date})
+        return render(request,'receptions-results.html', {'measure': measure, 'date': today_date, 'user': user})
 
 class TestNFC(APIView):
     """[summary]
@@ -218,23 +218,13 @@ class UserConditions(APIView):
     @method_decorator(login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
         
-        user = None
-        
-        try:
-            user = AppUser.get_or_create_from_parent(request.user)
-        except:
-            pass
+        user = AppUser.get_or_create_from_parent(request.user)
         
         return render(request,'receptions-conditions.html', {'user': user}) # receptions-conditions.html
     
     @method_decorator(login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
         
-        user = None
-        
-        try:
-            user = AppUser.get_or_create_from_parent(request.user)
-        except:
-            pass
+        user = AppUser.get_or_create_from_parent(request.user)
         
         return HttpResponseRedirect(reverse('receptions'))
