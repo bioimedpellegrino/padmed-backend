@@ -49,6 +49,37 @@
 <script>
   //onScan.attachTo(document);
 // Register event listener
+
+async function getUserCameraID(){
+  let devices = await navigator.mediaDevices.enumerateDevices();
+  return devices
+  for (device in devices){
+    document.getElementById("output").innerHTML = 'DeviceID: ' + device.deviceId + ';' + "kind:" + device.kind; 
+  }
+  devices = devices.filter(function(device){
+    return device.kind == 'videoinput';
+  })
+  if (devices.length == 0) return null;
+  else{
+    default_device = devices[0];
+    let rakinda_device = devices.filter(function(device){return device.label.includes("JSK USB2.0 Camera RGB")})[0];
+    if (rakinda_device){
+      return rakinda_device.deviceId;
+    } 
+    else {
+      return default_device.deviceId;
+    }
+  }
+}
+
+getUserCameraID().then(devices => {
+  for (device in devices){
+   if(devices[device].kind == 'videoinput'){
+   document.getElementById("output").innerHTML += 'DeviceID: ' + devices[device].deviceId + '; ' + "kind:" + devices[device].kind + " label:" + devices[device].label + "<br>";
+  }}
+}
+);
+
 try{
   onScan.attachTo(document, {
     suffixKeyCodes: [13], // enter-key expected at the end of a scan
@@ -63,65 +94,7 @@ try{
 } catch(err){
   //document.getElementById("output").innerHTML = err + " " + err.message;
 }
-  function sendToQuickPrinterChrome(){
-    var commandsToPrint =
-                 "<LOGO>" +
-                         "<BIG><BOLD><CENTER> CAZZO <BR>\n" +
-                         "<CENTER>Bubino<BR>\n" +
-                         "<CENTER>Il bubino<BR>\n" +
-                         "<BOLD>Bay<BR>\n" +
-                         "<LEFT>Che va<BR>\n" +
-                         "<RIGHT><BOLD>A MUMBAII<BR>\n" +
-                         "<BR>\n" +
-                         "<CUT>\n" +
-                         "<DRAWER>\n" // OPEN THE CASH DRAWER
-                 ;
-     var textEncoded = encodeURI(commandsToPrint);
-     window.location.href="intent://"+textEncoded+"#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;";
- }
 
-
- var keybuffer = [];
-
-function press(event) {
-  console.log("pressed");
-  if (event.which === 13) {
-    return send();
-  }
-  var number = event.which - 48;
-  if (number < 0 || number > 9) {
-    return;
-  }
-  keybuffer.push(number);
-}
-
-$(document).on("keypress", press);
-
-  function send() {
-    console.log("scanned ");
-    socket.emit('scan', keybuffer.join(""));
-    keybuffer.length = 0;
-  }
-
-
-  var RFIDTime = false;
-  var RFIDInput = "";
-  $(document).keyup(function(e){
-  if(!RFIDTime) RFIDInput += String.fromCharCode(e.which); RFIDTime = e.timeStamp;
-  
-  if(RFIDTime){
-  if(e.timeStamp RFIDTime < 20){
-  RFIDInput += String.fromCharCode(e.which);
-  RFIDTime = e.timeStamp;
-  if(RFIDInput.length == 10){
-  console.log('detected RFID, value:' + RFIDInput);
-  }
-  } else {
-  RFIDInput = "";
-  RFIDTime = false;
-  }
-  }
-  });
 </script>
 {% endblock javascripts %}
 {% endblock content %}
