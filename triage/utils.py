@@ -15,13 +15,14 @@ def generate_video_measure(file_path, video_id):
     fourcc = cv2.VideoWriter_fourcc(*'MPEG')
     video_name = 'tmp/' + "{}.avi".format(video_id)
     video_path = os.path.join(settings.MEDIA_ROOT, video_name)
-    out = cv2.VideoWriter(video_path,fourcc, 15, (frame_width,frame_height)) 
+    out = cv2.VideoWriter(video_path,fourcc, 15, (frame_height, frame_width)) 
     video_frames = []
     ret = True
     # Iterate frame by frame and store into a numpy array
     while (ret): 
         ret, frame = cap.read() 
-        if ret: 
+        if ret:
+            frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
             video_frames.append(frame)
     video_frames = np.array(video_frames)
     # Save frame array into file
@@ -60,3 +61,5 @@ def unpack_result_deepaffex(deep_affex_result):
     }
     
     return result_unpacked
+
+
