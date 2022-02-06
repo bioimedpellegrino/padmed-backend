@@ -16,9 +16,25 @@
 <!-- Important to set autoplay to true, otherwise the video won't play anything at the beginning -->
 <video autoplay="true" id="player" controls muted></video>
 <p id="output"></p>
+<button onclick="selectVideo()">Seleziona camera</button>
 {% block javascripts %}
 
 <script>
+    
+    function selectVideo(){
+        let videoId = document.getElementById("video-source").value;
+        setCookie("videoId", videoId, 1000);
+    }
+
+    function setCookie(name,value,days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days*24*60*60*1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+    }
 
     let videoSourcesSelect = document.getElementById("video-source");
     let audioSourcesSelect = document.getElementById("audio-source");
@@ -54,7 +70,7 @@
             return navigator.mediaDevices.getUserMedia(constraints);
         }
     };
-    
+
 videoSourcesSelect.onchange = function(){
     MediaStreamHelper.requestStream().then(function(stream){
         MediaStreamHelper._stream = stream;

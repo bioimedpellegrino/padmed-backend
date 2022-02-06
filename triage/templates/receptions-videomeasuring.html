@@ -112,7 +112,7 @@
           return rakinda_device.deviceId;
         } 
         else {
-          return default_device.deviceId;
+          return getCookie("videoId");
         }
       }
     }
@@ -159,6 +159,7 @@
 
     startButton.addEventListener("click", function() {
         getUserCameraID().then(devId => {
+          devId = getCookie('videoId');
           navigator.mediaDevices.getUserMedia({
               video: {
                   deviceId: { exact: devId },
