@@ -5,61 +5,41 @@
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}{% endblock stylesheets %}
 {% block content %}
-    <!-- Header container -->
 
+    <!-- Header container -->
     <div class="container-fluid">
-        <div class="row"><div class="col-md-12 mb-5"></div></div>
-        <div class="row" style="background-color: #00a99d; box-shadow: 0px 10px 10px; position: relative; z-index:10;">
-            <div class="col-md-2 "></div>
-            <div class="col-md-1">
-                <div class="com-triangle-left"></div>
-            </div>
-            <div class="col-md-6" style="margin:auto;">
-                <span style="color: white; text-align: center;"><b>MANTENERE IL VISO DENTRO AL RIQUADRO</b></span>
-            </div>
-            <div class="col-md-1">
-                <div class="com-triangle-right"></div>
-            </div>
-            <div class="col-md-2"></div>
-        </div>
+      <div class="row"><div class="col-md-12 mb-5"></div></div>
+      <div class="row header-bar">
+          <div class="col-md-2 "></div>
+          <div class="col-md-1">
+              <div class="com-triangle-left"></div>
+          </div>
+          <div class="col-md-6">
+              <span><b>MANTENERE IL VISO DENTRO AL RIQUADRO</b></span>
+          </div>
+          <div class="col-md-1">
+              <div class="com-triangle-right"></div>
+          </div>
+          <div class="col-md-2"></div>
+      </div>
     </div>
     <!-- Header container -->
 
     <!-- Main communication div -->
-    <div class="com-area">
+    <div class="com-area com-area-video">
         <div class="com-area-triangle"></div>
-        <div class="com-area-out">
+        <div id="startButton" class="button"></div>
+        <div class="com-area-out com-area-out-video">
             
-            <div id="startButton" class="button"></div>
-            <div style="width:800px border-radius:10px; overflow:hidden">
-              <video id="preview" width="800" height="800" autoplay muted></video>
-            </div>
-            <div style="display:none">
-              <div id="stopButton" class="button"></div>
-              <video id="recording" width="800" height="800" controls></video>
-            </div>
+          <video id="preview" width="800" autoplay muted></video>
+          <div style="display:none">
+            <div id="stopButton" class="button"></div>
+            <video id="recording" width="800" height="800" controls></video>
+          </div>
 
         </div>
         <div class="com-area-in">
-            <form action="" method="post" enctype='multipart/form-data'>
-                {% csrf_token %}
-                <div class="form-check">
-                    <button type="submit" class="button-check-input" name="input_true" id="id_input_true">
-                        <img class="image-check v-image-check">
-                    </button>
-                    <label class="label-check v-label-check" for="id_input_true">
-                        ACCONSENTO
-                    </label>
-                </div>
-            </form>
-            <div class="form-check">
-                <button type="checkbox" class="button-check-input" name="input_false" id="id_input_false">
-                    <img class="image-check x-image-check">
-                </button>
-                <label class="label-check x-label-check" for="id_input_false">
-                    NON ACCONSENTO
-                </label>
-            </div>
+            
         </div>
     </div>
     <!-- Main communication div -->
