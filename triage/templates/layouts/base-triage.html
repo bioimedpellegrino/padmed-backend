@@ -328,13 +328,11 @@
       align-items: center;
       flex-direction: column;
       justify-content: space-between;
+      overflow:hidden;
     }
     .com-area-out-video video {
       width: 100%;
       border-radius:20px;
-      transform: rotateY(180deg);
-      -webkit-transform:rotateY(180deg); /* Safari and Chrome */
-      -moz-transform:rotateY(180deg); /* Firefox */
     }
     #progressBar {
       width: 90%;
@@ -361,6 +359,11 @@
     /* ------------- */
 
     /* Rotation */
+    .mirror {
+      transform: rotateY(180deg);
+      -webkit-transform:rotateY(180deg); /* Safari and Chrome */
+      -moz-transform:rotateY(180deg); /* Firefox */
+    }
     .rot-90 {
       -webkit-transform: rotate(90deg);
       -moz-transform: rotate(90deg);
