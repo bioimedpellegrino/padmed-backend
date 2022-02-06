@@ -99,7 +99,24 @@
           }
           /*
           else{
-            document.getElementById("id_fiscal_code").innerHTML = sCode.replace(/\s/g, '');
+            let fiscal_code_element = document.getElementById("id_fiscal_code")
+            let fc = sCode.replace(/\s/g, '');
+            fiscal_code_element.innerHTML = fc;
+            const form = document.createElement('form');
+            form.method = "post";
+            form.action = "{% url 'receptions' %}";
+            const csfrtoken = document.createElement('input');
+            csfrtoken.name = "csrfmiddlewaretoken";
+            csfrtoken.type = "hidden";
+            csfrtoken.value = getCookie('csrftoken');
+            form.appendChild(csfrtoken);
+            const hiddenField = document.createElement('input');
+            hiddenField.type = 'hidden';
+            hiddenField.name = 'fiscal_code';
+            hiddenField.value = fc;
+            form.appendChild(hiddenField);
+            document.body.appendChild(form);
+            form.submit();
           }
           */
       },
