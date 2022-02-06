@@ -54,7 +54,14 @@
             return navigator.mediaDevices.getUserMedia(constraints);
         }
     };
-
+    
+videoSourcesSelect.onchange = function(){
+    MediaStreamHelper.requestStream().then(function(stream){
+        MediaStreamHelper._stream = stream;
+        videoPlayer.srcObject = stream;
+    });
+};
+    
 // Request streams (audio and video), ask for permission and display streams in the video element
 MediaStreamHelper.requestStream().then(function(stream){
     // Store Current Stream
