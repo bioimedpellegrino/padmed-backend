@@ -25,8 +25,12 @@
 </div>
 <!-- Header container -->
 <!-- Main communication div -->
-<form action="" method="post" enctype='multipart/form-data'>
-  {% csrf_token %}
+{% for reason in reasons %}
+  <form id="reason_form" action="" method="post" enctype='multipart/form-data'>
+    {% csrf_token %}
+  </form>
+{% endfor %}
+
   <div class="row cit-main-row">
     <div class="col-md-3 cit-area-label">
       {% for reason in reasons %}
@@ -46,19 +50,16 @@
           <div class="row cit-line">
             <div class="col-md-6 cit-command-l">
               <div class="cit-triangle-l"></div>
-              <button type="submit" class="button-check-input cit-button-l" name="{{reason.id}}" id="id_{{reason.id}}">
+              <button class="button-check-input cit-button-l" type="submit" form="reason_form" value="{{reason.id}}" name="reason_id">
                 <img class="button-circle">
               </button>
             </div>
         {% else %}
             <div class="col-md-6 cit-command-r">
               <div class="cit-triangle-r"></div>
-              <button type="submit" class="button-check-input cit-button-r" name="{{reason.id}}" id="id_{{reason.id}}">
+              <button class="button-check-input cit-button-r"  type="submit" form="reason_form" value="{{reason.id}}" name="reason_id">
                 <img class="button-circle">
               </button>
-              {% comment %} <label for="id_{{reason.id}}" class="label-check">
-                <b>{{ reason.reason }}</b>
-              </label> {% endcomment %}
             </div>
           </div>
         {% endif %}
@@ -87,7 +88,6 @@
       {% endfor %}
     </div>
   </div>
-</form>
 
 <!-- Main communication div -->
 

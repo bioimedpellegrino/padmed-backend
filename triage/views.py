@@ -117,23 +117,19 @@ class ReceptionsReasonsView(APIView):
     
     @method_decorator(login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
-        from .forms import ReasonsForm
         
         access_id = kwargs.get('access_id', None)
         access = get_object_or_404(TriageAccess,pk=access_id)
         
-        form = ReasonsForm(request.POST)
-        if form.is_valid():
-            reason = form.cleaned_data["reason"]
-
-            access.access_reason = reason
-            access.triage_code = reason.related_code
-            access.save()
-            
-            return HttpResponseRedirect(reverse('record_video',kwargs={"access_id":access_id}))
-        else:
-            pass #TODO
+        reason_id = int(request.POST["reason_id"][0])
+        reason = get_object_or_404(TriageAccessReason,pk=reason_id)
         
+        access.access_reason = reason
+        access.triage_code = reason.related_code
+        access.save()
+        
+        return HttpResponseRedirect(reverse('record_video',kwargs={"access_id":access_id}))
+    
 class RecordVideoView(APIView):
     """
     Args:
