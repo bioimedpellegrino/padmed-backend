@@ -416,7 +416,7 @@
       }
     };
     
-    progress(40, 40, $('#progressBar'));
+    progress(2, 40, $('#progressBar'));
 
     function show_complete() {
       $('#progressBar').animate({ width: 0 }, 500);
@@ -430,22 +430,22 @@
 
     function progress_text_changes(){
       var text_list = [
-        ("Analisi dei dati in corso",1),
-        ("Analisi dei dati in corso.",1),
-        ("Analisi dei dati in corso..",1),
-        ("Analisi dei dati in corso...",2),
-        ("Estrazione dati flusso sanguigno",1),
-        ("Estrazione dati flusso sanguigno.",1),
-        ("Estrazione dati flusso sanguigno..",1),
-        ("Estrazione dati flusso sanguigno...",2),
-        ("Calcolo dei parametri biometrici",1),
-        ("Calcolo dei parametri biometrici.",1),
-        ("Calcolo dei parametri biometrici..",1),
-        ("Calcolo dei parametri biometrici...",1.5),
-        ("Preparazione formato di output",1),
-        ("Preparazione formato di output.",1),
-        ("Preparazione formato di output..",1),
-        ("Preparazione formato di output...",1),
+        ["Analisi dei dati in corso",1],
+        ["Analisi dei dati in corso.",1],
+        ["Analisi dei dati in corso..",1],
+        ["Analisi dei dati in corso...",2],
+        ["Estrazione dati flusso sanguigno",1],
+        ["Estrazione dati flusso sanguigno.",1],
+        ["Estrazione dati flusso sanguigno..",1],
+        ["Estrazione dati flusso sanguigno...",2],
+        ["Calcolo dei parametri biometrici",1],
+        ["Calcolo dei parametri biometrici.",1],
+        ["Calcolo dei parametri biometrici..",1],
+        ["Calcolo dei parametri biometrici...",1.5],
+        ["Preparazione formato di output",1],
+        ["Preparazione formato di output.",1],
+        ["Preparazione formato di output..",1],
+        ["Preparazione formato di output...",1],
       ];
       var progression = 0;
       text_list.forEach(function (item, index) {
