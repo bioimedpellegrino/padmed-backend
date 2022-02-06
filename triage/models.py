@@ -4,6 +4,7 @@ import os
 import base64
 import pytz
 from functools import lru_cache
+from logger.utils import add_log
 from pprint import pprint
 from dateutil.relativedelta import relativedelta
 
@@ -417,7 +418,7 @@ class PatientMeasureResult(models.Model):
         elif hresult["temperature"]["mean"] >= 41.1:
             hresult["temperature"]["alarm"] = 3
             hresult["temperature"]["order"] = "%s%02d"%(0, 50-hresult["temperature"]["mean"])
-            
+
         ## Blood pressure
         # data = result["Results"]["HR_BPM"]["Data"]
         # multiplier = result["Results"]["HR_BPM"]["Multiplier"]
@@ -460,9 +461,12 @@ class PatientMeasureResult(models.Model):
             max_alarm = 3
         pmin = hresult["pressure"]["alarm"] = max(min_alarm,max_alarm)
         hresult["pressure"]["order"] = "%s%03d%03d"%(3-hresult["pressure"]["alarm"],pmin,pmax)
-            
+
         ## Heart rate
-        data = result["Results"]["HR_BPM"][0]["Data"]
+        try:
+            data = result["Results"]["HR_BPM"][0]["Data"]
+        except KeyError as e:
+            add_log(level=3, exception=e)
         multiplier = result["Results"]["HR_BPM"][0]["Multiplier"]
         unit = result["SignalUnits"]["HR_BPM"]
         hresult["heart_rate"]["mean"] = round(statistics.fmean(data)/multiplier)

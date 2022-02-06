@@ -1,28 +1,25 @@
 {% extends 'layouts/base-triage.html' %}
 
-{% block title %} Receptions {% endblock title %}
+{% block title %} Conditions {% endblock title %}
 
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}{% endblock stylesheets %}
 {% block content %}
     <!-- Header container -->
-
     <div class="container-fluid">
         <div class="row"><div class="col-md-12 mb-5"></div></div>
-        <div class="row" style="background-color: #00a99d">
-            <div class="col-md-1 "></div>
-            <div class="col-md-1"></div>
+        <div class="row header-bar">
+            <div class="col-md-2 "></div>
             <div class="col-md-1">
                 <div class="com-triangle-left"></div>
             </div>
-            <div class="col-md-6" style="margin:auto;">
-                <span style="color: white; text-align: center;"><b>PRIMA DI UTILIZZARE IL SERVIZIO ACCETTARE LE CONDIZIONI</b></span>
+            <div class="col-md-6">
+                <span><b>PRIMA DI UTILIZZARE IL SERVIZIO ACCETTARE LE CONDIZIONI</b></span>
             </div>
             <div class="col-md-1">
                 <div class="com-triangle-right"></div>
             </div>
-            <div class="col-md-1"></div>
-            <div class="col-md-1"></div>
+            <div class="col-md-2"></div>
         </div>
     </div>
     <!-- Header container -->
@@ -43,18 +40,22 @@
             <form action="" method="post" enctype='multipart/form-data'>
                 {% csrf_token %}
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2">
-                    <label class="form-check-label" style="color: #21561e;" for="flexRadioDefault2">
+                    <button type="submit" class="button-check-input" name="input_true" id="id_input_true">
+                        <img class="image-check v-image-check">
+                    </button>
+                    <label class="label-check v-label-check" for="id_input_true">
                         ACCONSENTO
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-                    <label class="form-check-label" style="color: #7e0000;" for="flexRadioDefault1">
-                        NON ACCONSENTO
-                    </label>
-                </div>
             </form>
+            <div class="form-check">
+                <button type="checkbox" class="button-check-input" name="input_false" id="id_input_false">
+                    <img class="image-check x-image-check">
+                </button>
+                <label class="label-check x-label-check" for="id_input_false">
+                    NON ACCONSENTO
+                </label>
+            </div>
         </div>
     </div>
     <!-- Main communication div -->

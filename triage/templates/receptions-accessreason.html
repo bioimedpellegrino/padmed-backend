@@ -1,105 +1,97 @@
 {% extends 'layouts/base-triage.html' %}
 
-{% block title %} Receptions {% endblock title %}
+{% block title %} Access reasons {% endblock title %}
 
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
-<!-- Header -->
-<div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center" 
-        style="min-height: 600px; background-image: url(/static/assets/img/triage/doctor-group.png); background-size: cover; background-position: center top;">
-    <!-- Mask -->
-    <span class="mask bg-gradient-default opacity-4"></span>
-    <!-- Header container -->
-    <div class="container-fluid d-flex align-items-center">
-        <div class="row">
-            <div class="col-lg-7 col-md-10">
-                <h1 class="display-2 text-white">Benvenuto</h1>
-                <p class="text-white lead mt-0 mb-5">
-                    <b>
-                        Questo è PadMed. 
-                        Per ottenere il tuo codice di accesso al pronto soccorso usa la 
-                        tua tessera sanitaria oppure inserisci il tuo codice fiscale
-                    </b>
-                </p>
-            </div>
+  <!-- Header container -->
+  <div class="container-fluid">
+    <div class="row"><div class="col-md-12 mb-5"></div></div>
+    <div class="row header-bar">
+        <div class="col-md-2 "></div>
+        <div class="col-md-1">
+            <div class="com-triangle-left"></div>
         </div>
+        <div class="col-md-6">
+            <span><b>SELEZIONARE LA CAUSA DEL CHECK UP</b></span>
+        </div>
+        <div class="col-md-1">
+            <div class="com-triangle-right"></div>
+        </div>
+        <div class="col-md-2"></div>
     </div>
-</div>
+  </div>
+  <!-- Header container -->
 
-    <div class="container-fluid mt--7">
-      <div class="row justify-content-center">
-        <div class="col-xl-12 order-xl-1">
-          <div class="card bg-secondary shadow">
-            <div class="card-header bg-white border-0">
-              <div class="row align-items-center">
-                <div class="col-8">
-                  <h3 class="mb-0">Perché ti stai recando al pronto soccorso?</h3>
-                </div>
-              </div>
+  <!-- Main communication div -->
+  {% for reason in reasons %}
+    <form id="reason_form" action="" method="post" enctype='multipart/form-data'>
+      {% csrf_token %}
+    </form>
+  {% endfor %}
+
+  <div class="row cit-main-row">
+    <div class="col-md-3 cit-area-label">
+      {% for reason in reasons %}
+        {% if not forloop.counter|divisibleby:2 %}
+          <div class="cit-label-l">
+            <label for="id_{{reason.id}}">
+              <b>{{reason.reason}}</b>
+            </label>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class="col-md-6 cit-area">
+      <div class="com-area-triangle"></div>
+      {% for reason in reasons %}
+        {% if not forloop.counter|divisibleby:2 %}
+          <div class="row cit-line">
+            <div class="col-md-6 cit-command-l">
+              <div class="cit-triangle-l"></div>
+              <button class="button-check-input cit-button-l" type="submit" form="reason_form" value="{{reason.id}}" name="reason_id">
+                <img class="button-circle">
+              </button>
             </div>
-            <div class="card-body">
-              <div class="row triage-reasons">
-                {% for reason in reasons %}
-                    <div class="col-lg-4 col-md-6 m-3">
-                    <a class="btn btn-lg btn-primary" style="width: 250px;" href="{% url 'receptions_accessreason' access_id=access_id reason_id=reason.id %}">
-                        
-                        {% if reason.label == 'INCIDENTE' %}
-                        <div>
-                            <i class="fas fa-car-crash fa-2x"></i>
-                            <span>{{ reason.label }}</span>
-                        </div>
-                        {% elif reason.label == 'MALESSERE'%}
-                        <div>
-                            <i class="fas fa-heartbeat fa-2x"></i>
-                            <span>{{ reason.label }}</span>
-                        </div>
-                        {% elif reason.label == 'ALTRO'%}
-                        <div>
-                            <i class="fas fa-thermometer-three-quarters fa-2x"></i>
-                            <span>{{ reason.label }}</span>
-                        </div>
-                        {% elif reason.label == 'CONTUSIONE'%}
-                        <div>
-                            <i class="fas fa-crutch fa-2x"></i>
-                            <span>{{ reason.label }}</span>
-                        </div>
-                        {% elif reason.label == 'FERITA'%}
-                        <div>
-                            <i class="fas fa-band-aid fa-2x"></i>
-                            <span>{{ reason.label }}</span>
-                        </div>
-                        {% elif reason.label == 'DOLORE ADDOMINALE'%}
-                        <div>
-                            <i class="fas fa-capsules fa-2x"></i>
-                            <span>{{ reason.label }}</span>
-                        </div>
-                        {% elif reason.label == 'DOLORE GENERALE'%}
-                        <div>
-                            <i class="fas fa-frown fa-2x"></i>
-                            <span>{{ reason.label }}</span>
-                        </div>
-                        {% elif reason.label == 'INFORTUNIO SUL LAVORO'%}
-                        <div>
-                            <i class="fas fa-user-injured fa-2x"></i>
-                            <span>{{ reason.label }}</span>
-                        </div>
-                        {% else%}
-                        <div>
-                            <i class="fas fa-camera fa-2x"></i>
-                            <span>{{ reason.label }}</span>
-                        </div>
-                        {% endif %}
-                    </a>
-                    </div>
-                {% endfor %}
-              </div>
+        {% else %}
+            <div class="col-md-6 cit-command-r">
+              <div class="cit-triangle-r"></div>
+              <button class="button-check-input cit-button-r"  type="submit" form="reason_form" value="{{reason.id}}" name="reason_id">
+                <img class="button-circle">
+              </button>
             </div>
           </div>
-        </div>
-      </div>
+        {% endif %}
+        {% if forloop.last %}
+          {% if not forloop.counter|divisibleby:2 %}
+              <div class="col-md-4 cit-command-r" style="visibility:hidden;">
+                <button class="button-check-input" name="hiddenbutton" id="id_hiddenbutton">
+                  <img class="button-circle">
+                </button>
+                <div class="cit-triangle-r"></div>
+              </div>
+            </div>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
     </div>
+    <div class="col-md-3 cit-area-label">
+      {% for reason in reasons %}
+        {% if forloop.counter|divisibleby:2 %}
+          <div class="cit-label-r">
+            <label for="id_{{reason.id}}">
+              <b>{{reason.reason}}</b>
+            </label>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+<!-- Main communication div -->
+
 {% endblock content %}
 
 <!-- Specific JS goes HERE --> 

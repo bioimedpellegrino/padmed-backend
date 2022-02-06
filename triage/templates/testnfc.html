@@ -74,9 +74,9 @@ async function getUserCameraID(){
 
 getUserCameraID().then(devices => {
   for (device in devices){
-    console.log(devices[device])
+   if(devices[device].kind == 'videoinput'){
    document.getElementById("output").innerHTML += 'DeviceID: ' + devices[device].deviceId + '; ' + "kind:" + devices[device].kind + " label:" + devices[device].label + "<br>";
-  }
+  }}
 }
 );
 
@@ -94,23 +94,6 @@ try{
 } catch(err){
   //document.getElementById("output").innerHTML = err + " " + err.message;
 }
-  function sendToQuickPrinterChrome(){
-    var commandsToPrint =
-                 "<LOGO>" +
-                         "<BIG><BOLD><CENTER> CAZZO <BR>\n" +
-                         "<CENTER>Bubino<BR>\n" +
-                         "<CENTER>Il bubino<BR>\n" +
-                         "<BOLD>Bay<BR>\n" +
-                         "<LEFT>Che va<BR>\n" +
-                         "<RIGHT><BOLD>A MUMBAII<BR>\n" +
-                         "<BR>\n" +
-                         "<CUT>\n" +
-                         "<DRAWER>\n" // OPEN THE CASH DRAWER
-                 ;
-     var textEncoded = encodeURI(commandsToPrint);
-     window.location.href="intent://"+textEncoded+"#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;";
- }
-
 
 </script>
 {% endblock javascripts %}

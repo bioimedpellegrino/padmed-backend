@@ -1,0 +1,126 @@
+{% extends 'layouts/base-triage.html' %}
+
+{% block title %} Receptions {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+{% block content %}
+<label>Select Video Source (Camera)</label>
+
+<select id="video-source"></select>
+<div style="display:none">
+    <label>Select Audio Source (Microphone)</label>
+    <select id="audio-source"></select>
+</div>
+<label>Live Preview:</label>
+<!-- Important to set autoplay to true, otherwise the video won't play anything at the beginning -->
+<video autoplay="true" id="player" controls muted></video>
+<p id="output"></p>
+<button onclick="selectVideo()">Seleziona camera</button>
+{% block javascripts %}
+
+<script>
+    
+    function selectVideo(){
+        let videoId = document.getElementById("video-source").value;
+        setCookie("videoId", videoId, 1000);
+    }
+
+    function setCookie(name,value,days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days*24*60*60*1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+    }
+
+    let videoSourcesSelect = document.getElementById("video-source");
+    let audioSourcesSelect = document.getElementById("audio-source");
+    let videoPlayer = document.getElementById("player");
+    
+    // Create Helper to ask for permission and list devices
+    let MediaStreamHelper = {
+        // Property of the object to store the current stream
+        _stream: null,
+        // This method will return the promise to list the real devices
+        getDevices: function() {
+            return navigator.mediaDevices.enumerateDevices();
+        },
+        // Request user permissions to access the camera and video
+        requestStream: function() {
+            if (this._stream) {
+                this._stream.getTracks().forEach(track => {
+                    track.stop();
+                });
+            }
+    
+            const audioSource = audioSourcesSelect.value;
+            const videoSource = videoSourcesSelect.value;
+            const constraints = {
+                audio: {
+                    deviceId: audioSource ? {exact: audioSource} : undefined
+                },
+                video: {
+                    deviceId: videoSource ? {exact: videoSource} : undefined
+                }
+            };
+        
+            return navigator.mediaDevices.getUserMedia(constraints);
+        }
+    };
+
+videoSourcesSelect.onchange = function(){
+    MediaStreamHelper.requestStream().then(function(stream){
+        MediaStreamHelper._stream = stream;
+        videoPlayer.srcObject = stream;
+    });
+};
+    
+// Request streams (audio and video), ask for permission and display streams in the video element
+MediaStreamHelper.requestStream().then(function(stream){
+    // Store Current Stream
+    MediaStreamHelper._stream = stream;
+
+    // Select the Current Streams in the list of devices
+    audioSourcesSelect.selectedIndex = [...audioSourcesSelect.options].findIndex(option => option.text === stream.getAudioTracks()[0].label);
+    videoSourcesSelect.selectedIndex = [...videoSourcesSelect.options].findIndex(option => option.text === stream.getVideoTracks()[0].label);
+
+    // Play the current stream in the Video element
+    videoPlayer.srcObject = stream;
+    
+    // You can now list the devices using the Helper
+    MediaStreamHelper.getDevices().then((devices) => {
+        // Iterate over all the list of devices (InputDeviceInfo and MediaDeviceInfo)
+        devices.forEach((device) => {
+            let option = new Option();
+            option.value = device.deviceId;
+
+            // According to the type of media device
+            switch(device.kind){
+                // Append device to list of Cameras
+                case "videoinput":
+                    option.text = device.label || `Camera ${videoSourcesSelect.length + 1}`;
+                    videoSourcesSelect.appendChild(option);
+                    break;
+                // Append device to list of Microphone
+                case "audioinput":
+                    option.text = device.label || `Microphone ${videoSourcesSelect.length + 1}`;
+                    audioSourcesSelect.appendChild(option);
+                    break;
+            }
+
+            if(device.kind == "videoinput"){
+                document.getElementById("output").innerHTML = 'DeviceID: ' + device.deviceId + ';' + "kind:" + device.kind; 
+            }
+        });
+    }).catch(function (e) {
+        console.log(e.name + ": " + e.message);
+    });
+}).catch(function(err){
+    console.error(err);
+}); 
+</script>
+{% endblock javascripts %}
+{% endblock content %}

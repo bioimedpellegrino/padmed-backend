@@ -18,6 +18,17 @@
   
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+  <link href="//db.onlinewebfonts.com/c/066ce24dae3730ed6c648b09efaea93a?family=Acumin+Variable+Concept" rel="stylesheet" type="text/css"/>
+  <style>
+    @font-face {font-family: AcuminVariableConcept;
+      src: url("/static/assets/fonts/Acumin Variable Concept/Acumin Variable Concept/@font-face/066ce24dae3730ed6c648b09efaea93a.eot"); /* IE9*/
+      src: url("/static/assets/fonts/Acumin Variable Concept/Acumin Variable Concept/@font-face/066ce24dae3730ed6c648b09efaea93a.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
+      url("/static/assets/fonts/Acumin Variable Concept/Acumin Variable Concept/@font-face/066ce24dae3730ed6c648b09efaea93a.woff2") format("woff2"), /* chrome、firefox */
+      url("/static/assets/fonts/Acumin Variable Concept/Acumin Variable Concept/@font-face/066ce24dae3730ed6c648b09efaea93a.woff") format("woff"), /* chrome、firefox */
+      url("/static/assets/fonts/Acumin Variable Concept/Acumin Variable Concept/@font-face/066ce24dae3730ed6c648b09efaea93a.ttf") format("truetype"), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+      url("/static/assets/fonts/Acumin Variable Concept/Acumin Variable Concept/@font-face/066ce24dae3730ed6c648b09efaea93a.svg#Acumin Variable Concept") format("svg"); /* iOS 4.1- */
+    }
+  </style>  
   <!-- Icons -->
   <link href="/static/assets/js/plugins/nucleo/css/nucleo.css" rel="stylesheet" />
   <link href="/static/assets/js/plugins/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet" />
@@ -28,6 +39,40 @@
   <script type="text/javascript" src="/static/assets/js/onscan.js"></script>
   <!-- Specific CSS goes HERE -->
   <style>
+    /* Body font */
+
+    body {
+      {% comment %} font-family: AcuminVariableConcept !important; {% endcomment %}
+      font: 30px/100% AcuminVariableConcept, sans-serif;
+    }
+    
+    /*-----------*/
+
+    /* Header bar style */
+    .header-bar {
+      background-color: #00a99d; 
+      box-shadow: 0px 10px 10px; 
+      position: relative; 
+      z-index:10;
+      font-size: 1.5rem;
+    }
+    .header-bar div {
+      margin:auto;
+      text-align: center;
+      color: white;
+    }
+    .com-triangle-right {
+      border-top: 45px solid transparent;
+      border-bottom: 45px solid transparent;
+      border-right: 35px solid #7e7e7e;
+    }
+    .com-triangle-left {
+      border-top: 45px solid transparent;
+      border-bottom: 45px solid transparent;
+      border-left: 35px solid #7e7e7e;
+    }
+
+    /* ---------------- */
     
     /* Main communication areas style */
     
@@ -37,6 +82,7 @@
       margin: 0 240px 0 240px;
       padding: 30px 50px 30px 50px;
     }
+
     .com-area-triangle {
       width: 0; 
       height: 0;
@@ -54,65 +100,295 @@
       background-color: #e7e7e7;
       border: 4px solid #fafafa;
       border-radius: 25px;
-      padding: 15px;
+      padding: 15px 15px 0px 15px;
       text-align: justify;
       color: black;
     }
+    .normal-text {
+      font: 21px/125% AcuminVariableConcept, sans-serif;
+    }
+    .normal-text-b {
+      font: 45px/125% AcuminVariableConcept, sans-serif;
+    }
     .com-area-in {
-      margin: 30px;
+      margin: 0px;
       background-color: #e7e7e7;
-      padding: 15px;
+      padding: 0px;
       color: black;
     }
+
+    .full-right {
+      margin-top: 20px;
+      text-align: right;
+    }
+
+    .full-bottom-left {
+      margin-top: 0px;
+      margin-left: 30px;
+      text-align: left;
+    }
+
+    .text-box {
+      display: block;
+      width: 100%;
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #8898aa;
+      background-color: #fff;
+      background-clip: padding-box;
+      border: 1px solid #cad1d7;
+      border-radius: 0.375rem;
+      box-shadow: none;
+      transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
     /*---------------------*/
 
     /* Double border buttons style */
+
     .form-check {
       display: flex;
-      margin-bottom: 50px;
-      {% comment %} align-items: center;
-      justify-content:center; {% endcomment %}
+      margin-bottom: 0px;
     }
-    .form-check-label {
+    .label-check {
       margin-top: auto;
       margin-bottom: auto;
-      margin-left: 40px;
-      color: black;
+      margin-left: 20px;
+      font-size: 25px;
     }
-    .form-check-input {
-      position: relative;
-      width: 105px;
-      height: 105px;
-      border: 7px solid #404040;
-      border-radius: 50%;
+    .v-label-check {
+      color: #21561e;
     }
-
-    .com-triangle-right {
-
-      border-top: 45px solid transparent;
-      border-bottom: 45px solid transparent;
-      
-      border-right: 35px solid #7e7e7e;
+    .x-label-check {
+      color: #7e0000;
     }
 
-    .com-triangle-left {
-
-      border-top: 45px solid transparent;
-      border-bottom: 45px solid transparent;
-      
-      border-left: 35px solid #7e7e7e;
+    .image-check {
+      width: 115px;
+      height: 115px;
     }
-    {% comment %} .form-check-input-checked::after {
-      content: '';
-      width: 105px;
-      height: 105px;
-      border: 1px solid #fff;
-      border-radius: 50%;
-      display: block;
-      margin: -4px 2px;
-    } {% endcomment %}
+    .v-image-check {
+      content: url("/static/assets/img/icons/v_button.png");
+    }
+    .v-image-check:active,
+    .v-image-check:checked {
+      content: url("/static/assets/img/icons/v_button_pressed.png");
+    }
+    .x-image-check {
+      content: url("/static/assets/img/icons/x_button.png");
+    }
+    .x-image-check:active,
+    .x-image-check:checked {
+      content: url("/static/assets/img/icons/x_button_pressed.png");
+    }
+    .button-check-input {
+      border: 0;
+      background-color: #e7e7e7;
+      outline: none;
+    }
+    .button-check-input:active,
+    .button-check-input:focus,
+    .button-check-input:checked {
+      outline: none;
+    }
+
+    .button-circle {
+      content: url("/static/assets/img/icons/button-circle.png");
+    }
+    .button-circle:active,
+    .button-circle:focus,
+    .button-circle:checked {
+      content: url("/static/assets/img/icons/button-circle-bold.png");
+    }
+    
     /*-----------------------------*/
+    /* Citofono styles */
+    .cit-area-label {
+      margin:0;
+      margin-top: 40px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .cit-label-l {
+      margin:0;
+      height: 150px;
+      display: flex;
+      direction: rtl;
+      text-align:right;
+    }
+    .cit-label-r {
+      margin:0;
+      height: 150px;
+      display: flex;
+    }
+    .cit-label-l label,
+    .cit-label-r label {
+      font-size: 25px;
+      margin-top: auto;
+      margin-bottom: auto;
+    }
 
+    .cit-area {
+      background-color: #e7e7e7;
+      border-radius: 25px;
+      margin: auto;
+      margin-top:0;
+      padding: 30px 50px 30px 50px;
+      font: 70px/125% AcuminVariableConcept, sans-serif;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .cit-line {
+      margin:0;
+      height: 150px;
+      justify-content: space-between;
+    }
+    .cit-command-l {
+      margin: 0 0 0 -50px;
+      padding:0;
+      display: flex;
+      align-items: left;
+    }
+    .cit-command-r {
+      margin: 0 -50px 0 0;
+      direction: rtl;
+      padding:0;
+      display: flex;
+      align-items: right;
+    }
+    .cit-triangle-l {
+      border-top: 30px solid transparent;
+      border-bottom: 30px solid transparent;
+      border-left: 35px solid #f7fafc;
+      margin-top: 45px;
+      margin-bottom: 45px;
+      margin-right: 40px;
+    }
+    .cit-triangle-r {
+      border-top: 30px solid transparent;
+      border-bottom: 30px solid transparent;
+      border-right: 35px solid #f7fafc;
+      margin-top: 45px;
+      margin-bottom: 45px;
+      margin-left: 40px;
+    }
+    .cit-button-l {
+      margin-left: 50px;
+    }
+    .cit-button-r {
+      margin-right: 50px;
+    }
+
+    /*-----------------------------*/
+    /* Footer styles */
+
+    .main-content {
+      height: 960px;
+      padding: 0px;
+      margin: auto;
+    }
+
+    .footer {
+      height: 960px;
+      padding: 0px;
+      margin: auto;
+    }
+    .footer-logo-div {
+      width: 50%;
+      margin: auto;
+      margin-top: 150px;
+      margin-bottom: 350px;
+    }
+    .footer-logo-img {
+      width: 100%;
+    }
+    .footer-bar-h2 {
+      margin: 2px;
+      margin-bottom: 180px;
+      padding-top: 7px;
+      text-align: center;
+      color: #030303;
+      border: 2px solid #c5c5c5;
+    }
+
+    /* ------------- */
+
+    /* Main communication areas style */
+    .com-area-video {
+      margin-left: 40px;
+      margin-right: 40px;
+    }
+    .com-area-out-video {
+      padding:5px;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow:hidden;
+    }
+    .com-area-out-video video {
+      width: 100%;
+      border-radius:20px;
+    }
+    #progressBar {
+      width: 90%;
+      margin: 10px auto;
+      height: 35px;
+      background-color: #00a99d;
+    }
+    #progressBar .bar {
+      height: 100%;
+      text-align: right;
+      padding: 0 10px;
+      line-height: 35px; /* same as #progressBar height if we want text middle aligned */
+      width: 0;
+      background-color: #CBEA00;
+      box-sizing: border-box;
+    }
+    #progressComplete {
+      display:none;
+      text-align: center;
+      margin: 10px auto;
+      padding: 0 10px;
+      height: 35px;
+    }
+    /* ------------- */
+
+    /* Rotation */
+    .mirror-rot-270 {
+      transform: rotate3d(0, 0, 1, 270deg);
+      transform: rotate3d(0, 1, 0, 180deg);
+    }
+    .mirror {
+      transform: rotateY(180deg);
+      -webkit-transform:rotateY(180deg); /* Safari and Chrome */
+      -moz-transform:rotateY(180deg); /* Firefox */
+    }
+    .rot-90 {
+      -webkit-transform: rotate(90deg);
+      -moz-transform: rotate(90deg);
+      -o-transform: rotate(90deg);
+      -ms-transform: rotate(90deg);
+      transform: rotate(90deg);
+    }
+    .rot-180 {
+      -webkit-transform: rotate(180deg);
+      -moz-transform: rotate(180deg);
+      -o-transform: rotate(180deg);
+      -ms-transform: rotate(180deg);
+      transform: rotate(180deg);
+    }
+    .rot-270 {
+      -webkit-transform: rotate(270deg);
+      -moz-transform: rotate(270deg);
+      -o-transform: rotate(270deg);
+      -ms-transform: rotate(270deg);
+      transform: rotate(270deg);
+    }
   </style>
   {% block stylesheets %}{% endblock stylesheets %}
 
@@ -126,10 +402,67 @@
     {% block content %}{% endblock content %}
 
   </div>
+  
+  
+  {% include "includes/footer-triage.html" %}
 
   {% include "includes/scripts-triage.html" %}
 
-  <!-- Specific JS goes HERE --> 
+  <!-- Specific JS goes HERE -->
+  <script>
+    // Progress bar
+    function progress(timeleft, timetotal, $element) {
+      var progressBarWidth = timeleft * $element.width() / timetotal;
+      $element.find('.bar').animate({ width: progressBarWidth }, 500).html(Math.floor(timeleft/60) + ":"+ timeleft%60);
+      if(timeleft > 0) {
+          setTimeout(function() {
+              progress(timeleft - 1, timetotal, $element);
+          }, 1000);
+      } else {
+        show_complete();
+      }
+    };
+    
+    progress(40, 40, $('#progressBar'));
+
+    function show_complete() {
+      $('#progressBar').animate({ width: 0 }, 500);
+      setTimeout(function() {
+        $('#progressBar').hide();
+        $('#progressComplete').show();
+        progress_text_changes();
+      }, 500);
+      
+    }
+
+    function progress_text_changes(){
+      var text_list = [
+        ["Analisi dei dati in corso",1],
+        ["Analisi dei dati in corso.",1],
+        ["Analisi dei dati in corso..",1],
+        ["Analisi dei dati in corso...",2],
+        ["Estrazione dati flusso sanguigno",1],
+        ["Estrazione dati flusso sanguigno.",1],
+        ["Estrazione dati flusso sanguigno..",1],
+        ["Estrazione dati flusso sanguigno...",2],
+        ["Calcolo dei parametri biometrici",1],
+        ["Calcolo dei parametri biometrici.",1],
+        ["Calcolo dei parametri biometrici..",1],
+        ["Calcolo dei parametri biometrici...",1.5],
+        ["Preparazione formato di output",1],
+        ["Preparazione formato di output.",1],
+        ["Preparazione formato di output..",1],
+        ["Preparazione formato di output...",1],
+      ];
+      var progression = 0;
+      text_list.forEach(function (item, index) {
+        setTimeout(function() {
+          $('#progressComplete span').html(item[0]);
+        }, progression*1000);
+        progression += item[1]
+      });
+    }
+  </script>
   {% block javascripts %}{% endblock javascripts %}
 
 </body>
