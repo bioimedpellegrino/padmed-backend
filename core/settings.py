@@ -206,3 +206,6 @@ MESSAGE_TAGS = {
 
 ## DEFAULTS PRIMARY KEYS 
 DEFAULT_AUTO_FIELD='django.db.models.AutoField' 
+
+## Behaviour variables
+USE_CARD_READER = env("USE_CARD_READER", cast=bool, default=True)

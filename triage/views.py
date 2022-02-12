@@ -54,7 +54,8 @@ class ReceptionsView(APIView):
         
         form = PatientForm()
         user = AppUser.get_or_create_from_parent(request.user)
-        return render(request, self.TEMPLATE_NAME, {'form': form, 'user': user})
+        use_card_reader = settings.USE_CARD_READER
+        return render(request, self.TEMPLATE_NAME, {'form': form, 'user': user,'use_card_reader':use_card_reader})
     
     @method_decorator(login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
@@ -91,6 +92,7 @@ class ReceptionsView(APIView):
             access.save()
             return HttpResponseRedirect(reverse('accessreason',kwargs={"access_id":access.id}))
         else:
+            print("Errors",form.errors)
             # TODO
             form = PatientForm()
             return render(request, self.TEMPLATE_NAME, {'form': form, 'errors': 'Il codice fiscale inserito non è valido', 'user': user})
