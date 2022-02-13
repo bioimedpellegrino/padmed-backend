@@ -44,10 +44,13 @@ def unpack_result_deepaffex(deep_affex_result):
     result_unpacked["ID"] = deep_affex_result["ID"]
     result_unpacked["StatusID"] = deep_affex_result["StatusID"]
     result_unpacked["StudyID"] = deep_affex_result["StudyID"]
-    # print("==================================")
-    # print(deep_affex_result.keys())
+    print("==================================")
+    print(deep_affex_result.keys())
     # print("==================================")
     deep_affex_measures = deep_affex_result["Results"]
+    # print("==================================")
+    print(deep_affex_result["Results"])
+    print("==================================")
     
     # Important value HB_BPM, SNR
     hb = deep_affex_measures["HR_BPM"]
