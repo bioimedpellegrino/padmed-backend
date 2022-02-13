@@ -79,19 +79,20 @@ async def login(config, email, password):
     Returns:
         [boolean]: [return True if user_token in the config.json file is populated, False otherwise]
     """
-    if dfxapi.Settings.user_token:
-        print("Already logged in")
-        return False
+    # if dfxapi.Settings.user_token:
+    #     print("Already logged in")
+    #     return False
 
-    if not dfxapi.Settings.device_token:
-        print("Please register first to obtain a device_token")
-        return False
+    # if not dfxapi.Settings.device_token:
+    #     print("Please register first to obtain a device_token")
+    #     return False
 
     headers = {"Authorization": f"Bearer {dfxapi.Settings.device_token}"}
     async with aiohttp.ClientSession(headers=headers) as session:
         status, body = await dfxapi.Users.login(session, email, password)
         if status < 400:
             config["user_token"] = dfxapi.Settings.user_token
+            save_config(config)
             print("Login successful")
             return True
         else:
