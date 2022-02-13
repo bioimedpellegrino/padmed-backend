@@ -387,7 +387,6 @@ class PatientMeasureResult(models.Model):
     @property
     @lru_cache(maxsize=None)
     def get_hresult(self):
-        import statistics
         result = self.get_clean_result
         hresult = {
             "heart_rate":{},
@@ -459,64 +458,40 @@ class PatientMeasureResult(models.Model):
         
         return hresult
     
-    def _set_temperature_alarms(self,hresult):
-        if hresult["temperature"]["mean"] < 27:
-            hresult["temperature"]["alarm"] = 3
-            hresult["temperature"]["order"] = "%s%02d"%(0, hresult["temperature"]["mean"])
-        elif hresult["temperature"]["mean"] < 33:
-            hresult["temperature"]["alarm"] = 2
-            hresult["temperature"]["order"] = "%s%02d"%(1, hresult["temperature"]["mean"])
-        elif hresult["temperature"]["mean"] < 35:
-            hresult["temperature"]["alarm"] = 1
-            hresult["temperature"]["order"] = "%s%02d"%(2, hresult["temperature"]["mean"])
-        elif hresult["temperature"]["mean"] < 37:
-            hresult["temperature"]["alarm"] = 0
-            hresult["temperature"]["order"] = "%s%02d"%(3, 50-hresult["temperature"]["mean"])
-        elif hresult["temperature"]["mean"] < 40:
-            hresult["temperature"]["alarm"] = 1
-            hresult["temperature"]["order"] = "%s%02d"%(2, 50-hresult["temperature"]["mean"])
-        elif hresult["temperature"]["mean"] < 41.1:
-            hresult["temperature"]["alarm"] = 2
-            hresult["temperature"]["order"] = "%s%02d"%(1, 50-hresult["temperature"]["mean"])
-        elif hresult["temperature"]["mean"] >= 41.1:
-            hresult["temperature"]["alarm"] = 3
-            hresult["temperature"]["order"] = "%s%02d"%(0, 50-hresult["temperature"]["mean"])
-        return hresult
-    
-    def _set_temperature_alarms(self,mean):
-        if mean < 27:
-            order = "%s%02d"%(0, mean)
-        elif mean < 33:
-            order = "%s%02d"%(1, mean)
-        elif mean < 35:
-            order = "%s%02d"%(2, mean)
-        elif mean < 37:
-            order = "%s%02d"%(3, 50-mean)
-        elif mean < 40:
-            order = "%s%02d"%(2, 50-mean)
-        elif mean < 41.1:
-            order = "%s%02d"%(1, 50-mean)
-        elif mean >= 41.1:
-            order = "%s%02d"%(0, 50-mean)
+    def _get_heart_rate_order(self,mean):
+        if mean < 40:
+            order = "%s%03d"%(0, mean)
+        elif mean < 50:
+            order = "%s%03d"%(1, mean)
+        elif mean < 60:
+            order = "%s%03d"%(2, mean)
+        elif mean < 100:
+            order = "%s%03d"%(3, 130-mean)
+        elif mean < 110:
+            order = "%s%03d"%(2, 130-mean)
+        elif mean < 120:
+            order = "%s%03d"%(1, 130-mean)
+        elif mean >= 120:
+            order = "%s%03d"%(0, 130-mean)
         return order
     
-    def _get_temperature_alarm(self,mean):
-        if mean < 27:
+    def _get_heart_rate_alarm(self,mean):
+        if mean < 40:
             alarm = 3
-        elif mean < 33:
+        elif mean < 50:
             alarm = 2
-        elif mean < 35:
+        elif mean < 60:
             alarm = 1
-        elif mean < 37:
+        elif mean < 100:
             alarm = 0
-        elif mean < 40:
+        elif mean < 110:
             alarm = 1
-        elif mean < 41.1:
+        elif mean < 120:
             alarm = 2
-        elif mean >= 41.1:
+        elif mean >= 120:
             alarm = 3
         return alarm
-    
+
     def _get_pressure_alarm(self,pmin,pmax):
         if pmin < 50:
             min_alarm = 3
@@ -553,39 +528,41 @@ class PatientMeasureResult(models.Model):
         order = "%s%03d%03d"%(3-alarm,pmin,pmax)
         return order
     
-    def _get_heart_rate_order(self,mean):
-        if mean < 40:
-            order = "%s%03d"%(0, mean)
-        elif mean < 50:
-            order = "%s%03d"%(1, mean)
-        elif mean < 60:
-            order = "%s%03d"%(2, mean)
-        elif mean < 100:
-            order = "%s%03d"%(3, 130-mean)
-        elif mean < 110:
-            order = "%s%03d"%(2, 130-mean)
-        elif mean < 120:
-            order = "%s%03d"%(1, 130-mean)
-        elif mean >= 120:
-            order = "%s%03d"%(0, 130-mean)
+    def _get_temperature_order(self,mean):
+        if mean < 27:
+            order = "%s%02d"%(0, mean)
+        elif mean < 33:
+            order = "%s%02d"%(1, mean)
+        elif mean < 35:
+            order = "%s%02d"%(2, mean)
+        elif mean < 37:
+            order = "%s%02d"%(3, 50-mean)
+        elif mean < 40:
+            order = "%s%02d"%(2, 50-mean)
+        elif mean < 41.1:
+            order = "%s%02d"%(1, 50-mean)
+        elif mean >= 41.1:
+            order = "%s%02d"%(0, 50-mean)
         return order
     
-    def _get_heart_rate_alarm(self,mean):
-        if mean < 40:
+    def _get_temperature_alarm(self,mean):
+        if mean < 27:
             alarm = 3
-        elif mean < 50:
+        elif mean < 33:
             alarm = 2
-        elif mean < 60:
+        elif mean < 35:
             alarm = 1
-        elif mean < 100:
+        elif mean < 37:
             alarm = 0
-        elif mean < 110:
+        elif mean < 40:
             alarm = 1
-        elif mean < 120:
+        elif mean < 41.1:
             alarm = 2
-        elif mean >= 120:
+        elif mean >= 41.1:
             alarm = 3
         return alarm
+    
+
 class MeasureLogger(models.Model):
     
     id = models.AutoField(primary_key=True)
