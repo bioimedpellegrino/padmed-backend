@@ -181,7 +181,7 @@ if DEBUG_PERFORMANCE:
 
 #DFX
 LICENCE_KEY=env("LICENCE_KEY", default='73b74e60-1bdb-465b-9d62-28667ac6caca')
-ORG_KEY=env("ORG_KEY", default='demo')
+ORG_KEY=env("ORG_KEY", default='padmed')
 DFX_USER=env("DFX_USER", default='alessandro.pellegrino@padmed.com')
 DFX_PASSWORD=env("DFX_PASSWORD", default='P4dm3d!rGtX')
 
@@ -206,3 +206,7 @@ MESSAGE_TAGS = {
 
 ## DEFAULTS PRIMARY KEYS 
 DEFAULT_AUTO_FIELD='django.db.models.AutoField' 
+
+## Behaviour variables
+USE_CARD_READER = env("USE_CARD_READER", cast=bool, default=True)
+ROTATE_90_COUNTERCLOCKWISE = env("ROTATE_90_COUNTERCLOCKWISE", cast=bool, default=True)

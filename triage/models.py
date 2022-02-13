@@ -377,13 +377,17 @@ class PatientMeasureResult(models.Model):
         import ast
         result = ast.literal_eval(self.result)
         return result
-
+    @property
+    @lru_cache(maxsize=None)
+    def get_clean_result(self):
+        import ast
+        result = ast.literal_eval(self.measure_short)
+        return result
+            
     @property
     @lru_cache(maxsize=None)
     def get_hresult(self):
-        from random import randrange
-        import statistics
-        result = self.get_result
+        result = self.get_clean_result
         hresult = {
             "heart_rate":{},
             "pressure":{"min":{},"max":{}},
@@ -391,46 +395,104 @@ class PatientMeasureResult(models.Model):
         }
             
         ## Temperature
-        # data = result["Results"]["HR_BPM"]["Data"]
-        # multiplier = result["Results"]["HR_BPM"]["Multiplier"]
-        # unit = result["SignalUnits"]["HR_BPM"]
-        hresult["temperature"]["mean"] = randrange(27,42)
-        hresult["temperature"]["stdev"] = 1
-        hresult["temperature"]["unit"] = "°C"
-        if hresult["temperature"]["mean"] < 27:
-            hresult["temperature"]["alarm"] = 3
-            hresult["temperature"]["order"] = "%s%02d"%(0, hresult["temperature"]["mean"])
-        elif hresult["temperature"]["mean"] < 33:
-            hresult["temperature"]["alarm"] = 2
-            hresult["temperature"]["order"] = "%s%02d"%(1, hresult["temperature"]["mean"])
-        elif hresult["temperature"]["mean"] < 35:
-            hresult["temperature"]["alarm"] = 1
-            hresult["temperature"]["order"] = "%s%02d"%(2, hresult["temperature"]["mean"])
-        elif hresult["temperature"]["mean"] < 37:
-            hresult["temperature"]["alarm"] = 0
-            hresult["temperature"]["order"] = "%s%02d"%(3, 50-hresult["temperature"]["mean"])
-        elif hresult["temperature"]["mean"] < 40:
-            hresult["temperature"]["alarm"] = 1
-            hresult["temperature"]["order"] = "%s%02d"%(2, 50-hresult["temperature"]["mean"])
-        elif hresult["temperature"]["mean"] < 41.1:
-            hresult["temperature"]["alarm"] = 2
-            hresult["temperature"]["order"] = "%s%02d"%(1, 50-hresult["temperature"]["mean"])
-        elif hresult["temperature"]["mean"] >= 41.1:
-            hresult["temperature"]["alarm"] = 3
-            hresult["temperature"]["order"] = "%s%02d"%(0, 50-hresult["temperature"]["mean"])
+        try:
+            data = result["measure"]["TEMPERATURE"]
+        except KeyError as e:
+            hresult["temperature"]["mean"] = "-"
+            hresult["temperature"]["stdev"] = "-"
+            hresult["temperature"]["unit"] = "-"
+            hresult["temperature"]["order"] = None
+            hresult["temperature"]["alarm"] = None
+            add_log(level=3, exception=e)
+        else:
+            hresult["temperature"]["mean"] = data["value"]
+            hresult["temperature"]["stdev"] = "-" # TODO: add SDR information
+            hresult["temperature"]["unit"] = data["unit"]
+            hresult["temperature"]["order"] = self._get_temperature_order(hresult["temperature"]["mean"])
+            hresult["temperature"]["alarm"] = self._get_temperature_alarm(hresult["temperature"]["mean"])
 
         ## Blood pressure
-        # data = result["Results"]["HR_BPM"]["Data"]
-        # multiplier = result["Results"]["HR_BPM"]["Multiplier"]
-        # unit = result["SignalUnits"]["HR_BPM"]
-        hresult["pressure"]["min"]["mean"] = randrange(40,200)
-        hresult["pressure"]["min"]["stdev"] = 3
-        hresult["pressure"]["min"]["unit"] = "mmHg"
-        hresult["pressure"]["max"]["mean"] = randrange(70,220)
-        hresult["pressure"]["max"]["stdev"] = 3
-        hresult["pressure"]["max"]["unit"] = "mmHg"
-        pmin = hresult["pressure"]["min"]["mean"]
-        pmax = hresult["pressure"]["max"]["mean"]
+        try:
+            data = result["measure"]["PRESSURE"]
+        except KeyError as e:
+            hresult["pressure"]["min"]["mean"] = "-"
+            hresult["pressure"]["min"]["stdev"] = "-" 
+            hresult["pressure"]["min"]["unit"] = "-" 
+            hresult["pressure"]["max"]["mean"] = "-" 
+            hresult["pressure"]["max"]["stdev"] = "-"
+            hresult["pressure"]["max"]["unit"] = "-"
+            hresult["pressure"]["alarm"] = None
+            hresult["pressure"]["order"] = None
+            add_log(level=3, exception=e)
+        else:
+            unit = data["unit"]
+            pmin = data["value_min"]
+            pmax = data["value_max"]
+            hresult["pressure"]["min"]["mean"] = pmin
+            hresult["pressure"]["min"]["stdev"] = "-" # TODO: add SDR information
+            hresult["pressure"]["min"]["unit"] = unit
+            hresult["pressure"]["max"]["mean"] = pmax
+            hresult["pressure"]["max"]["stdev"] = "-" # TODO: add SDR information
+            hresult["pressure"]["max"]["unit"] = unit
+            alarm = self._get_pressure_alarm(pmin,pmax)
+            hresult["pressure"]["alarm"] = alarm
+            hresult["pressure"]["order"] = self._get_pressure_order(alarm,pmin,pmax)
+
+        ## Heart rate
+        try:
+            data = result["measure"]["HB_BPM"]
+        except KeyError as e:
+            hresult["heart_rate"]["mean"] = "-"
+            hresult["heart_rate"]["stdev"] = "-"
+            hresult["heart_rate"]["unit"] = "-"
+            hresult["heart_rate"]["order"] = None
+            hresult["heart_rate"]["alarm"] = None
+            add_log(level=3, exception=e)
+        else:
+            unit = data["unit"]
+            hresult["heart_rate"]["mean"] = data["value"]
+            hresult["heart_rate"]["stdev"] = "-" # TODO: add SDR information
+            hresult["heart_rate"]["unit"] = unit
+            hresult["heart_rate"]["order"] = self._get_heart_rate_order(hresult["heart_rate"]["mean"])
+            hresult["heart_rate"]["alarm"] = self._get_heart_rate_alarm(hresult["heart_rate"]["mean"])
+        
+        return hresult
+    
+    def _get_heart_rate_order(self,mean):
+        if mean < 40:
+            order = "%s%03d"%(0, mean)
+        elif mean < 50:
+            order = "%s%03d"%(1, mean)
+        elif mean < 60:
+            order = "%s%03d"%(2, mean)
+        elif mean < 100:
+            order = "%s%03d"%(3, 130-mean)
+        elif mean < 110:
+            order = "%s%03d"%(2, 130-mean)
+        elif mean < 120:
+            order = "%s%03d"%(1, 130-mean)
+        elif mean >= 120:
+            order = "%s%03d"%(0, 130-mean)
+        return order
+    
+    def _get_heart_rate_alarm(self,mean):
+        if mean < 40:
+            alarm = 3
+        elif mean < 50:
+            alarm = 2
+        elif mean < 60:
+            alarm = 1
+        elif mean < 100:
+            alarm = 0
+        elif mean < 110:
+            alarm = 1
+        elif mean < 120:
+            alarm = 2
+        elif mean >= 120:
+            alarm = 3
+        return alarm
+
+    def _get_pressure_alarm(self,pmin,pmax):
         if pmin < 50:
             min_alarm = 3
         elif pmin < 60:
@@ -459,43 +521,48 @@ class PatientMeasureResult(models.Model):
             max_alarm = 2
         elif pmax >= 180:
             max_alarm = 3
-        pmin = hresult["pressure"]["alarm"] = max(min_alarm,max_alarm)
-        hresult["pressure"]["order"] = "%s%03d%03d"%(3-hresult["pressure"]["alarm"],pmin,pmax)
-
-        ## Heart rate
-        try:
-            data = result["Results"]["HR_BPM"][0]["Data"]
-        except KeyError as e:
-            add_log(level=3, exception=e)
-        multiplier = result["Results"]["HR_BPM"][0]["Multiplier"]
-        unit = result["SignalUnits"]["HR_BPM"]
-        hresult["heart_rate"]["mean"] = round(statistics.fmean(data)/multiplier)
-        hresult["heart_rate"]["stdev"] = round(statistics.stdev(data)/multiplier) # TODO: add SDR information
-        hresult["heart_rate"]["unit"] = unit
-        if hresult["heart_rate"]["mean"] < 40:
-            hresult["heart_rate"]["alarm"] = 3
-            hresult["heart_rate"]["order"] = "%s%03d"%(0, hresult["heart_rate"]["mean"])
-        elif hresult["heart_rate"]["mean"] < 50:
-            hresult["heart_rate"]["alarm"] = 2
-            hresult["heart_rate"]["order"] = "%s%03d"%(1, hresult["heart_rate"]["mean"])
-        elif hresult["heart_rate"]["mean"] < 60:
-            hresult["heart_rate"]["alarm"] = 1
-            hresult["heart_rate"]["order"] = "%s%03d"%(2, hresult["heart_rate"]["mean"])
-        elif hresult["heart_rate"]["mean"] < 100:
-            hresult["heart_rate"]["alarm"] = 0
-            hresult["heart_rate"]["order"] = "%s%03d"%(3, 130-hresult["heart_rate"]["mean"])
-        elif hresult["heart_rate"]["mean"] < 110:
-            hresult["heart_rate"]["alarm"] = 1
-            hresult["heart_rate"]["order"] = "%s%03d"%(2, 130-hresult["heart_rate"]["mean"])
-        elif hresult["heart_rate"]["mean"] < 120:
-            hresult["heart_rate"]["alarm"] = 2
-            hresult["heart_rate"]["order"] = "%s%03d"%(1, 130-hresult["heart_rate"]["mean"])
-        elif hresult["heart_rate"]["mean"] >= 120:
-            hresult["heart_rate"]["alarm"] = 3
-            hresult["heart_rate"]["order"] = "%s%03d"%(0, 130-hresult["heart_rate"]["mean"])
-        
-        return hresult
+        alarm = max(min_alarm,max_alarm)
+        return alarm
     
+    def _get_pressure_order(self,alarm,pmin,pmax):
+        order = "%s%03d%03d"%(3-alarm,pmin,pmax)
+        return order
+    
+    def _get_temperature_order(self,mean):
+        if mean < 27:
+            order = "%s%02d"%(0, mean)
+        elif mean < 33:
+            order = "%s%02d"%(1, mean)
+        elif mean < 35:
+            order = "%s%02d"%(2, mean)
+        elif mean < 37:
+            order = "%s%02d"%(3, 50-mean)
+        elif mean < 40:
+            order = "%s%02d"%(2, 50-mean)
+        elif mean < 41.1:
+            order = "%s%02d"%(1, 50-mean)
+        elif mean >= 41.1:
+            order = "%s%02d"%(0, 50-mean)
+        return order
+    
+    def _get_temperature_alarm(self,mean):
+        if mean < 27:
+            alarm = 3
+        elif mean < 33:
+            alarm = 2
+        elif mean < 35:
+            alarm = 1
+        elif mean < 37:
+            alarm = 0
+        elif mean < 40:
+            alarm = 1
+        elif mean < 41.1:
+            alarm = 2
+        elif mean >= 41.1:
+            alarm = 3
+        return alarm
+    
+
 class MeasureLogger(models.Model):
     
     id = models.AutoField(primary_key=True)

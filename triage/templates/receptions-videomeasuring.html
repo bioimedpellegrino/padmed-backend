@@ -30,8 +30,11 @@
         <div class="com-area-triangle"></div>
         <div id="startButton" class="button"></div>
         <div class="com-area-out com-area-out-video"> <!--rot-90-->
-            
-          <video id="preview" class="rot-270" width="800" autoplay muted></video>
+          {% if ROTATE_90_COUNTERCLOCKWISE %}
+            <video id="preview" class="rot-270" width="800" autoplay muted></video>
+          {% else %}
+            <video id="preview" width="800" autoplay muted></video>
+          {% endif %}
           <div style="display:none">
             <div id="stopButton" class="button"></div>
             <video id="recording" width="800" height="800" controls></video>
