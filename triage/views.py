@@ -143,8 +143,8 @@ class RecordVideoView(APIView):
         user = AppUser.get_or_create_from_parent(request.user)
         access_id = kwargs.get('access_id', None)
         access = get_object_or_404(TriageAccess,pk=access_id)
-        
-        return render(request, self.TEMPLATE_NAME, {'access_id': access_id, 'user': user})
+        ROTATE_90_COUNTERCLOCKWISE = settings.ROTATE_90_COUNTERCLOCKWISE
+        return render(request, self.TEMPLATE_NAME, {'access_id': access_id, 'user': user,"ROTATE_90_COUNTERCLOCKWISE":ROTATE_90_COUNTERCLOCKWISE})
     
     parser_classes = (MultiPartParser,)
     @method_decorator(login_required(login_url="/login/"))

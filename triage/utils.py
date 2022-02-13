@@ -9,8 +9,12 @@ def generate_video_measure(file_path, video_id):
     # Read video-blob
     cap = cv2.VideoCapture(os.path.join(settings.MEDIA_ROOT, file_path))
     # Get video resolution
-    frame_width = int(cap.get(3))
-    frame_height = int(cap.get(4))
+    if settings.ROTATE_90_COUNTERCLOCKWISE:
+        frame_width = int(cap.get(3))
+        frame_height = int(cap.get(4))
+    else:
+        frame_width = int(cap.get(4))
+        frame_height = int(cap.get(3))        
     # Define video codecs and writer
     fourcc = cv2.VideoWriter_fourcc(*'MPEG')
     video_name = 'tmp/' + "{}.avi".format(video_id)
@@ -22,7 +26,8 @@ def generate_video_measure(file_path, video_id):
     while (ret): 
         ret, frame = cap.read() 
         if ret:
-            frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
+            if settings.ROTATE_90_COUNTERCLOCKWISE:
+                frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
             video_frames.append(frame)
     video_frames = np.array(video_frames)
     # Save frame array into file
