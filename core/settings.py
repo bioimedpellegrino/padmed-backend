@@ -181,7 +181,7 @@ if DEBUG_PERFORMANCE:
 
 #DFX
 LICENCE_KEY=env("LICENCE_KEY", default='73b74e60-1bdb-465b-9d62-28667ac6caca')
-ORG_KEY=env("ORG_KEY", default='demo')
+ORG_KEY=env("ORG_KEY", default='padmed')
 DFX_USER=env("DFX_USER", default='alessandro.pellegrino@padmed.com')
 DFX_PASSWORD=env("DFX_PASSWORD", default='P4dm35!')
 
