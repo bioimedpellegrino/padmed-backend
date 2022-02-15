@@ -19,6 +19,7 @@ from django.conf import settings
 
 from dfxutils.app import AppState, MeasurementStep
 from dfxutils.dlib_tracker import DlibTracker
+from dfxutils.visage_tracker import VisageTracker
 from dfxutils.opencvhelpers import CameraReader, VideoReader
 from dfxutils.prettyprint import PrettyPrinter as PP
 from dfxutils.renderer import NullRenderer, Renderer
@@ -232,7 +233,7 @@ async def make_measure(config, config_path, video_path, demographics=None, start
                 app.demographics = json.load(f)
 
         # Create a face tracker
-        tracker = DlibTracker()
+        tracker = VisageTracker() if settings.FACE_TRACKER == 'VISAGE' else DlibTracker()
 
         # Create DFX SDK factory
         factory = dfxsdk.Factory()
