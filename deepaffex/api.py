@@ -231,7 +231,16 @@ async def make_measure(config, config_path, video_path, demographics=None, start
         if demographics is not None:
             with open(demographics, "r") as f:
                 app.demographics = json.load(f)
-
+        if not demographics:
+            app.demographics = {
+                "gender": "male",
+                "age": 32,
+                "height": 180,
+                "weight": 70,
+                "smoking": 0,
+                "diabetes": 0,
+                "bloodpressuremedication": 0
+            }
         # Create a face tracker
         if settings.FACE_TRACKER == 'VISAGE':
             tracker = VisageTracker(settings.VISAGE_LICENSE,
