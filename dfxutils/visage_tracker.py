@@ -15,7 +15,7 @@
 
 import os
 import pathlib
-
+from django.conf import settings
 import libvisage as visage
 
 
@@ -24,7 +24,7 @@ class VisageTracker():
         # Create a Visage Factory object
         self._visageFactory = visage.Factory()
 
-        visageCfg = os.path.join(os.getcwd(), "res", "visage", "Facial Features Tracker - Ultra.cfg")
+        visageCfg = os.path.join("libvisagepython", "res", "visage", "Facial Features Tracker - Ultra.cfg")
 
         # License
         if visageLicense is None:

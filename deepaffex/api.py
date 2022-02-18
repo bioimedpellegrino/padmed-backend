@@ -233,7 +233,14 @@ async def make_measure(config, config_path, video_path, demographics=None, start
                 app.demographics = json.load(f)
 
         # Create a face tracker
-        tracker = VisageTracker() if settings.FACE_TRACKER == 'VISAGE' else DlibTracker()
+        if settings.FACE_TRACKER == 'VISAGE':
+            tracker = VisageTracker(settings.VISAGE_LICENSE,
+                                    1,
+                                    imreader.width,
+                                    imreader.height,
+                                    use_analyser=args.analyser)
+        else:
+            tracker = DlibTracker()
 
         # Create DFX SDK factory
         factory = dfxsdk.Factory()
