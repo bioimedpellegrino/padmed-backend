@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'triage',
     'dashboards',
     'crispy_forms',
-    'rest_framework'
+    'rest_framework',
+    'dfx'
 ]
 
 MIDDLEWARE = [

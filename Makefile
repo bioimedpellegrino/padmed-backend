@@ -80,5 +80,9 @@ import_dialog_codes: init
 	. $(VENV)/bin/activate ; $(PYTHON) manage.py import_dialog_codes "$(preview)" "$(local_file_name_with_ext)" "$(language_code)"
 #./run-make.sh import_dialog_codes preview="True" local_file_name_with_ext="Country-codes.xls" language_code="en"
 
+init_signals: init
+	. $(VENV)/bin/activate ; $(PYTHON) manage.py init_signals
+#./run-make.sh init_signals
+
 .PHONY: clean execute
 
