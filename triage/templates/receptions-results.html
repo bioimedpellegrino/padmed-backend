@@ -67,7 +67,9 @@
 <script>
   function sendToQuickPrinterChrome(){
 
-    var commandsToPrint =  "'{{print_command}}'";
+    var commandsToPrint =  '{{print_command}}';
+    commandsToPrint = commandsToPrint.replaceAll("&lt;", "<");
+    commandsToPrint = commandsToPrint.replaceAll("&gt;", ">");
     var textEncoded = encodeURI(commandsToPrint);
     window.location.href="intent://"+textEncoded+"#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;";
  }
