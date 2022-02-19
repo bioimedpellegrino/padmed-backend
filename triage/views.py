@@ -27,7 +27,7 @@ from app.models import AppUser
 from .forms import PatientForm
 from .models import Hospital, Patient, TriageCode, TriageAccessReason, TriageAccess, \
     PatientVideo, PatientMeasureResult, MeasureLogger, Totem
-from .utils import generate_video_measure, unpack_result_deepaffex
+from .utils import generate_video_measure, unpack_result_deepaffex, print_command_measure
 
 class TestDFXApiView(APIView):
     """[summary]
@@ -198,7 +198,8 @@ class PatientResults(APIView):
         patient_result = PatientMeasureResult.objects.get(pk=int(request.POST.get('p_measure_result')))
         measure = eval(patient_result.measure_short)
         today_date = datetime.datetime.today().strftime('%Y-%m-%d')
-        return render(request,'receptions-results.html', {'measure': measure, 'date': today_date, 'user': user, 'show_arrow': True})
+        print_command = print_command_measure(measure, today_date)
+        return render(request,'receptions-results.html', {'measure': measure, 'date': today_date, 'user': user, 'print_command': print_command, 'show_arrow': True})
 
 class TestNFC(APIView):
     """[summary]

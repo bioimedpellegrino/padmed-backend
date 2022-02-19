@@ -82,3 +82,29 @@ def unpack_result_deepaffex(deep_affex_result):
     return result_unpacked
 
 
+def measure_json_to_list(measure_json):
+    """_summary_
+    #TODO DOCS
+    Args:
+        measure_json (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    return [{"key": k, "name": v["name"], "value": v["value"], "unit":v["unit"]} for k,v in measure_json.items()]
+
+
+def print_command_measure(measure, date):
+    """_summary_
+    #TODO DOCS
+    Args:
+        measure (_type_): _description_
+    """
+    signals_list = measure_json_to_list(measure["measure"])
+    print_command = "<BIG><BOLD><CENTER> PADMED <BR>\n" + "<CENTER>Esito misurazione<BR>\n" + "<CENTER>Data:" + date +"<BR>\n" + "<BOLD>Misurazione:" +"<BR>\n" + "<BOLD>Misurazione:"+ "<BR>\n";
+    for signal_list in signals_list:
+        command = "<LEFT><BOLD>" + signal_list.name + ":" + " " + signal_list.value + " " + signal_list.unit + "<BR>\n"
+        print_command += command
+    print_command += "<CUT>\n"
+    
+    return print_command

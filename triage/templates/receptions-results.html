@@ -66,20 +66,10 @@
 
 <script>
   function sendToQuickPrinterChrome(){
-    var commandsToPrint =
-                         "<BIG><BOLD><CENTER> PADMED <BR>\n" +
-                         "<CENTER>Esito misurazione<BR>\n" +
-                         "<CENTER>Data:" + '{{date}}' +"<BR>\n" +
-                         "<BOLD>Misurazione:" +
-                         "<BR>\n" +
-                         "<LEFT><BOLD>Battito cardiaco:" + '{{measure.measure.HB_BPM.value}}' + '{{measure.measure.HB_BPM.unit}}' +
-                         "<BR>\n" +
-                         "<LEFT><BOLD>SNR:" +'{{measure.measure.SNR.value}}' + '{{measure.measure.SNR.unit}}' +
-                         "<BR>\n" +
-                         "<CUT>\n"
-                 ;
-     var textEncoded = encodeURI(commandsToPrint);
-     window.location.href="intent://"+textEncoded+"#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;";
+
+    var commandsToPrint =  "'{{print_command}}'";
+    var textEncoded = encodeURI(commandsToPrint);
+    window.location.href="intent://"+textEncoded+"#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;";
  }
 
  function sendHome(){
