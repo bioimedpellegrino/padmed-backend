@@ -107,7 +107,7 @@ def print_command_measure(measure, date):
         return ""
     print_command = "<BIG><BOLD><CENTER> PADMED <BR>\n" + "<CENTER>Esito misurazione<BR>\n" + "<CENTER>Data:" + date +"<BR>\n" + "<BOLD>Misurazione:" +"<BR>\n" + "<BOLD>Misurazione:"+ "<BR>\n";
     for signal_list in signals_list:
-        command = "<LEFT><BOLD>" + signal_list.name + ":" + " " + signal_list.value + " " + signal_list.unit + "<BR>\n"
+        command = "<LEFT><BOLD>" + signal_list["name"] + ":" + " " + signal_list["value"] + " " + signal_list["unit"] + "<BR>\n"
         print_command += command
     print_command += "<CUT>\n"
     
