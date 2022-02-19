@@ -19,6 +19,7 @@ from django.conf import settings
 
 from dfxutils.app import AppState, MeasurementStep
 from dfxutils.dlib_tracker import DlibTracker
+from dfxutils.visage_tracker import VisageTracker
 from dfxutils.opencvhelpers import CameraReader, VideoReader
 from dfxutils.prettyprint import PrettyPrinter as PP
 from dfxutils.renderer import NullRenderer, Renderer
@@ -79,19 +80,20 @@ async def login(config, email, password):
     Returns:
         [boolean]: [return True if user_token in the config.json file is populated, False otherwise]
     """
-    if dfxapi.Settings.user_token:
-        print("Already logged in")
-        return False
+    # if dfxapi.Settings.user_token:
+    #     print("Already logged in")
+    #     return False
 
-    if not dfxapi.Settings.device_token:
-        print("Please register first to obtain a device_token")
-        return False
+    # if not dfxapi.Settings.device_token:
+    #     print("Please register first to obtain a device_token")
+    #     return False
 
     headers = {"Authorization": f"Bearer {dfxapi.Settings.device_token}"}
     async with aiohttp.ClientSession(headers=headers) as session:
         status, body = await dfxapi.Users.login(session, email, password)
         if status < 400:
             config["user_token"] = dfxapi.Settings.user_token
+            save_config(config)
             print("Login successful")
             return True
         else:
@@ -214,7 +216,7 @@ async def retrieve_sdk_config(config, config_file, sdk_id):
 
         return base64.standard_b64decode(config["study_cfg_data"])
     
-async def make_measure(config, config_path, video_path, demographics=None, start_time=2, end_time=20, rotation=None, fps=None, debug_study_cfg_file=None, profile_id="", partner_id=""):
+async def make_measure(config, config_path, video_path, demographics=None, start_time=0, end_time=35, rotation=None, fps=None, debug_study_cfg_file=None, profile_id="", partner_id=""):
     
     token = dfxapi.Settings.user_token if dfxapi.Settings.user_token else dfxapi.Settings.device_token
     headers = {"Authorization": f"Bearer {token}"}
@@ -229,9 +231,25 @@ async def make_measure(config, config_path, video_path, demographics=None, start
         if demographics is not None:
             with open(demographics, "r") as f:
                 app.demographics = json.load(f)
-
+        if not demographics:
+            app.demographics = {
+                "gender": "male",
+                "age": 32,
+                "height": 180,
+                "weight": 70,
+                "smoking": 0,
+                "diabetes": 0,
+                "bloodpressuremedication": 0
+            }
         # Create a face tracker
-        tracker = DlibTracker()
+        if settings.FACE_TRACKER == 'VISAGE':
+            tracker = VisageTracker(settings.VISAGE_LICENSE,
+                                    1,
+                                    imreader.width,
+                                    imreader.height,
+                                    use_analyser=args.analyser)
+        else:
+            tracker = DlibTracker()
 
         # Create DFX SDK factory
         factory = dfxsdk.Factory()

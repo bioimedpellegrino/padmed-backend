@@ -183,12 +183,13 @@ if DEBUG_PERFORMANCE:
 LICENCE_KEY=env("LICENCE_KEY", default='73b74e60-1bdb-465b-9d62-28667ac6caca')
 ORG_KEY=env("ORG_KEY", default='padmed')
 DFX_USER=env("DFX_USER", default='alessandro.pellegrino@padmed.com')
-DFX_PASSWORD=env("DFX_PASSWORD", default='P4dm35!')
+DFX_PASSWORD=env("DFX_PASSWORD", default='P4dm3d!rGtX')
 
 #DEEP AFFEX MEASUREMENT SETTINGS
 CHUNK_DURATION=env("CHUNK_DURATION", cast=float, default=5)
 DEEPAFFEX_DEBUG=env("DEEPAFFEX_DEBUG", cast=bool, default=False)
 DEEPAFFEX_DEBUG_SAVE_CHUNKS_FOLDER=env("DEEPAFFEX_DEBUG_SAVE_CHUNKS_FOLDER", cast=str, default=os.path.join(MEDIA_ROOT, "debug_chunks"))
+FACE_TRACKER = env("FACE_TRACKER", cast=str, default="DLIB")
 ## CUSTOM SETTINGS VARIABLES FOR GRAPHS
 INIT_MAX_WAITING_SECONDS = env("INIT_MAX_WAITING_SECONDS", cast=float, default=2400)
 
