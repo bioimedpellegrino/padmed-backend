@@ -105,10 +105,10 @@ def print_command_measure(measure, date):
         signals_list = measure_json_to_list(measure["measure"])
     except:
         return ""
-    print_command = "<BIG><BOLD><CENTER> PADMED <BR>\n" + "<CENTER>Esito misurazione<BR>\n" + "<CENTER>Data:" + date +"<BR>\n" + "<BOLD>Misurazione:" +"<BR>\n" + "<BOLD>Misurazione:"+ "<BR>\n";
+    print_command = "<BIG><BOLD><CENTER> PADMED <BR>" + "<CENTER>Esito misurazione<BR>" + "<CENTER>Data:" + date +"<BR>" + "<BOLD>Misurazione:" +"<BR>" + "<BOLD>Misurazione:"+ "<BR>";
     for signal_list in signals_list:
-        command = "<LEFT><BOLD>" + str(signal_list["name"]) + ":" + " " + str(signal_list["value"]) + " " + str(signal_list["unit"]) + "<BR>\n"
+        command = "<LEFT><BOLD>" + str(signal_list["name"]) + ":" + " " + str(signal_list["value"]) + " " + str(signal_list["unit"]) + "<BR>"
         print_command += command
-    print_command += "<CUT>\n"
+    print_command += "<CUT>"
     
     return print_command
