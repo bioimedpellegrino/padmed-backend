@@ -47,52 +47,11 @@
 {% block javascripts %}
 
 <script>
-  //onScan.attachTo(document);
-// Register event listener
+function sendToQuickPrinterChrome(){
 
-async function getUserCameraID(){
-  let devices = await navigator.mediaDevices.enumerateDevices();
-  return devices
-  for (device in devices){
-    document.getElementById("output").innerHTML = 'DeviceID: ' + device.deviceId + ';' + "kind:" + device.kind; 
-  }
-  devices = devices.filter(function(device){
-    return device.kind == 'videoinput';
-  })
-  if (devices.length == 0) return null;
-  else{
-    default_device = devices[0];
-    let rakinda_device = devices.filter(function(device){return device.label.includes("JSK USB2.0 Camera RGB")})[0];
-    if (rakinda_device){
-      return rakinda_device.deviceId;
-    } 
-    else {
-      return default_device.deviceId;
-    }
-  }
-}
-
-getUserCameraID().then(devices => {
-  for (device in devices){
-   if(devices[device].kind == 'videoinput'){
-   document.getElementById("output").innerHTML += 'DeviceID: ' + devices[device].deviceId + '; ' + "kind:" + devices[device].kind + " label:" + devices[device].label + "<br>";
-  }}
-}
-);
-
-try{
-  onScan.attachTo(document, {
-    suffixKeyCodes: [13], // enter-key expected at the end of a scan
-    reactToPaste: true, // Compatibility to built-in scanners in paste-mode (as opposed to keyboard-mode)
-    onScan: function(sCode, iQty) { // Alternative to document.addEventListener('scan')
-        document.getElementById("output").innerHTML = 'Scanned: ' + iQty + 'x ' + sCode; 
-    },
-    onKeyDetect: function(iKeyCode){ // output all potentially relevant key events - great for debugging!
-      document.getElementById("output").innerHTML = 'Pressed: ' + iKeyCode;
-    }
-});
-} catch(err){
-  //document.getElementById("output").innerHTML = err + " " + err.message;
+  var commandsToPrint =  String('{{print_command}}');
+  var textEncoded = encodeURI(commandsToPrint);
+  window.location.href="intent://"+textEncoded+"#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;";
 }
 
 </script>

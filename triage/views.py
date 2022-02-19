@@ -209,8 +209,8 @@ class TestNFC(APIView):
     """
     @method_decorator(login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
-
-        return render(request,'testnfc.html', {'show_arrow': True})
+        print_command = '<BIG><BOLD><CENTER> PADMED <BR><CENTER>Esito misurazione<BR><CENTER>Data:2022-02-19<BR><BOLD>Misurazione:<BR><BOLD>Misurazione:<BR><LEFT><BOLD>General Wellness Score: 83.33 <BR><LEFT><BOLD>Vital Score: 3.5 <BR><LEFT><BOLD>Physiological Score: 4.0 <BR><LEFT><BOLD>Mental Score: 4.0 <BR><LEFT><BOLD>Physical Score: 4.33 <BR><LEFT><BOLD>Risks Score: 5.0 <BR><LEFT><BOLD>NuraLogix Mental Stress Index: 2.88 <BR><LEFT><BOLD>NuraLogix Mental Stress Index: 2.88 <BR><LEFT><BOLD>HR Variability (SDNN): 38.2 ms<BR><LEFT><BOLD>Heart Rate 140 (bpm): 58.13 bpm<BR><LEFT><BOLD>Heart Rate 140 (Hz): 0.97 Hz<BR><LEFT><BOLD>Beat-to-beat Interval: 1.03 <BR><LEFT><BOLD>Signal-to-Noise Ratio (SNR): 1.25 dB<BR><LEFT><BOLD>Facial Topographical Age: 36.0 yrs<BR><LEFT><BOLD>Gender: 1.0 M/F<BR><LEFT><BOLD>Height (cm): 166.98 cm<BR><LEFT><BOLD>Weight (kg): 88.04 kg<BR><LEFT><BOLD>Waist Circumference: 81.24 cm<BR><LEFT><BOLD>Body Shape Index: 7.81 <BR><LEFT><BOLD>Waist-to-height Ratio: 45.13 %<BR><LEFT><BOLD>Systolic Blood Pressure: 129.48 mmHg<BR><LEFT><BOLD>Diastolic Blood Pressure: 75.97 mmHg<BR><LEFT><BOLD>Pulse Pressure: 59.4 mmHg<BR><LEFT><BOLD>Mean Arterial Pressure: 93.81 mmHg<BR><LEFT><BOLD>Stroke Risk: 0.44 %<BR><LEFT><BOLD>Heart Attack Risk: 0.01 %<BR><LEFT><BOLD>Cardiovascular Disease Risk: 0.33 %<BR><LEFT><BOLD>Cardiac Workload: 3.9 dB<BR><LEFT><BOLD>Vascular Capacity: 1.55 seconds<BR><LEFT><BOLD>Breathing Rate (bpm): 10.95 bpm<BR><LEFT><BOLD>Breathing Rate (Hz): 0.18 Hz<BR><LEFT><BOLD>Irregular Heartbeats: 0.0 <BR><LEFT><BOLD>Calculated Body Mass Index: 21.6 kg/m²<BR><CUT>'
+        return render(request,'testnfc.html', {'show_arrow': True, 'print_command': print_command})
 
 class VideoSelecting(APIView):
     """[summary]
