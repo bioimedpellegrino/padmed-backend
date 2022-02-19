@@ -18,6 +18,7 @@ class DeepAffexPoint(models.Model):
     signal_config = models.CharField(max_length=32, blank=True, null=True, choices=SIGNAL_CONFIG, default="")
     signal_unit = models.CharField(max_length=32, blank=True, null=True, default="")
     multiplier = models.FloatField(blank=True, null=True)
+    is_measure = models.BooleanField(default=True)
     
     def __str__(self):
         return self.signal_name
@@ -32,7 +33,6 @@ class DeepAffexPoint(models.Model):
             "multiplier": self.multiplier
         }
     
-    @property
     def compute_value(self, data):        
         value = round(mean(data)/self.multiplier, 2)
         return {

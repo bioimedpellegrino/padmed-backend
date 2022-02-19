@@ -4,6 +4,9 @@ from statistics import mean
 import cv2
 import numpy as np 
 import os
+from dfx.models import DeepAffexPoint
+from logger.utils import add_log
+
 
 def generate_video_measure(file_path, video_id):
     # Read video-blob
@@ -44,29 +47,37 @@ def unpack_result_deepaffex(deep_affex_result):
     result_unpacked["ID"] = deep_affex_result["ID"]
     result_unpacked["StatusID"] = deep_affex_result["StatusID"]
     result_unpacked["StudyID"] = deep_affex_result["StudyID"]
-    print("==================================")
-    print(deep_affex_result.keys())
+    # print("==================================")
+    # print(deep_affex_result.keys())
     # print("==================================")
     deep_affex_measures = deep_affex_result["Results"]
     # print("==================================")
-    print(deep_affex_result["Results"])
-    print("==================================")
+    # print(deep_affex_result["Results"])
+    # print("==================================")
     
-    # Important value HB_BPM, SNR
-    hb = deep_affex_measures["HR_BPM"]
-    snr = deep_affex_measures["SNR"]
-    hb_value = round(mean([mean(hb_data['Data'])/hb_data['Multiplier'] for hb_data in hb]), 2)
-    snr_value = round(mean([mean(snr_data['Data'])/snr_data['Multiplier'] for snr_data in snr]), 2)
-    result_unpacked["measure"] = {
-        "HB_BPM": {
-                "value": hb_value,
-                "unit": deep_affex_result["SignalUnits"]["HR_BPM"]
-                },
-        "SNR": {
-                "value": snr_value,
-                "unit": deep_affex_result["SignalUnits"]["SNR"]
-        }
-    }
+    # GENERATE MEASURE
+    deep_affex_points = DeepAffexPoint.objects.filter(is_measure=True)
+    for deep_affex_point in deep_affex_points:
+        try:
+            raw_data = deep_affex_measures[deep_affex_point.signal_key]
+            result_unpacked["measure"][deep_affex_point.signal_key] = deep_affex_point.compute_value(raw_data[0]['Data'])
+        except Exception as e:
+            add_log(level=5, message=5, custom_message='Error UNPACK MEASURE: %s' % e)
+        
+    # hb = deep_affex_measures["HR_BPM"]
+    # snr = deep_affex_measures["SNR"]
+    # hb_value = round(mean([mean(hb_data['Data'])/hb_data['Multiplier'] for hb_data in hb]), 2)
+    # snr_value = round(mean([mean(snr_data['Data'])/snr_data['Multiplier'] for snr_data in snr]), 2)
+    # result_unpacked["measure"] = {
+    #     "HB_BPM": {
+    #             "value": hb_value,
+    #             "unit": deep_affex_result["SignalUnits"]["HR_BPM"]
+    #             },
+    #     "SNR": {
+    #             "value": snr_value,
+    #             "unit": deep_affex_result["SignalUnits"]["SNR"]
+    #     }
+    # }
     
     return result_unpacked
 
