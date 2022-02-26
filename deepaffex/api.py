@@ -247,7 +247,7 @@ async def make_measure(config, config_path, video_path, demographics=None, start
                                     1,
                                     imreader.width,
                                     imreader.height,
-                                    use_analyser=args.analyser)
+                                    use_analyser=settings.USE_VISAGE_ANALYZER)
         else:
             tracker = DlibTracker()
 
