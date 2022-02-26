@@ -15,6 +15,7 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework import status
 
 from codicefiscale import codicefiscale
+from app.decorators import totem_login_required
 from deepaffex.api import register_device, login, get_studies_by_id, get_studies_list, select_study, get_measurements_list, get_measurement, retrieve_sdk_config, make_measure #async
 from deepaffex.utils import save_config, load_config
 import asyncio
@@ -49,7 +50,7 @@ class ReceptionsView(APIView):
     """
     TEMPLATE_NAME = 'receptions-access.html'
     
-    @method_decorator(login_required(login_url="/login/"))
+    @method_decorator(totem_login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
         
         form = PatientForm()
@@ -57,7 +58,7 @@ class ReceptionsView(APIView):
         use_card_reader = settings.USE_CARD_READER
         return render(request, self.TEMPLATE_NAME, {'form': form, 'user': user,'use_card_reader':use_card_reader})
     
-    @method_decorator(login_required(login_url="/login/"))
+    @method_decorator(totem_login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
         user = AppUser.get_or_create_from_parent(request.user)
         totem = user.totem_logged
@@ -106,7 +107,7 @@ class ReceptionsReasonsView(APIView):
     
     TEMPLATE_NAME = 'receptions-accessreason.html'
     
-    @method_decorator(login_required(login_url="/login/"))
+    @method_decorator(totem_login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
         user = AppUser.get_or_create_from_parent(request.user)
         access_id = int(kwargs.get('access_id', None))
@@ -116,7 +117,7 @@ class ReceptionsReasonsView(APIView):
 
         return render(request, self.TEMPLATE_NAME, {'access_id': access_id, 'reasons': reasons, 'user': user})
     
-    @method_decorator(login_required(login_url="/login/"))
+    @method_decorator(totem_login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
         
         access_id = kwargs.get('access_id', None)
@@ -138,7 +139,7 @@ class RecordVideoView(APIView):
     """
     TEMPLATE_NAME = "receptions-videomeasuring.html"
     
-    @method_decorator(login_required(login_url="/login/"))
+    @method_decorator(totem_login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
         user = AppUser.get_or_create_from_parent(request.user)
         access_id = kwargs.get('access_id', None)
@@ -147,7 +148,7 @@ class RecordVideoView(APIView):
         return render(request, self.TEMPLATE_NAME, {'access_id': access_id, 'user': user,"ROTATE_90_COUNTERCLOCKWISE":ROTATE_90_COUNTERCLOCKWISE})
     
     parser_classes = (MultiPartParser,)
-    @method_decorator(login_required(login_url="/login/"))
+    @method_decorator(totem_login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
 
         video = request.FILES['video']
@@ -191,7 +192,7 @@ class PatientResults(APIView):
     Args:
         ApiView ([type]): [description]
     """
-    @method_decorator(login_required(login_url="/login/"))
+    @method_decorator(totem_login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
         
         user = AppUser.get_or_create_from_parent(request.user)
@@ -218,7 +219,7 @@ class VideoSelecting(APIView):
     Args:
         APIView ([type]): [description]
     """
-    @method_decorator(login_required(login_url="/login/"))
+    @method_decorator(totem_login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
 
         return render(request,'videoselecting.html')
@@ -229,14 +230,14 @@ class UserConditions(APIView):
     Args:
         APIView ([type]): [description]
     """
-    @method_decorator(login_required(login_url="/login/"))
+    @method_decorator(totem_login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
         
         user = AppUser.get_or_create_from_parent(request.user)
         
         return render(request,'receptions-conditions.html', {'user': user}) # receptions-conditions.html
     
-    @method_decorator(login_required(login_url="/login/"))
+    @method_decorator(totem_login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
         
         user = AppUser.get_or_create_from_parent(request.user)
