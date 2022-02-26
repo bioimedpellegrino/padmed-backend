@@ -20,6 +20,10 @@ python -m pip install --upgrade wheel cmake
 
 pip install dfxapi/lib/libdfx-4.9.3.0-py3-none-linux_x86_64.whl
 
+# Installation of Visage #
+pip install <path_to_wheel>
+export LD_LIBRARY_PATH=venv3/lib64/python3.8/site-packages/libvisage/lib
+
 
 # ENV
 
