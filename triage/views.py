@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -30,6 +30,12 @@ from .models import Hospital, Patient, TriageCode, TriageAccessReason, TriageAcc
     PatientVideo, PatientMeasureResult, MeasureLogger, Totem
 from .utils import generate_video_measure, unpack_result_deepaffex, print_command_measure
 
+class RedirectView(View):
+    def get(self, request, *args, **kwargs):
+        url_name = kwargs["url_name"]
+        url_kwargs = kwargs.get("url_kwargs",{})
+        return redirect(reverse(url_name,kwargs=url_kwargs))
+    
 class TestDFXApiView(APIView):
     """[summary]
 
@@ -243,3 +249,5 @@ class UserConditions(APIView):
         user = AppUser.get_or_create_from_parent(request.user)
         
         return HttpResponseRedirect(reverse('receptions'))
+
+    

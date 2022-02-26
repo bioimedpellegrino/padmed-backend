@@ -22,6 +22,12 @@ from app.models import AppUser
 
 # from django.http import Http404
 
+class RedirectView(View):
+    def get(self, request, *args, **kwargs):
+        url_name = kwargs["url_name"]
+        url_kwargs = kwargs.get("url_kwargs",{})
+        return redirect(reverse(url_name,kwargs=url_kwargs))
+    
 class LiveView(View):
     
     template_name = 'live_dash.html'

@@ -5,6 +5,7 @@ from .views import *
 urlpatterns=[
     
     ## Dashboard ## 
+    path('', RedirectView.as_view(), name='dashboards_first_page',kwargs={"url_name":"live_dash"}),
     path('live', LiveView.as_view(), name='live_dash'),
     path('access/<int:id>', AccessView.as_view(), name='access'),
     path('storico', StoricoView.as_view(), name='storico_dash'),
