@@ -15,18 +15,6 @@ cd -P -- "$(dirname -- "$0")"
 
 set -o allexport
 
-# if [ -f /etc/bilimetrix/bilimetrix.env ]
-# then
-#     source /etc/bilimetrix/bilimetrix.env
-# fi
-# if [ -f ~/.bilimetrix.env ]
-# then
-#     source ~/.bilimetrix.env
-# fi
-# if [ -f .bilimetrix.env ]
-# then
-#     source .bilimetrix.env
-# fi
 if [ -f /etc/padmed/padmed.env ]
 then
     source /etc/padmed/padmed.env
@@ -47,11 +35,8 @@ if [ -f .env ]
 then
     source .env
 fi
-# if [ -f ${BILIMETRIX_CONF_ENV_LAST_RESORT:-""} ]
-# then
-#     source ${BILIMETRIX_CONF_ENV_LAST_RESORT}
-# fi
 
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 
 set +o allexport
 make $@
