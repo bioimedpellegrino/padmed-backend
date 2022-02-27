@@ -18,13 +18,10 @@ from codicefiscale import codicefiscale
 from app.decorators import totem_login_required
 from deepaffex.api import register_device, login, get_studies_by_id, get_studies_list, select_study, get_measurements_list, get_measurement, retrieve_sdk_config, make_measure #async
 from deepaffex.utils import save_config, load_config
-import asyncio
-import datetime
-import os
-import json
-import time
+import asyncio, datetime, os, json, time, traceback
 
 from app.models import AppUser
+from logger.utils import add_log
 from .forms import PatientForm
 from .models import Hospital, Patient, TriageCode, TriageAccessReason, TriageAccess, \
     PatientVideo, PatientMeasureResult, MeasureLogger, Totem
@@ -159,48 +156,53 @@ class RecordVideoView(APIView):
     parser_classes = (MultiPartParser,)
     @method_decorator(totem_login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
-        video = request.FILES['video']
-        access_id = kwargs.get('access_id')
-        triage_access = TriageAccess.objects.get(pk=access_id)
+        try:
+            video = request.FILES['video']
+            access_id = kwargs.get('access_id')
+            triage_access = TriageAccess.objects.get(pk=access_id)
 
-        triage_access.status_tracker.status = triage_access.status_tracker.saving_video
-        
-        file_path = default_storage.save('tmp/' + "{}.webm".format(access_id), video)
+            triage_access.status_tracker.status = triage_access.status_tracker.saving_video
+            
+            file_path = default_storage.save('tmp/' + "{}.webm".format(access_id), video)
 
-        video = generate_video_measure(file_path, access_id)
-        
-        patient_video = PatientVideo()
-        patient_video.triage_access = triage_access
-        patient_video.video = video
-        patient_video.save()
-        #Make the measure
-        video_path = os.path.join(settings.MEDIA_ROOT, video)
-        triage_access.status_tracker.status = triage_access.status_tracker.loading_configurations
-        config_path = os.path.join(settings.CORE_DIR, "config.json")
-        config = load_config(config_path)
-        measurement_id, logs = asyncio.run(make_measure(config=config, config_path=config_path, video_path=video_path, start_time=settings.START_TIME, end_time=settings.END_TIME,access_tracker=triage_access.status_tracker))
-        # Logger
-        triage_access.status_tracker.status = triage_access.status_tracker.saving_logs
-        log = MeasureLogger()
-        log.triage_access = triage_access
-        log.log = json.dumps(logs)
-        log.save()
-        # Save results
-        p_measure_result = PatientMeasureResult()
-        p_measure_result.patient_video = patient_video
-        p_measure_result.measurement_id = measurement_id
-        # Retrive comprehensive measurement informations
-        time.sleep(2)
-        triage_access.status_tracker.status = triage_access.status_tracker.receiving_results
-        result = asyncio.run(get_measurement(config=config, measurement_id=measurement_id))
-        p_measure_result.result = result
-        p_measure_result.save()
-        triage_access.status_tracker.status = triage_access.status_tracker.unpack_results
-        p_measure_result.measure_short = unpack_result_deepaffex(result)
-        p_measure_result.save()
-        triage_access.status_tracker.status = triage_access.status_tracker.printing_results
-        
-        return Response({'p_measure_result': p_measure_result.pk }, status=status.HTTP_200_OK)
+            video = generate_video_measure(file_path, access_id)
+            
+            patient_video = PatientVideo()
+            patient_video.triage_access = triage_access
+            patient_video.video = video
+            patient_video.save()
+            #Make the measure
+            video_path = os.path.join(settings.MEDIA_ROOT, video)
+            triage_access.status_tracker.status = triage_access.status_tracker.loading_configurations
+            config_path = os.path.join(settings.CORE_DIR, "config.json")
+            config = load_config(config_path)
+            measurement_id, logs = asyncio.run(make_measure(config=config, config_path=config_path, video_path=video_path, start_time=settings.START_TIME, end_time=settings.END_TIME,access_tracker=triage_access.status_tracker))
+            # Logger
+            triage_access.status_tracker.status = triage_access.status_tracker.saving_logs
+            log = MeasureLogger()
+            log.triage_access = triage_access
+            log.log = json.dumps(logs)
+            log.save()
+            # Save results
+            p_measure_result = PatientMeasureResult()
+            p_measure_result.patient_video = patient_video
+            p_measure_result.measurement_id = measurement_id
+            # Retrive comprehensive measurement informations
+            time.sleep(2)
+            triage_access.status_tracker.status = triage_access.status_tracker.receiving_results
+            result = asyncio.run(get_measurement(config=config, measurement_id=measurement_id))
+            p_measure_result.result = result
+            p_measure_result.save()
+            triage_access.status_tracker.status = triage_access.status_tracker.unpack_results
+            p_measure_result.measure_short = unpack_result_deepaffex(result)
+            p_measure_result.save()
+            triage_access.status_tracker.status = triage_access.status_tracker.printing_results
+            
+            return Response({'p_measure_result': p_measure_result.pk, 'success':True, 'error': None }, status=status.HTTP_200_OK)
+        except Exception as e:
+            message= "An exception occurred during video elaboration in RecordVideoView"
+            add_log(level=5, message=1, exception=traceback.format_exc(), custom_message=message, request=request)
+            return Response({'p_measure_result': None, 'success':False, 'error': str(e) }, status=status.HTTP_200_OK)
     
 class PatientResults(APIView):
     """
@@ -216,6 +218,18 @@ class PatientResults(APIView):
         today_date = datetime.datetime.today().strftime('%Y-%m-%d')
         print_command = print_command_measure(measure, today_date)
         return render(request,'receptions-results.html', {'measure': measure, 'date': today_date, 'user': user, 'print_command': print_command, 'show_arrow': True})
+    
+class PatientResultsError(APIView):
+    """
+    Args:
+        ApiView ([type]): [description]
+    """
+    @method_decorator(totem_login_required(login_url="/login/"))
+    def post(self, request, *args, **kwargs):
+        
+        user = AppUser.get_or_create_from_parent(request.user)
+        error = PatientMeasureResult.objects.get(pk=int(request.POST.get('error')))
+        return render(request,'receptions-results-error.html', {'error': error, 'user': user})
 
 class TestNFC(APIView):
     """[summary]

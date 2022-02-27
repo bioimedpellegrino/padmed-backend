@@ -15,7 +15,7 @@
             <div class="com-triangle-left"></div>
         </div>
         <div class="col-md-6">
-            <span><b>RITIRA I TUOI RISULTATI!</b></span>
+            <span><b>UN ERRORE HA INTERROTTO LA MISURA</b></span>
         </div>
         <div class="col-md-1">
             <div class="com-triangle-right"></div>
@@ -33,14 +33,14 @@
     <div class="row">
       <div class="col-md-4"></div>
       <div class="col-md-4" style="text-align:center;">
-        <h3>I TUOI RISULTATI VERRANNO STAMPATI A BREVE</h3>
+        <h3>CONTATTARE L'ASSISTENZA O CLICCARE SULLO SMILE PER RIPETERE L'ACCESSO</h3>
       </div>
       <div class="col-md-4"></div>
     </div>
     <div class="row">
       <div class="col-md-4"></div>
       <div class="col-md-4" style="text-align:center;">
-        <h1>GRAZIE!</h1>
+        <h1>CI SCUSIAMO PER L'INCONVENIENTE!</h1>
       </div>
       <div class="col-md-4"></div>
     </div>
@@ -65,19 +65,6 @@
 {% block javascripts %}
 
 <script>
-  function sendToQuickPrinterChrome(){
-    var commandsToPrint =  '{{print_command}}';
-    commandsToPrint = commandsToPrint.replaceAll("&lt;", "<");
-    commandsToPrint = commandsToPrint.replaceAll("&gt;", ">");
-    var textEncoded = encodeURI(commandsToPrint);
-    window.location.href="intent://"+textEncoded+"#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;";
-  }
-
-  function sendHome(){
-    location.href="{% url 'user_conditions' %}";
-  }
-
- const printerTimeout = setTimeout(sendToQuickPrinterChrome, 7000);
 
 </script>
 

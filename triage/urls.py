@@ -11,6 +11,7 @@ urlpatterns=[
     path('accessreason/<int:access_id>', ReceptionsReasonsView.as_view(), name='accessreason'),
     path('recordvideo/<int:access_id>/', RecordVideoView.as_view(), name='record_video'),
     path('patientresults/', PatientResults.as_view(), name='patient_results'),
+    path('patientresults_error/', PatientResultsError.as_view(), name='patient_results_error'),
     
     #NFC and test Pages
     path('testnfc/', TestNFC.as_view(), name='test'),

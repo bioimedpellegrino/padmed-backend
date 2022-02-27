@@ -215,24 +215,40 @@
 
                 xhr.onreadystatechange = function() {
                   if (xhr.readyState === 4) {
-                    p_measure_result = eval('('+xhr.response+')' );
-                    if(p_measure_result){
-                      const form = document.createElement('form');
-                      form.method = "post";
-                      form.action = "{% url 'patient_results' %}";
-                      const csfrtoken = document.createElement('input');
-                      csfrtoken.name = "csrfmiddlewaretoken";
-                      csfrtoken.type = "hidden";
-                      csfrtoken.value = getCookie('csrftoken');
-                      form.appendChild(csfrtoken);
-                      const hiddenField = document.createElement('input');
-                      hiddenField.type = 'hidden';
-                      hiddenField.name = 'p_measure_result';
-                      hiddenField.value = p_measure_result['p_measure_result'];
-                      form.appendChild(hiddenField);
-                      document.body.appendChild(form);
-                      form.submit();
+                    response = eval('('+xhr.response+')' );
+                    console.log("response",response);
+                    if(response){
+                      if(response.success){
+                        var success = true;
+                      } else {
+                        var success = false;
+                        var error = response['error'];
+                      }
+                    } else {
+                      var success = false;
+                      var error = "no_response";
                     }
+                    const form = document.createElement('form');
+                    form.method = "post";
+                    const csfrtoken = document.createElement('input');
+                    csfrtoken.name = "csrfmiddlewaretoken";
+                    csfrtoken.type = "hidden";
+                    csfrtoken.value = getCookie('csrftoken');
+                    form.appendChild(csfrtoken);
+                    const hiddenField = document.createElement('input');
+                    hiddenField.type = 'hidden';
+                    if (success){
+                      form.action = "{% url 'patient_results' %}";
+                      hiddenField.name = 'p_measure_result';
+                      hiddenField.value = response['p_measure_result'];
+                    } else {
+                      form.action = "{% url 'patient_results_error' %}";
+                      hiddenField.name = 'error';
+                      hiddenField.value = error;
+                    }
+                    form.appendChild(hiddenField);
+                    document.body.appendChild(form);
+                    form.submit();
                   }
                 }
                 xhr.open("post", url, true);
@@ -273,11 +289,11 @@
         ajax_progress_text_changes();
       }, 500);
     }
+
     var last_status = ""
     var steps = 0
     var old_text = ""
-    function ajax_progress_text_changes(){      
-
+    function ajax_progress_text_changes(){
       $.ajax({
         type: "GET",
         url: "{% url 'get_access_status' %}",
