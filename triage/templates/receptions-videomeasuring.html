@@ -31,13 +31,13 @@
         <div id="startButton" class="button"></div>
         <div class="com-area-out com-area-out-video"> <!--rot-90-->
           {% if ROTATE_90_COUNTERCLOCKWISE %}
-            <video id="preview" class="rot-270" width="720" autoplay muted></video>
+            <video id="preview" class="rot-270" width="500" autoplay muted></video>
           {% else %}
-            <video id="preview" width="720" autoplay muted></video>
+            <video id="preview" width="500" autoplay muted></video>
           {% endif %}
           <div style="display:none">
             <div id="stopButton" class="button"></div>
-            <video id="recording" width="720" height="720" controls></video>
+            <video id="recording" width="500" height="500" controls></video>
           </div>
 
         </div>
@@ -166,9 +166,9 @@
           navigator.mediaDevices.getUserMedia({
               video: {
                   deviceId: { exact: devId },
-                  height: { min: 720, max: 720 },
-                  width: { min: 720, max: 720 },
-                  frameRate: { min: 30, max: 30 },
+                  height: { min: 500, max: 500 },
+                  width: { min: 500, max: 500 },
+                  frameRate: { min: 24, max: 24 },
                 },
               audio: false
         }).then(stream => {
