@@ -64,7 +64,7 @@
     let stopButton = document.getElementById("stopButton");
     let logElement = document.getElementById("log");
 
-    let recordingTimeMS = 35000;
+    let recordingTimeMS = 45000;
     let p_measure_result;
 
 
@@ -145,7 +145,7 @@
 
     function doMeasure(){
       startButton.click();
-      let stop = setTimeout(stopMeasure, 40000);
+      let stop = setTimeout(stopMeasure, 50000);
     }
 
     function sendData(data, access_id) {
