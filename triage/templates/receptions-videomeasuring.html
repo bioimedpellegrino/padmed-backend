@@ -31,13 +31,13 @@
         <div id="startButton" class="button"></div>
         <div class="com-area-out com-area-out-video"> <!--rot-90-->
           {% if ROTATE_90_COUNTERCLOCKWISE %}
-            <video id="preview" class="rot-270" width="800" autoplay muted></video>
+            <video id="preview" class="rot-270" width="500" autoplay muted></video>
           {% else %}
-            <video id="preview" width="800" autoplay muted></video>
+            <video id="preview" width="500" autoplay muted></video>
           {% endif %}
           <div style="display:none">
             <div id="stopButton" class="button"></div>
-            <video id="recording" width="800" height="800" controls></video>
+            <video id="recording" width="500" height="500" controls></video>
           </div>
 
         </div>
@@ -64,7 +64,7 @@
     let stopButton = document.getElementById("stopButton");
     let logElement = document.getElementById("log");
 
-    let recordingTimeMS = 40000;
+    let recordingTimeMS = 35000;
     let p_measure_result;
 
 
@@ -145,7 +145,7 @@
 
     function doMeasure(){
       startButton.click();
-      let stop = setTimeout(stopMeasure, 45000);
+      let stop = setTimeout(stopMeasure, 40000);
     }
 
     function sendData(data, access_id) {
@@ -166,9 +166,9 @@
           navigator.mediaDevices.getUserMedia({
               video: {
                   deviceId: { exact: devId },
-                  height: { min: 720, max: 1280 },
-                  width: { min: 1080, max: 1920 },
-                  frameRate: { min: 15, ideal: 24, max: 30 },
+                  height: { min: 500, max: 500 },
+                  width: { min: 500, max: 500 },
+                  frameRate: { min: 24, max: 24 },
                 },
               audio: false
         }).then(stream => {

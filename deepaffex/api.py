@@ -216,7 +216,7 @@ async def retrieve_sdk_config(config, config_file, sdk_id):
 
         return base64.standard_b64decode(config["study_cfg_data"])
     
-async def make_measure(config, config_path, video_path, demographics=None, start_time=0, end_time=35, rotation=None, fps=None, debug_study_cfg_file=None, profile_id="", partner_id=""):
+async def make_measure(config, config_path, video_path, demographics=None, start_time=0, end_time=30, rotation=None, fps=None, debug_study_cfg_file=None, profile_id="", partner_id=""):
     
     token = dfxapi.Settings.user_token if dfxapi.Settings.user_token else dfxapi.Settings.device_token
     headers = {"Authorization": f"Bearer {token}"}
@@ -232,15 +232,7 @@ async def make_measure(config, config_path, video_path, demographics=None, start
             with open(demographics, "r") as f:
                 app.demographics = json.load(f)
         if not demographics:
-            app.demographics = {
-                "gender": "male",
-                "age": 32,
-                "height": 180,
-                "weight": 70,
-                "smoking": 0,
-                "diabetes": 0,
-                "bloodpressuremedication": 0
-            }
+            app.demographics = {}
         # Create a face tracker
         if settings.FACE_TRACKER == 'VISAGE':
             tracker = VisageTracker(settings.VISAGE_LICENSE,
