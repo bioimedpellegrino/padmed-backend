@@ -194,15 +194,31 @@ class RecordVideoView(APIView):
             p_measure_result.result = result
             p_measure_result.save()
             triage_access.status_tracker.status = triage_access.status_tracker.unpack_results
-            p_measure_result.measure_short = unpack_result_deepaffex(result)
+            try:
+                p_measure_result.measure_short = unpack_result_deepaffex(result)
+            except KeyError as ke:
+                return Response({
+                    'p_measure_result': p_measure_result.pk, 
+                    'success':False, 
+                    'error': 'Chiave mancante: %s'%str(ke) 
+                    }, status=status.HTTP_200_OK)
+            
             p_measure_result.save()
             triage_access.status_tracker.status = triage_access.status_tracker.printing_results
             
-            return Response({'p_measure_result': p_measure_result.pk, 'success':True, 'error': None }, status=status.HTTP_200_OK)
+            return Response({
+                'p_measure_result': p_measure_result.pk, 
+                'success':True, 
+                'error': None }, status=status.HTTP_200_OK)
         except Exception as e:
             message= "An exception occurred during video elaboration in RecordVideoView"
+            traceback.print_exc()
             add_log(level=5, message=1, exception=traceback.format_exc(), custom_message=message, request=request)
-            return Response({'p_measure_result': None, 'success':False, 'error': str(e) }, status=status.HTTP_200_OK)
+            return Response({
+                'p_measure_result': p_measure_result.pk, 
+                'success':False, 
+                'error': "Errore generico di tipo %s: %s"%(e.__class__.__name__,str(e)) 
+                }, status=status.HTTP_200_OK)
     
 class PatientResults(APIView):
     """
@@ -228,8 +244,10 @@ class PatientResultsError(APIView):
     def post(self, request, *args, **kwargs):
         
         user = AppUser.get_or_create_from_parent(request.user)
+        patient_result = PatientMeasureResult.objects.get(pk=int(request.POST.get('p_measure_result')))
+        access_id = patient_result.patient_video.triage_access.id
         error = PatientMeasureResult.objects.get(pk=int(request.POST.get('error')))
-        return render(request,'receptions-results-error.html', {'error': error, 'user': user})
+        return render(request,'receptions-results-error.html', {'error': error, 'user': user,'access_id':access_id})
 
 class TestNFC(APIView):
     """[summary]

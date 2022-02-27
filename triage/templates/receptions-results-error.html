@@ -28,12 +28,14 @@
   <div class="com-area">
     <div class="com-area-triangle"></div>
     <div class="com-area-out" style="text-align:center;">
-      <img src="/static/assets/img/triage/Print.png">
+      <p class="normal-text">
+        {{error}}
+      </p>
     </div>
     <div class="row">
       <div class="col-md-4"></div>
       <div class="col-md-4" style="text-align:center;">
-        <h3>CONTATTARE L'ASSISTENZA O CLICCARE SULLO SMILE PER RIPETERE L'ACCESSO</h3>
+        <h3>CONTATTARE L'ASSISTENZA O CLICCARE SULLO SMILE PER RIPETERLA</h3>
       </div>
       <div class="col-md-4"></div>
     </div>
@@ -47,16 +49,11 @@
     <div class="row">
       <div class="col-md-4"></div>
       <div class="col-md-4" style="text-align:center;">
-        <img src="/static/assets/img/triage/smile.png" onclick="sendHome()">
+        <img src="/static/assets/img/triage/smile.png" onclick="sendVideoMeasuring()">
       </div>
       <div class="col-md-4"></div>
     </div>
   </div>
-  {% if show_arrow %}
-  <div class="row full-bottom-left">
-      <img src="/static/assets/img/triage/arrow90.png" onclick="sendToQuickPrinterChrome();">
-    </div>
-  {% endif %}
 
 <!-- Main communication div -->
 {% endblock content %}
@@ -66,6 +63,10 @@
 
 <script>
 
+  function sendVideoMeasuring(){
+    location.href="{% url 'record_video' access_id=access_id %}";
+  }
+  
 </script>
 
 {% endblock javascripts %}

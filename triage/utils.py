@@ -1,4 +1,5 @@
 
+import traceback
 from django.conf import settings
 from statistics import mean
 import cv2
@@ -39,22 +40,72 @@ def generate_video_measure(file_path, video_id):
         
     return video_name
 
+def test_dictionary_keys(dictionary,necessary_keys,non_necessary_keys):
+        
+    errors = []
+    warnings = []
+    
+    for key_tuples,advices in [(necessary_keys,errors),(non_necessary_keys,warnings)]:
+        for key_tuple in key_tuples:
+            for key in key_tuple:
+                analyzing = key_tuple[:key_tuple.index(key)+1]
+                if analyzing in advices:
+                    break
+                try:
+                    if key_tuple.index(key)==0:
+                        slice_dict = dictionary[key]
+                    else:
+                        slice_dict = slice_dict[key]
+                except KeyError:   
+                    advices.append(analyzing)
+                    break
+    if errors:
+        success = False
+    else:
+        success = True
+    return success, warnings, errors
+
+def test_result_deepaffex(deep_affex_result):
+    necessary_keys = [
+        ("Created",),
+        ("Updated",),
+        ("ID",),
+        ("StatusID",),
+        ("StudyID",),
+    ]
+    non_necessary_keys = [
+        ("Results",),
+    ]
+    expected_points = DeepAffexPoint.objects.filter(is_measure=True)
+    for expected_point in expected_points:
+        non_necessary_keys.append(("Result",expected_point.signal_key,))
+        non_necessary_keys.append(("Result",expected_point.signal_key,0,))
+        non_necessary_keys.append(("Result",expected_point.signal_key,0,"Data",))
+    
+    return test_dictionary_keys(deep_affex_result,necessary_keys,non_necessary_keys)
+
 def unpack_result_deepaffex(deep_affex_result):
     
     result_unpacked = {}
-    result_unpacked["Created"] = deep_affex_result["Created"]
-    result_unpacked["Updated"] = deep_affex_result["Updated"]
-    result_unpacked["ID"] = deep_affex_result["ID"]
-    result_unpacked["StatusID"] = deep_affex_result["StatusID"]
-    result_unpacked["StudyID"] = deep_affex_result["StudyID"]
     result_unpacked["measure"] = {}
-    # print("==================================")
-    # print(deep_affex_result.keys())
-    # print("==================================")
-    deep_affex_measures = deep_affex_result["Results"]
-    # print("==================================")
-    # print(deep_affex_result["Results"])
-    # print("==================================")
+    try:
+        result_unpacked["Created"] = deep_affex_result["Created"]
+        result_unpacked["Updated"] = deep_affex_result["Updated"]
+        result_unpacked["ID"] = deep_affex_result["ID"]
+        result_unpacked["StatusID"] = deep_affex_result["StatusID"]
+        result_unpacked["StudyID"] = deep_affex_result["StudyID"]
+        # print("==================================")
+        # print(deep_affex_result.keys())
+        # print("==================================")
+        deep_affex_measures = deep_affex_result["Results"]
+        # print("==================================")
+        # print(deep_affex_result["Results"])
+        # print("==================================")
+    except KeyError as ke:
+        traceback.print_exc()
+        message = "Key error at unpack_result_deepaffex. deep_affex_result:  %s"%deep_affex_result
+        add_log(level=5, message=1, exception=traceback.format_exc(), custom_message=message)
+        raise ke
     
     # GENERATE MEASURE
     deep_affex_points = DeepAffexPoint.objects.filter(is_measure=True)
@@ -62,8 +113,10 @@ def unpack_result_deepaffex(deep_affex_result):
         try:
             raw_data = deep_affex_measures[deep_affex_point.signal_key]
             result_unpacked["measure"][deep_affex_point.signal_key] = deep_affex_point.compute_value(raw_data[0]['Data'])
-        except Exception as e:
-            add_log(level=5, message=5, custom_message='Error UNPACK MEASURE: %s' % e)
+        except KeyError as ke:
+            traceback.print_exc()
+            message = "Key warning at unpack_result_deepaffex. Missing key: %s"%str(ke)
+            add_log(level=4, message=1, exception=traceback.format_exc(), custom_message=message)
         
     # hb = deep_affex_measures["HR_BPM"]
     # snr = deep_affex_measures["SNR"]
