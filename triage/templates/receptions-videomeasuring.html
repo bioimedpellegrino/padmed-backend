@@ -302,10 +302,9 @@
           setTimeout(function(){ajax_progress_text_changes();}, 1000);
         },
         error: function() {
-          alert( "Un errore ha impedito la comunicazione con il server. I dati non saranno aggiornati." );
+          alert( "Un errore ha impedito la comunicazione con il server. La barra di progresso non verrà aggiornata." );
         }
       });
-
     }
 
     function progress_text_changes(){
