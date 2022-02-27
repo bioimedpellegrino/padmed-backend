@@ -334,30 +334,8 @@
       width: 100%;
       border-radius:20px;
     }
-    #progressBar {
-      width: 90%;
-      margin: 10px auto;
-      height: 35px;
-      background-color: #00a99d;
-    }
-    #progressBar .bar {
-      height: 100%;
-      text-align: right;
-      padding: 0 10px;
-      line-height: 35px; /* same as #progressBar height if we want text middle aligned */
-      width: 0;
-      background-color: #CBEA00;
-      box-sizing: border-box;
-    }
-    #progressComplete {
-      display:none;
-      text-align: center;
-      margin: 10px auto;
-      padding: 0 10px;
-      height: 35px;
-    }
     /* ------------- */
-
+    
     /* Rotation */
     .mirror-rot-270 {
       transform: rotate3d(0, 0, 1, 270deg);
@@ -410,58 +388,7 @@
 
   <!-- Specific JS goes HERE -->
   <script>
-    // Progress bar
-    function progress(timeleft, timetotal, $element) {
-      var progressBarWidth = timeleft * $element.width() / timetotal;
-      $element.find('.bar').animate({ width: progressBarWidth }, 500).html(Math.floor(timeleft/60) + ":"+ timeleft%60);
-      if(timeleft > 0) {
-          setTimeout(function() {
-              progress(timeleft - 1, timetotal, $element);
-          }, 1000);
-      } else {
-        show_complete();
-      }
-    };
     
-    progress(40, 40, $('#progressBar'));
-
-    function show_complete() {
-      $('#progressBar').animate({ width: 0 }, 500);
-      setTimeout(function() {
-        $('#progressBar').hide();
-        $('#progressComplete').show();
-        progress_text_changes();
-      }, 500);
-      
-    }
-
-    function progress_text_changes(){
-      var text_list = [
-        ["Analisi dei dati in corso",1],
-        ["Analisi dei dati in corso.",1],
-        ["Analisi dei dati in corso..",1],
-        ["Analisi dei dati in corso...",2],
-        ["Estrazione dati flusso sanguigno",1],
-        ["Estrazione dati flusso sanguigno.",1],
-        ["Estrazione dati flusso sanguigno..",1],
-        ["Estrazione dati flusso sanguigno...",2],
-        ["Calcolo dei parametri biometrici",1],
-        ["Calcolo dei parametri biometrici.",1],
-        ["Calcolo dei parametri biometrici..",1],
-        ["Calcolo dei parametri biometrici...",1.5],
-        ["Preparazione formato di output",1],
-        ["Preparazione formato di output.",1],
-        ["Preparazione formato di output..",1],
-        ["Preparazione formato di output...",1],
-      ];
-      var progression = 0;
-      text_list.forEach(function (item, index) {
-        setTimeout(function() {
-          $('#progressComplete span').html(item[0]);
-        }, progression*1000);
-        progression += item[1]
-      });
-    }
   </script>
   {% block javascripts %}{% endblock javascripts %}
 

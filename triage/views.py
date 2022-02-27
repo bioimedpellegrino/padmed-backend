@@ -7,7 +7,7 @@ from django.core.files.storage import default_storage
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.views.generic import View
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -258,5 +258,30 @@ class UserConditions(APIView):
         user = AppUser.get_or_create_from_parent(request.user)
         
         return HttpResponseRedirect(reverse('receptions'))
+    
+### AJAX GET VIEWS ###
+
+class GetAccessStatusView(APIView):
+    
+    ACCESS_STATUS = {
+        "created":"Accesso registrato",
+        "recording_video":"Registrazione del video",
+        "saving_video":"Salvataggio del video",
+        "loading_configurations":"Caricamento configurazioni",
+        "initializing_dfx":"Inizializzazione strumenti di analisi",
+        "data_preelaborations":"Pre-elaborazione del video",
+        "saving_logs":"Salvataggio dei log",
+        "receiving_results":"Ricezione risultati",
+        "unpack_results":"Lettura risultati",
+        "printing_results":"Stampa risultati",
+    }
+    
+    @method_decorator(totem_login_required(login_url="/login/"))
+    def get(self, request, *args, **kwargs):
+        access_id = request.GET.get('access_id', None)
+        access = get_object_or_404(TriageAccess,pk=access_id)
+        status = access.status_tracker.status
+        fe_status = self.ACCESS_STATUS[status]
+        return JsonResponse({"status":fe_status})
 
     

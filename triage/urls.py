@@ -17,5 +17,8 @@ urlpatterns=[
     path('videoselecting/', VideoSelecting.as_view(), name='videoselecting'),
     # DFXAPI
     path('testdfxapi/', TestDFXApiView.as_view(), name='test_dfx_api'),
+    
+    ## AJAX GET
+    path('get_access_status/', GetAccessStatusView.as_view(), name='get_access_status'),
 
 ]
