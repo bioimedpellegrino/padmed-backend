@@ -96,7 +96,9 @@ class ReceptionsView(APIView):
             access.hospital = hospital
             access.totem = totem
             access.access_date = datetime.datetime.now()
+            access.status_tracker.status = access.status_tracker.created
             access.save()
+            
             return HttpResponseRedirect(reverse('accessreason',kwargs={"access_id":access.id}))
         else:
             print("Errors",form.errors)
@@ -151,16 +153,18 @@ class RecordVideoView(APIView):
         access_id = kwargs.get('access_id', None)
         access = get_object_or_404(TriageAccess,pk=access_id)
         ROTATE_90_COUNTERCLOCKWISE = settings.ROTATE_90_COUNTERCLOCKWISE
+        access.status_tracker.status = access.status_tracker.recording_video
         return render(request, self.TEMPLATE_NAME, {'access_id': access_id, 'user': user,"ROTATE_90_COUNTERCLOCKWISE":ROTATE_90_COUNTERCLOCKWISE})
     
     parser_classes = (MultiPartParser,)
     @method_decorator(totem_login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
-
         video = request.FILES['video']
         access_id = kwargs.get('access_id')
         triage_access = TriageAccess.objects.get(pk=access_id)
 
+        triage_access.status_tracker.status = triage_access.status_tracker.saving_video
+        
         file_path = default_storage.save('tmp/' + "{}.webm".format(access_id), video)
 
         video = generate_video_measure(file_path, access_id)
@@ -171,10 +175,12 @@ class RecordVideoView(APIView):
         patient_video.save()
         #Make the measure
         video_path = os.path.join(settings.MEDIA_ROOT, video)
+        triage_access.status_tracker.status = triage_access.status_tracker.loading_configurations
         config_path = os.path.join(settings.CORE_DIR, "config.json")
         config = load_config(config_path)
-        measurement_id, logs = asyncio.run(make_measure(config=config, config_path=config_path, video_path=video_path, start_time=settings.START_TIME, end_time=settings.END_TIME))
+        measurement_id, logs = asyncio.run(make_measure(config=config, config_path=config_path, video_path=video_path, start_time=settings.START_TIME, end_time=settings.END_TIME,access_tracker=triage_access.status_tracker))
         # Logger
+        triage_access.status_tracker.status = triage_access.status_tracker.saving_logs
         log = MeasureLogger()
         log.triage_access = triage_access
         log.log = json.dumps(logs)
@@ -185,11 +191,14 @@ class RecordVideoView(APIView):
         p_measure_result.measurement_id = measurement_id
         # Retrive comprehensive measurement informations
         time.sleep(2)
+        triage_access.status_tracker.status = triage_access.status_tracker.receiving_results
         result = asyncio.run(get_measurement(config=config, measurement_id=measurement_id))
         p_measure_result.result = result
         p_measure_result.save()
+        triage_access.status_tracker.status = triage_access.status_tracker.unpack_results
         p_measure_result.measure_short = unpack_result_deepaffex(result)
         p_measure_result.save()
+        triage_access.status_tracker.status = triage_access.status_tracker.printing_results
         
         return Response({'p_measure_result': p_measure_result.pk }, status=status.HTTP_200_OK)
     

@@ -216,8 +216,9 @@ async def retrieve_sdk_config(config, config_file, sdk_id):
 
         return base64.standard_b64decode(config["study_cfg_data"])
     
-async def make_measure(config, config_path, video_path, demographics=None, start_time=0, end_time=30, rotation=None, fps=None, debug_study_cfg_file=None, profile_id="", partner_id=""):
+async def make_measure(config, config_path, video_path, demographics=None, start_time=0, end_time=30, rotation=None, fps=None, debug_study_cfg_file=None, profile_id="", partner_id="",access_tracker=None):
     
+    access_tracker.status = access_tracker.initializing_dfx
     token = dfxapi.Settings.user_token if dfxapi.Settings.user_token else dfxapi.Settings.device_token
     headers = {"Authorization": f"Bearer {token}"}
     # Prepare to make a measurement..
@@ -326,14 +327,13 @@ async def make_measure(config, config_path, video_path, demographics=None, start
             
             # Null render -> face tracker
             renderer = NullRenderer()
-            
             produce_chunks_coro = extract_from_imgs(
                     chunk_queue,  # Chunks will be put into this queue
                     imreader,  # Image reader
                     tracker,  # Face tracker
                     collector,  # DFX SDK collector needed to create chunks
                     renderer,  # Rendering
-                    app)  # App
+                    app) # App  
 
             # Coroutine to get chunks from chunk_queue and send chunk using WebSocket
             async def send_chunks():
@@ -392,7 +392,8 @@ async def make_measure(config, config_path, video_path, demographics=None, start
             async def render():
                 if type(renderer) == NullRenderer:
                     return
-
+                
+            access_tracker.status = access_tracker.data_preelaborations
             # Wrap the coroutines in tasks, start them and wait till they finish
             tasks = [
                 asyncio.create_task(produce_chunks_coro),

@@ -186,6 +186,20 @@ class TriageAccessReason(models.Model):
 
 class TriageAccess(models.Model):
     
+    # Use the class triage.classes.StatusTracker to manage the status
+    ACCESS_STATUS = [
+        ("created","Created"),
+        ("recording_video","Recording video"),
+        ("saving_video","Saving video"),
+        ("loading_configurations","Loading configurations"),
+        ("initializing_dfx","Initializing DFX objects"),
+        ("data_preelaborations","Data preelaborations"),
+        ("saving_logs","Saving logs"),
+        ("receiving_results","Receiving results"),
+        ("unpack_results","Unpack results"),
+        ("printing_results","Printing results")
+    ]
+    
     id = models.AutoField(primary_key=True)
     created = models.DateTimeField(auto_now_add=True)
     patient = models.ForeignKey(Patient, blank=True, null=True, related_name='accesses', on_delete=models.CASCADE)
@@ -195,7 +209,13 @@ class TriageAccess(models.Model):
     access_reason = models.ForeignKey(TriageAccessReason, blank=True, null=True, on_delete=models.PROTECT)
     access_date = models.DateTimeField(blank=True, null=True)
     exit_date = models.DateTimeField(blank=True, null=True)
+    _status = models.CharField(max_length=32, blank=True, null=True)
 
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        from triage.classes import StatusTracker
+        self.status_tracker = StatusTracker(self,"_status",self.ACCESS_STATUS)
+            
     def __str__(self):
         return "{} - {}".format(self.id, self.patient)
     @property
