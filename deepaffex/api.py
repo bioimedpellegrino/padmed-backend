@@ -216,9 +216,9 @@ async def retrieve_sdk_config(config, config_file, sdk_id):
 
         return base64.standard_b64decode(config["study_cfg_data"])
     
-async def make_measure(config, config_path, video_path, demographics=None, start_time=0, end_time=30, rotation=None, fps=None, debug_study_cfg_file=None, profile_id="", partner_id="",access_tracker=None):
+async def make_measure(config, config_path, video_path, demographics=None, start_time=0, end_time=30, rotation=None, fps=None, debug_study_cfg_file=None, profile_id="", partner_id=""):
     
-    access_tracker.status = access_tracker.initializing_dfx
+    #access_tracker.status = access_tracker.initializing_dfx
     token = dfxapi.Settings.user_token if dfxapi.Settings.user_token else dfxapi.Settings.device_token
     headers = {"Authorization": f"Bearer {token}"}
     # Prepare to make a measurement..
@@ -393,7 +393,7 @@ async def make_measure(config, config_path, video_path, demographics=None, start
                 if type(renderer) == NullRenderer:
                     return
                 
-            access_tracker.status = access_tracker.data_preelaborations
+            #access_tracker.status = access_tracker.data_preelaborations
             # Wrap the coroutines in tasks, start them and wait till they finish
             tasks = [
                 asyncio.create_task(produce_chunks_coro),
