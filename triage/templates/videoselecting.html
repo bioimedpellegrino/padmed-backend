@@ -23,21 +23,6 @@
 {% block javascripts %}
 
 <script>
-    
-    function selectVideo(){
-        let videoId = document.getElementById("video-source").value;
-        setCookie("videoId", videoId, 1000);
-    }
-
-    function setCookie(name,value,days) {
-        var expires = "";
-        if (days) {
-            var date = new Date();
-            date.setTime(date.getTime() + (days*24*60*60*1000));
-            expires = "; expires=" + date.toUTCString();
-        }
-        document.cookie = name + "=" + (value || "")  + expires + "; path=/";
-    }
 
     let videoSourcesSelect = document.getElementById("video-source");
     let audioSourcesSelect = document.getElementById("audio-source");
@@ -57,74 +42,98 @@
                     track.stop();
                 });
             }
-    
             const audioSource = audioSourcesSelect.value;
             const videoSource = videoSourcesSelect.value;
             const constraints = {
-                audio: {
-                    deviceId: audioSource ? {exact: audioSource} : undefined
-                },
+                // audio: {
+                //     deviceId: audioSource ? {exact: audioSource} : undefined
+                // },
                 video: {
                     deviceId: videoSource ? {exact: videoSource} : undefined
                 }
             };
+            console.log(constraints)
             return navigator.mediaDevices.getUserMedia(constraints);
         }
     };
 
     $(document).ready(function(){
-        
+        define_select_behavior();
+        read_available_devices();
+        stream_video();
+    });
+
+    function selectVideo(){
+        let videoId = document.getElementById("video-source").value;
+        setCookie("videoId", videoId, 1000);
+    }
+
+    function setCookie(name,value,days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days*24*60*60*1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+    }
+
+    function define_select_behavior(){
         videoSourcesSelect.onchange = function(){
             MediaStreamHelper.requestStream().then(function(stream){
                 MediaStreamHelper._stream = stream;
                 videoPlayer.srcObject = stream;
             });
         };
+    }
 
+    function read_available_devices(){
+        // You can now list the devices using the Helper
+        MediaStreamHelper.getDevices().then((devices) => {
+            // Iterate over all the list of devices (InputDeviceInfo and MediaDeviceInfo)
+            devices.forEach((device) => {
+                let option = new Option();
+                option.value = device.deviceId;
+
+                // According to the type of media device
+                switch(device.kind){
+                    // Append device to list of Cameras
+                    case "videoinput":
+                        option.text = device.label || `Camera ${videoSourcesSelect.length + 1}`;
+                        videoSourcesSelect.appendChild(option);
+                        break;
+                    // Append device to list of Microphone
+                    case "audioinput":
+                        option.text = device.label || `Microphone ${videoSourcesSelect.length + 1}`;
+                        audioSourcesSelect.appendChild(option);
+                        break;
+                }
+
+                if(device.kind == "videoinput"){
+                    document.getElementById("output").innerHTML = 'DeviceID: ' + device.deviceId + ';' + "kind:" + device.kind; 
+                        document.getElementById("output").innerHTML = 'DeviceID: ' + device.deviceId + ';' + "kind:" + device.kind; 
+                    document.getElementById("output").innerHTML = 'DeviceID: ' + device.deviceId + ';' + "kind:" + device.kind; 
+                }
+            });
+        }).catch(function (e) {
+            console.log(e.name + ": " + e.message);
+        });
+    }
+
+    function stream_video(){
         // Request streams (audio and video), ask for permission and display streams in the video element
         MediaStreamHelper.requestStream().then(function(stream){
             // Store Current Stream
             MediaStreamHelper._stream = stream;
-
             // Select the Current Streams in the list of devices
-            audioSourcesSelect.selectedIndex = [...audioSourcesSelect.options].findIndex(option => option.text === stream.getAudioTracks()[0].label);
+            // audioSourcesSelect.selectedIndex = [...audioSourcesSelect.options].findIndex(option => option.text === stream.getAudioTracks()[0].label);
             videoSourcesSelect.selectedIndex = [...videoSourcesSelect.options].findIndex(option => option.text === stream.getVideoTracks()[0].label);
-
             // Play the current stream in the Video element
             videoPlayer.srcObject = stream;
-            
-            // You can now list the devices using the Helper
-            MediaStreamHelper.getDevices().then((devices) => {
-                // Iterate over all the list of devices (InputDeviceInfo and MediaDeviceInfo)
-                devices.forEach((device) => {
-                    let option = new Option();
-                    option.value = device.deviceId;
-
-                    // According to the type of media device
-                    switch(device.kind){
-                        // Append device to list of Cameras
-                        case "videoinput":
-                            option.text = device.label || `Camera ${videoSourcesSelect.length + 1}`;
-                            videoSourcesSelect.appendChild(option);
-                            break;
-                        // Append device to list of Microphone
-                        case "audioinput":
-                            option.text = device.label || `Microphone ${videoSourcesSelect.length + 1}`;
-                            audioSourcesSelect.appendChild(option);
-                            break;
-                    }
-
-                    if(device.kind == "videoinput"){
-                        document.getElementById("output").innerHTML = 'DeviceID: ' + device.deviceId + ';' + "kind:" + device.kind; 
-                    }
-                });
-            }).catch(function (e) {
-                console.log(e.name + ": " + e.message);
-            });
         }).catch(function(err){
             console.log(err);
         });   
-    });
+    }
 
 </script>
 {% endblock javascripts %}
