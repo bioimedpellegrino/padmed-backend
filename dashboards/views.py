@@ -18,6 +18,7 @@ from crispy_forms.utils import render_crispy_form
 from rest_framework.views import APIView
 
 from triage.models import *
+from dfx.models import *
 from app.models import AppUser
 
 # from django.http import Http404
@@ -579,7 +580,6 @@ class GetLiveData():
     def get_table(cls,request,data):
         import re
         from django.template.loader import render_to_string
-        from dfx.models import DeepAffexPoint
         from .utils import get_max_waiting_time
         
         key_units = DeepAffexPoint.objects.all().values_list("signal_key","signal_unit")
@@ -888,10 +888,8 @@ class GetStoricoData(APIView):
         import re
         from django.template.loader import render_to_string
         
-        units = {}
-        units["temperature"] = "°C"
-        units["pressure"] = "mmHg"
-        units["heartrate"] = "bpm"
+        key_units = DeepAffexPoint.objects.all().values_list("signal_key","signal_unit")
+        units = {key:unit for key,unit in key_units}
         
         for item in data:
             item.access_date_cache = item.access_date.strftime("%x %X")
