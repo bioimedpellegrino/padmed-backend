@@ -97,22 +97,12 @@
                 Misura {{result.id}}
               </h3>
               <dl class="row">
-                <dt class="col-sm-3 col-md-2">Temperatura</dt>
-                <dd class="col-sm-9 col-md-4">
-                  {{ result.get_hresult.temperature.mean }} &#177; {{ result.get_hresult.temperature.stdev }} {{ result.get_hresult.temperature.unit }}
-                </dd>
-                <dt class="col-sm-3 col-md-2">Frequenza cardiaca</dt>
-                <dd class="col-sm-9 col-md-4">
-                  {{ result.get_hresult.heart_rate.mean }} &#177; {{ result.get_hresult.heart_rate.stdev }} {{ result.get_hresult.heart_rate.unit }}
-                </dd>
-                <dt class="col-sm-3 col-md-2">Pressione minima</dt>
-                <dd class="col-sm-9 col-md-4">
-                  {{ result.get_hresult.pressure.min.mean }} &#177; {{ result.get_hresult.pressure.min.stdev }} {{ result.get_hresult.pressure.min.unit }}
-                </dd>
-                <dt class="col-sm-3 col-md-2">Pressione massima</dt>
-                <dd class="col-sm-9 col-md-4">
-                  {{ result.get_hresult.pressure.max.mean }} &#177; {{ result.get_hresult.pressure.max.stdev }} {{ result.get_hresult.pressure.max.unit }}
-                </dd>
+                {% for index,values in result.get_hresult.items %}
+                  <dt class="col-sm-3 col-md-2">{{ values.name }}</dt>
+                  <dd class="col-sm-9 col-md-4">
+                    {{ values.value }}{% if values.stdev %} &#177; {{ values.stdev }}{% endif %} {{ values.unit }}
+                  </dd>
+                {% endfor %}
               </dl>
             </div>
           </div>
