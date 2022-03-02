@@ -237,16 +237,23 @@
                     form.appendChild(csfrtoken);
                     const hiddenField = document.createElement('input');
                     hiddenField.type = 'hidden';
+                    const hiddenField_access_id = document.createElement('input');
+                    hiddenField_access_id.type = 'hidden';
                     if (success){
                       form.action = "{% url 'patient_results' %}";
                       hiddenField.name = 'p_measure_result';
                       hiddenField.value = response['p_measure_result'];
+                      hiddenField_access_id.name = "access_id";
+                      hiddenField_access_id.value = {{access_id}};
                     } else {
                       form.action = "{% url 'patient_results_error' %}";
                       hiddenField.name = 'error';
                       hiddenField.value = error;
+                      hiddenField_access_id.name = "access_id";
+                      hiddenField_access_id.value = {{access_id}};
                     }
                     form.appendChild(hiddenField);
+                    form.appendChild(hiddenField_access_id);
                     document.body.appendChild(form);
                     form.submit();
                   }
@@ -323,7 +330,7 @@
       });
     }
 
-    function progress_text_changes(){
+    {% comment %} function progress_text_changes(){
       var text_list = [
         ["Analisi dei dati in corso",1],
         ["Analisi dei dati in corso.",1],
@@ -349,7 +356,7 @@
         }, progression*1000);
         progression += item[1]
       });
-    }
+    } {% endcomment %}
 
     </script>
 {% endblock javascripts %}

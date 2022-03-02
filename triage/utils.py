@@ -102,7 +102,8 @@ def unpack_result_deepaffex(deep_affex_result):
         # print(deep_affex_result["Results"])
         # print("==================================")
     except KeyError as ke:
-        traceback.print_exc()
+        # traceback.print_exc()
+        print("No valid result received. The video quality is to low? Or the user is too ugly? Mheeee...")
         message = "Key error at unpack_result_deepaffex. deep_affex_result:  %s"%deep_affex_result
         add_log(level=5, message=1, exception=traceback.format_exc(), custom_message=message)
         raise ke

@@ -176,6 +176,7 @@ class RecordVideoView(APIView):
             triage_access.status_tracker.status = triage_access.status_tracker.loading_configurations
             config_path = os.path.join(settings.CORE_DIR, "config.json")
             config = load_config(config_path)
+            triage_access.status_tracker.status = triage_access.status_tracker.data_preelaborations
             measurement_id, logs = asyncio.run(make_measure(config=config, config_path=config_path, video_path=video_path, start_time=settings.START_TIME, end_time=settings.END_TIME))
             # Logger
             triage_access.status_tracker.status = triage_access.status_tracker.saving_logs
@@ -197,11 +198,18 @@ class RecordVideoView(APIView):
             try:
                 p_measure_result.measure_short = unpack_result_deepaffex(result)
             except KeyError as ke:
-                return Response({
-                    'p_measure_result': p_measure_result.pk, 
-                    'success':False, 
-                    'error': 'Chiave mancante: %s'%str(ke) 
-                    }, status=status.HTTP_200_OK)
+                if str(ke)=="Results":
+                    return Response({
+                        'p_measure_result': p_measure_result.pk, 
+                        'success':False, 
+                        'error': 'Qualità video troppo bassa.' 
+                        }, status=status.HTTP_200_OK)
+                else:
+                    return Response({
+                        'p_measure_result': p_measure_result.pk, 
+                        'success':False, 
+                        'error': 'Chiave mancante: %s'%str(ke) 
+                        }, status=status.HTTP_200_OK)                    
             
             p_measure_result.save()
             triage_access.status_tracker.status = triage_access.status_tracker.printing_results
@@ -244,9 +252,8 @@ class PatientResultsError(APIView):
     def post(self, request, *args, **kwargs):
         
         user = AppUser.get_or_create_from_parent(request.user)
-        patient_result = PatientMeasureResult.objects.get(pk=int(request.POST.get('p_measure_result')))
-        access_id = patient_result.patient_video.triage_access.id
-        error = PatientMeasureResult.objects.get(pk=int(request.POST.get('error')))
+        access_id = request.POST.get('access_id')
+        error = request.POST.get('error')
         return render(request,'receptions-results-error.html', {'error': error, 'user': user,'access_id':access_id})
 
 class TestNFC(APIView):
@@ -301,7 +308,7 @@ class GetAccessStatusView(APIView):
         "saving_video":"Salvataggio del video",
         "loading_configurations":"Caricamento configurazioni",
         "initializing_dfx":"Inizializzazione strumenti di analisi",
-        "data_preelaborations":"Pre-elaborazione del video",
+        "data_preelaborations":"Elaborazione del video",
         "saving_logs":"Salvataggio dei log",
         "receiving_results":"Ricezione risultati",
         "unpack_results":"Lettura risultati",
