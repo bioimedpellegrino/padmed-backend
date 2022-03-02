@@ -198,7 +198,7 @@ class RecordVideoView(APIView):
             try:
                 p_measure_result.measure_short = unpack_result_deepaffex(result)
             except KeyError as ke:
-                if str(ke)=="Results":
+                if str(ke.args[0])=="Results":
                     return Response({
                         'p_measure_result': p_measure_result.pk, 
                         'success':False, 
