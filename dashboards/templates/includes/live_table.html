@@ -9,9 +9,8 @@
         <th scope="col">Nome</th>
         <th scope="col">Ragione</th>
         <th scope="col">In attesa da</th>
-        <th scope="col">Temperatura ({{units.temperature}})</th>
-        <th scope="col">Pressione ({{units.pressure}})</th>
-        <th scope="col">Battito ({{units.heartrate}})</th>
+        <th scope="col">Pressione ({{units.BP_DIASTOLIC}})</th>
+        <th scope="col">Battito ({{units.HR_BPM}})</th>
         <th scope="col"></th>
       </tr>
     </thead>
@@ -61,83 +60,58 @@
             </div>
           </td>
 
-          <td scope="row" data-order="{{item.hresults.temperature.order}}">
+          <td scope="row" data-order="{{item.hresults.BP_DIASTOLIC.order}}">
             <div class="media align-items-center">
-              {% if item.hresults.temperature.alarm == 0 %}
-                <div class="icon-sm text-darkgreen">
-                  <i class="fas fa-thermometer-empty"></i>
-                </div>
-              {% elif item.hresults.temperature.alarm == 1 %}
-                <div class="icon-sm text-darkyellow">
-                  <i class="fas fa-thermometer-half"></i>
-                </div>
-              {% elif item.hresults.temperature.alarm == 2 %}
-                <div class="icon-sm text-darkred">
-                  <i class="fas fa-thermometer-full"></i>
-                </div>
-              {% elif item.hresults.temperature.alarm == 3 %}
-                <div class="icon-sm text-darkred blinking">
-                  <i class="fas fa-thermometer-full"></i>
-                </div>
-              {% endif %}
-              <div class="media-body">
-                <span class="mr-2">{{item.hresults.temperature.mean}} {% if item.hresults.temperature.stdev %}&#177;{% endif %} {{item.hresults.temperature.stdev}}</span>
-              </div>
-            </div>
-          </td>
-
-          <td scope="row" data-order="{{item.hresults.pressure.order}}">
-            <div class="media align-items-center">
-              {% if item.hresults.pressure.alarm == 0 %}
+              {% if item.hresults.BP_DIASTOLIC.alarm == 0 %}
                 <div class="icon-sm text-darkgreen">
                   <i class="fas fa-stopwatch"></i>
                 </div>
-              {% elif item.hresults.pressure.alarm == 1 %}
+              {% elif item.hresults.BP_DIASTOLIC.alarm == 1 %}
                 <div class="icon-sm text-darkyellow">
                   <i class="fas fa-stopwatch"></i>
                 </div>
-              {% elif item.hresults.pressure.alarm == 2 %}
+              {% elif item.hresults.BP_DIASTOLIC.alarm == 2 %}
                 <div class="icon-sm text-darkred">
                   <i class="fas fa-stopwatch"></i>
                 </div>
-              {% elif item.hresults.pressure.alarm == 3 %}
+              {% elif item.hresults.BP_DIASTOLIC.alarm == 3 %}
                 <div class="icon-sm text-darkred blinking">
                   <i class="fas fa-stopwatch"></i>
                 </div>
               {% endif %}
               <div class="media-body">
                 <span class="mr-2">
-                  {{item.hresults.pressure.min.mean}} {% if item.hresults.pressure.min.stdev %}&#177;{% endif %} {{item.hresults.pressure.min.stdev}}
+                  {{item.hresults.BP_DIASTOLIC.value}} {% if item.hresults.BP_DIASTOLIC.stdev %}&#177; {{item.hresults.BP_DIASTOLIC.stdev}}{% endif %}
                 </span>
                 /
                 <span class="mr-2">
-                  {{item.hresults.pressure.max.mean}} {% if item.hresults.pressure.max.stdev %}&#177;{% endif %} {{item.hresults.pressure.max.stdev}}
+                  {{item.hresults.BP_SYSTOLIC.value}} {% if item.hresults.BP_SYSTOLIC.stdev %}&#177; {{item.hresults.BP_SYSTOLIC.stdev}}{% endif %}
                 </span>
               </div>
             </div>
           </td>
 
-          <td scope="row" data-order="{{item.hresults.heart_rate.order}}">
+          <td scope="row" data-order="{{item.hresults.HR_BPM.order}}">
             <div class="media align-items-center">
-              {% if item.hresults.heart_rate.alarm == 0 %}
+              {% if item.hresults.HR_BPM.alarm == 0 %}
                 <div class="icon-sm text-darkgreen">
                   <i class="fas fa-heartbeat"></i>
                 </div>
-              {% elif item.hresults.heart_rate.alarm == 1 %}
+              {% elif item.hresults.HR_BPM.alarm == 1 %}
                 <div class="icon-sm text-darkyellow">
                   <i class="fas fa-heartbeat"></i>
                 </div>
-              {% elif item.hresults.heart_rate.alarm == 2 %}
+              {% elif item.hresults.HR_BPM.alarm == 2 %}
                 <div class="icon-sm text-darkred">
                   <i class="fas fa-heartbeat"></i>
                 </div>
-              {% elif item.hresults.heart_rate.alarm == 3 %}
+              {% elif item.hresults.HR_BPM.alarm == 3 %}
                 <div class="icon-sm text-darkred blinking">
                   <i class="fas fa-heartbeat"></i>
                 </div>
               {% endif %}
               <div class="media-body">
-                <span class="mr-2">{{item.hresults.heart_rate.mean}} {% if item.hresults.heart_rate.stdev %}&#177;{% endif %} {{item.hresults.heart_rate.stdev}}</span>
+                <span class="mr-2">{{item.hresults.HR_BPM.value}} {% if item.hresults.HR_BPM.stdev %}&#177; {{item.hresults.HR_BPM.stdev}}{% endif %}</span>
               </div>
             </div>
           </td>

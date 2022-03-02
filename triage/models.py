@@ -401,82 +401,34 @@ class PatientMeasureResult(models.Model):
     @lru_cache(maxsize=None)
     def get_clean_result(self):
         import ast
-        result = ast.literal_eval(self.measure_short)
-        return result
+        all_results = ast.literal_eval(self.measure_short)
+        all_indexes_result = all_results.get("measure",{})
+        return all_indexes_result
             
     @property
     @lru_cache(maxsize=None)
     def get_hresult(self):
-        result = self.get_clean_result
-        hresult = {
-            "heart_rate":{},
-            "pressure":{"min":{},"max":{}},
-            "temperature":{}
-        }
-            
-        ## Temperature
-        try:
-            data = result["measure"]["TEMPERATURE"]
-        except KeyError as e:
-            hresult["temperature"]["mean"] = "-"
-            hresult["temperature"]["stdev"] = "-"
-            hresult["temperature"]["unit"] = "-"
-            hresult["temperature"]["order"] = None
-            hresult["temperature"]["alarm"] = None
-            add_log(level=3, exception=e)
-        else:
-            hresult["temperature"]["mean"] = data["value"]
-            hresult["temperature"]["stdev"] = "-" # TODO: add SDR information
-            hresult["temperature"]["unit"] = data["unit"]
-            hresult["temperature"]["order"] = self._get_temperature_order(hresult["temperature"]["mean"])
-            hresult["temperature"]["alarm"] = self._get_temperature_alarm(hresult["temperature"]["mean"])
-
-        ## Blood pressure
-        try:
-            data = result["measure"]["PRESSURE"]
-        except KeyError as e:
-            hresult["pressure"]["min"]["mean"] = "-"
-            hresult["pressure"]["min"]["stdev"] = "-" 
-            hresult["pressure"]["min"]["unit"] = "-" 
-            hresult["pressure"]["max"]["mean"] = "-" 
-            hresult["pressure"]["max"]["stdev"] = "-"
-            hresult["pressure"]["max"]["unit"] = "-"
-            hresult["pressure"]["alarm"] = None
-            hresult["pressure"]["order"] = None
-            add_log(level=3, exception=e)
-        else:
-            unit = data["unit"]
-            pmin = data["value_min"]
-            pmax = data["value_max"]
-            hresult["pressure"]["min"]["mean"] = pmin
-            hresult["pressure"]["min"]["stdev"] = "-" # TODO: add SDR information
-            hresult["pressure"]["min"]["unit"] = unit
-            hresult["pressure"]["max"]["mean"] = pmax
-            hresult["pressure"]["max"]["stdev"] = "-" # TODO: add SDR information
-            hresult["pressure"]["max"]["unit"] = unit
-            alarm = self._get_pressure_alarm(pmin,pmax)
-            hresult["pressure"]["alarm"] = alarm
-            hresult["pressure"]["order"] = self._get_pressure_order(alarm,pmin,pmax)
-
-        ## Heart rate
-        try:
-            data = result["measure"]["HB_BPM"]
-        except KeyError as e:
-            hresult["heart_rate"]["mean"] = "-"
-            hresult["heart_rate"]["stdev"] = "-"
-            hresult["heart_rate"]["unit"] = "-"
-            hresult["heart_rate"]["order"] = None
-            hresult["heart_rate"]["alarm"] = None
-            add_log(level=3, exception=e)
-        else:
-            unit = data["unit"]
-            hresult["heart_rate"]["mean"] = data["value"]
-            hresult["heart_rate"]["stdev"] = "-" # TODO: add SDR information
-            hresult["heart_rate"]["unit"] = unit
-            hresult["heart_rate"]["order"] = self._get_heart_rate_order(hresult["heart_rate"]["mean"])
-            hresult["heart_rate"]["alarm"] = self._get_heart_rate_alarm(hresult["heart_rate"]["mean"])
+        indexes_values = self.get_clean_result
         
-        return hresult
+        for index in indexes_values:
+            indexes_values[index]["stdev"] = None # TODO: add SDR information
+            indexes_values[index]["order"] = None
+            indexes_values[index]["alarm"] = None
+            
+        if "HR_BPM" in indexes_values:
+            indexes_values["HR_BPM"]["alarm"] = self._get_heart_rate_alarm(indexes_values["HR_BPM"]["value"])
+            indexes_values["HR_BPM"]["order"] = self._get_heart_rate_order(indexes_values["HR_BPM"]["value"])
+        if "BP_DIASTOLIC" in indexes_values and "BP_SYSTOLIC" in indexes_values:
+            minima = indexes_values["BP_DIASTOLIC"]["value"]
+            massima = indexes_values["BP_SYSTOLIC"]["value"]
+            pressure_alarm = self._get_pressure_alarm(minima,massima)
+            pressure_order = self._get_pressure_order(pressure_alarm,minima,massima)
+            indexes_values["BP_DIASTOLIC"]["alarm"] = pressure_alarm
+            indexes_values["BP_SYSTOLIC"]["alarm"] = pressure_alarm
+            indexes_values["BP_DIASTOLIC"]["order"] = pressure_order
+            indexes_values["BP_SYSTOLIC"]["order"] = pressure_order
+        
+        return indexes_values
     
     def _get_heart_rate_order(self,mean):
         if mean < 40:

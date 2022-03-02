@@ -579,12 +579,11 @@ class GetLiveData():
     def get_table(cls,request,data):
         import re
         from django.template.loader import render_to_string
+        from dfx.models import DeepAffexPoint
         from .utils import get_max_waiting_time
         
-        units = {}
-        units["temperature"] = "°C"
-        units["pressure"] = "mmHg"
-        units["heartrate"] = "bpm"
+        key_units = DeepAffexPoint.objects.all().values_list("signal_key","signal_unit")
+        units = {key:unit for key,unit in key_units}
         
         max_waiting_time = get_max_waiting_time()
         max_waiting = max_waiting_time.hours*60 + max_waiting_time.minutes
