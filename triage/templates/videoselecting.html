@@ -23,7 +23,7 @@
 {% block javascripts %}
 
 <script>
-
+    var cached_videoSource
     let videoSourcesSelect = document.getElementById("video-source");
     let audioSourcesSelect = document.getElementById("audio-source");
     let videoPlayer = document.getElementById("player");
@@ -44,6 +44,7 @@
             }
             const audioSource = audioSourcesSelect.value;
             const videoSource = videoSourcesSelect.value;
+            update_text_video_source(videoSource);
             const constraints = {
                 // audio: {
                 //     deviceId: audioSource ? {exact: audioSource} : undefined
@@ -52,16 +53,19 @@
                     deviceId: videoSource ? {exact: videoSource} : undefined
                 }
             };
-            console.log(constraints)
             return navigator.mediaDevices.getUserMedia(constraints);
         }
     };
 
     $(document).ready(function(){
-        define_select_behavior();
         read_available_devices();
+        define_select_behavior();
         stream_video();
     });
+
+    function update_text_video_source(videoSource){
+        document.getElementById("output").innerHTML = 'DeviceID: ' + videoSource;
+    }
 
     function selectVideo(){
         let videoId = document.getElementById("video-source").value;
@@ -90,6 +94,7 @@
     function read_available_devices(){
         // You can now list the devices using the Helper
         MediaStreamHelper.getDevices().then((devices) => {
+            var cash_last_video_option = null;
             // Iterate over all the list of devices (InputDeviceInfo and MediaDeviceInfo)
             devices.forEach((device) => {
                 let option = new Option();
@@ -107,12 +112,6 @@
                         option.text = device.label || `Microphone ${videoSourcesSelect.length + 1}`;
                         audioSourcesSelect.appendChild(option);
                         break;
-                }
-
-                if(device.kind == "videoinput"){
-                    document.getElementById("output").innerHTML = 'DeviceID: ' + device.deviceId + ';' + "kind:" + device.kind; 
-                        document.getElementById("output").innerHTML = 'DeviceID: ' + device.deviceId + ';' + "kind:" + device.kind; 
-                    document.getElementById("output").innerHTML = 'DeviceID: ' + device.deviceId + ';' + "kind:" + device.kind; 
                 }
             });
         }).catch(function (e) {
