@@ -9,3 +9,19 @@ class PatientForm(forms.Form):
     
     class Media:
         css = {'all': ('/staticfiles/assets/css/argon-dashboard.css')}
+
+class AnagraficaForm(forms.ModelForm):
+    class Media:
+        from .models import DeclaredAnagrafica
+        model = DeclaredAnagrafica
+        exclude = ("id","expired","created","modified")
+        labels = {
+            "patient":"Paziente",
+            "birth_year":"Anno di nascita",
+            "gender":"Sesso",
+            "height":"Altezza",
+            "smoking":"Fumatore",
+            "diabetes":"Diabetico",
+            "bloodpressuremedication":"Assumi antipertensivi",
+        }
+    

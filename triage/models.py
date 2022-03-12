@@ -125,6 +125,7 @@ class DeclaredAnagrafica(models.Model):
     @property
     def to_dict(self):
         return {
+            "patient":self.patient,
             "gender": self.gender,
             "age": self.age,
             "height": self.height,
@@ -135,19 +136,13 @@ class DeclaredAnagrafica(models.Model):
         }
     
     @classmethod
-    def from_dict(cls,value):
-        new_anag = cls(
-            gender = value["gender"],
-            height = value["height"],
-            weight = value["weight"],
-            smoking = value["smoking"],
-            diabetes = value["diabetes"],
-            bloodpressuremedication = value["bloodpressuremedication"],
-        )
-        new_anag.age = value["age"]
+    def from_dict(cls,patient,values={}):
+        new_anag = cls(patient=patient)
+        for key,value in values.items():
+            setattr(new_anag,key,value)
         cls.save()
         return cls
-        
+    
     def update_expired(self):
         result = True
         now = timezone.localtime().date()
@@ -223,11 +218,12 @@ class Patient(models.Model):
         latest_datetime = DeclaredAnagrafica.objects.latest('created')
         if latest_datetime:
             latest_anag = DeclaredAnagrafica.objects.get(created=latest_datetime)
+            
         return latest_anag
     
     @declared_anag.setter
-    def declared_anag(self,value):
-        _ = DeclaredAnagrafica.from_dict(value)
+    def declared_anag(self,values):
+        _ = DeclaredAnagrafica.from_dict(self,values)
         
     def update_expired_anag(self):
         result = True

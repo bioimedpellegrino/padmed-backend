@@ -80,6 +80,21 @@ class ReceptionsView(APIView):
             patient, created = Patient.objects.get_or_create(
                 fiscal_code=fiscal_code_decoded['code']
                 )
+            patient.birth_date = fiscal_code_decoded["birthdate"]
+            patient.birth_place_city = fiscal_code_decoded["birthplace"]
+            patient.gender = fiscal_code_decoded["sex"]
+            patient.save()
+            
+            declared_anag = patient.declared_anag
+            already_compiled = False
+            if declared_anag is not None and not declared_anag.update_expired():
+                already_compiled = declared_anag.compiled
+            if not already_compiled:
+                patient.declared_anag = {
+                    "birth_year":fiscal_code_decoded["birthdate"].year,
+                    "gender":{"M":"male","F":"female"}[fiscal_code_decoded["sex"]],
+                } 
+            
             patient_user, c = AppUser.objects.get_or_create(
                 username=fiscal_code_decoded['code'],
                 patient_logged=patient,
@@ -96,12 +111,62 @@ class ReceptionsView(APIView):
             access.status_tracker.status = access.status_tracker.created
             access.save()
             
-            return HttpResponseRedirect(reverse('accessreason',kwargs={"access_id":access.id}))
+            if not already_compiled:
+                return HttpResponseRedirect(reverse('access_anagrafica',kwargs={"access_id":access.id}))
+            else:
+                return HttpResponseRedirect(reverse('accessreason',kwargs={"access_id":access.id}))
         else:
             print("Errors",form.errors)
             # TODO
             form = PatientForm()
             return render(request, self.TEMPLATE_NAME, {'form': form, 'errors': 'Il codice fiscale inserito non è valido', 'user': user})
+
+class AnagraficaView(APIView):
+    """[summary]
+
+    Args:
+        APIView ([type]): [description]
+    """
+    TEMPLATE_NAME = 'receptions-anagrafica.html'
+    
+    @method_decorator(totem_login_required(login_url="/login/"))
+    def get(self, request, *args, **kwargs):
+        from .forms import AnagraficaForm
+        user = AppUser.get_or_create_from_parent(request.user)
+        access_id = int(kwargs.get('access_id', None))
+        access = get_object_or_404(TriageAccess,pk=access_id)
+        patient = access.patient
+        declared_anag = patient.declared_anag
+        form = AnagraficaForm(
+            initial={
+                "patient":patient,
+                "birth_year":declared_anag["birth_year"],
+                "gender":declared_anag["gender"],
+            })
+        return render(request, self.TEMPLATE_NAME, {'form': form, 'user': user})
+    
+    @method_decorator(totem_login_required(login_url="/login/"))
+    def post(self, request, *args, **kwargs):
+        from .forms import AnagraficaForm
+        user = AppUser.get_or_create_from_parent(request.user)
+        totem = user.totem_logged
+        if not totem:
+            raise PermissionDenied("Solo gli utenti Totem sono abilitati all'inserimento dei dati. Effettura il login con un utente Totem o contattare l'assistenza.")
+        hospital = totem.hospital
+        
+        if not hospital:
+            raise PermissionDenied("Questo Totem non ha un hospedale associato. Associare un ospedale al Totem o contattare l'assistenza.")
+
+        access_id = int(kwargs.get('access_id', None))
+        access = get_object_or_404(TriageAccess,pk=access_id)
+        form = AnagraficaForm(request.POST)
+        
+        if form.is_valid():
+            declared_anag = form.save()
+            return HttpResponseRedirect(reverse('accessreason',kwargs={"access_id":access.id}))
+        else:
+            print("Errors",form.errors)
+            return render(request, self.TEMPLATE_NAME, {'form': form, 'has_error': True, 'user': user})
         
 class ReceptionsReasonsView(APIView):
     """[summary]
