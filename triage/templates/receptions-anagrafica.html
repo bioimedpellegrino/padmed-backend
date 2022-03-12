@@ -8,6 +8,9 @@
   input[name="height"] {
     width:100%;
   }
+  input[name="weight"] {
+    width:100%;
+  }
 </style>
 {% endblock stylesheets %}
 
@@ -46,15 +49,42 @@
 
             {{ form.patient }}
             {{ form.gender }}
-            {{ form.age }}
+            {{ form.birth_year }}
 
             <div style="border-left: solid 1px gray;border-right: solid 1px gray;border-radius:10px;" class="form-group col-xs-12 col-md-12">
-              <label for="{{form.height.name}}" title="">{{ form.height.label }}:</label>
-              <span id="#id_height_value" style="padding-left:10px;"></span>
+              <div style="display: flex;justify-content: space-between;">
+                <label for="{{form.height.name}}" title="">{{ form.height.label }}:</label>
+                <span id="id_height_value" style="padding-left:10px;"></span>
+              </div>
               <div>
                 {{ form.height }}
               </div>
               {{form.height.errors}}
+            </div>
+            <div style="border-left: solid 1px gray;border-right: solid 1px gray;border-radius:10px;" class="form-group col-xs-12 col-md-12">
+              <div style="display: flex;justify-content: space-between;">
+                <label for="{{form.weight.name}}" title="">{{ form.weight.label }}:</label>
+                <span id="id_weight_value" style="padding-left:10px;"></span>
+              </div>
+              <div>
+                {{ form.weight }}
+              </div>
+              {{form.weight.errors}}
+            </div>
+            <div style="border-left: solid 1px gray;border-right: solid 1px gray;border-radius:10px;" class="form-group col-xs-12 col-md-12">
+              <label style="" for="id_smoking" class="css-label-check">Fumi?</label>
+              <input style="position:absolute;right:.5em;right:.5em;bottom:5%;display:inline-block;width:100px;" type="checkbox" name="smoking" id="id_smoking" class="form-control" {% if form.smoking.value == True %}checked="checked"{% endif %}>
+              {{form.smoking.errors}}
+            </div>
+            <div style="border-left: solid 1px gray;border-right: solid 1px gray;border-radius:10px;" class="form-group col-xs-12 col-md-12">
+              <label style="" for="id_diabetes" class="css-label-check">Hai il diabete?</label>
+              <input style="position:absolute;right:.5em;right:.5em;bottom:5%;display:inline-block;width:100px;" type="checkbox" name="diabetes" id="id_diabetes" class="form-control" {% if form.diabetes.value == True %}checked="checked"{% endif %}>
+              {{form.diabetes.errors}}
+            </div>
+            <div style="border-left: solid 1px gray;border-right: solid 1px gray;border-radius:10px;" class="form-group col-xs-12 col-md-12">
+              <label style="" for="id_bloodpressuremedication" class="css-label-check">Assumi antipertensivi?</label>
+              <input style="position:absolute;right:.5em;right:.5em;bottom:5%;display:inline-block;width:100px;" type="checkbox" name="bloodpressuremedication" id="id_bloodpressuremedication" class="form-control" {% if form.bloodpressuremedication.value == True %}checked="checked"{% endif %}>
+              {{form.bloodpressuremedication.errors}}
             </div>
 
             <input type="submit" value="Submit">
@@ -72,13 +102,18 @@
 <script>
   $(document).ready(function(){
     show_height();
-    $("#id_height_value").change(function(){show_height()});
+    show_weight();
+    $("#id_height").change(function(){show_height()});
+    $("#id_weight").change(function(){show_weight()});
   });
 
   function show_height(){
     var value = $("#id_height").val();
-    $("#id_height_value").text(value);
-    console.log(value)
+    $("#id_height_value").text(value+" cm");
+  }
+  function show_weight(){
+    var value = $("#id_weight").val();
+    $("#id_weight_value").text(value+" Kg");
   }
 
 </script>

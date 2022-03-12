@@ -139,11 +139,6 @@ class AnagraficaView(APIView):
         patient = access.patient
         declared_anag = patient.declared_anag
         form = AnagraficaForm(instance=declared_anag)
-            # initial={
-            #     "patient":patient,
-            #     "birth_year":declared_anag.birth_year,
-            #     "gender":declared_anag.gender,
-            # })
         return render(request, self.TEMPLATE_NAME, {'form': form, 'user': user})
     
     @method_decorator(totem_login_required(login_url="/login/"))
