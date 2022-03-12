@@ -107,9 +107,9 @@ class DeclaredAnagrafica(models.Model):
     gender = models.CharField(verbose_name="Sesso",max_length=31,choices=GENDER_CHOICES,null=True,blank=True)
     height = models.PositiveIntegerField(verbose_name="Altezza",null=True,blank=True)
     weight = models.PositiveIntegerField(verbose_name="Peso",null=True,blank=True)
-    smoking = models.BooleanField(verbose_name="Fumatore",null=True,blank=True)
-    diabetes = models.BooleanField(verbose_name="Diabetico",null=True,blank=True)
-    bloodpressuremedication = models.BooleanField(verbose_name="Assume antipertensivi",null=True,blank=True)
+    smoking = models.BooleanField(verbose_name="Fumatore",null=False,blank=True,default=False)
+    diabetes = models.BooleanField(verbose_name="Diabetico",null=False,blank=True,default=False)
+    bloodpressuremedication = models.BooleanField(verbose_name="Assume antipertensivi",null=False,blank=True,default=False)
     
     expired = models.BooleanField(null=False,blank=False,default=False)
     created = models.DateTimeField(verbose_name="Data di creazione",auto_now_add=True)

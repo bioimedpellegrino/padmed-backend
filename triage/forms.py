@@ -47,9 +47,6 @@ class AnagraficaForm(forms.ModelForm):
             'gender',
             'height',
             'weight',
-            'smoking',
-            'diabetes',
-            'bloodpressuremedication',
         )
 
     def __init__(self, *args, **kwargs):

@@ -157,6 +157,8 @@ class AnagraficaView(APIView):
         access = get_object_or_404(TriageAccess,pk=access_id)
         patient = access.patient
         declared_anag = patient.declared_anag
+        print("request.POST")
+        print(request.POST)
         form = AnagraficaForm(request.POST,instance=declared_anag)
         
         if form.is_valid():
