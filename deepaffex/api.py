@@ -216,7 +216,7 @@ async def retrieve_sdk_config(config, config_file, sdk_id):
 
         return base64.standard_b64decode(config["study_cfg_data"])
     
-async def make_measure(config, config_path, video_path, demographics=None, start_time=0, end_time=30, rotation=None, fps=None, debug_study_cfg_file=None, profile_id="", partner_id=""):
+async def make_measure(config, config_path, video_path, demographics={}, start_time=0, end_time=30, rotation=None, fps=None, debug_study_cfg_file=None, profile_id="", partner_id=""):
     
     # access_tracker.status = access_tracker.initializing_dfx
     token = dfxapi.Settings.user_token if dfxapi.Settings.user_token else dfxapi.Settings.device_token
@@ -229,11 +229,11 @@ async def make_measure(config, config_path, video_path, demographics=None, start
         imreader = VideoReader(video_path, start_time, end_time, rotation=rotation, fps=fps)
 
         # Open the demographics file if provided
-        if demographics is not None:
-            with open(demographics, "r") as f:
-                app.demographics = json.load(f)
-        if not demographics:
-            app.demographics = {}
+        # if demographics is not None:
+        #     with open(demographics, "r") as f:
+        #         app.demographics = json.load(f)
+        app.demographics = demographics
+        
         # Create a face tracker
         if settings.FACE_TRACKER == 'VISAGE':
             tracker = VisageTracker(settings.VISAGE_LICENSE,
@@ -262,7 +262,7 @@ async def make_measure(config, config_path, video_path, demographics=None, start
         import traceback
         print(traceback.format_exc())
         logs["exception"] = "{}".format(ex)
-        add_log(level=5, message=5, custom_message='Error on STEP 1 make measure: %s' % ex)
+        # add_log(level=5, message=5, custom_message='Error on STEP 1 make measure: %s' % ex)
         return None, logs
     
     # Create DFX SDK collector (or FAIL)

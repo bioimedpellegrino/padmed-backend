@@ -37,6 +37,9 @@ class PatientMeasureResultAdmin(admin.ModelAdmin):
 class MeasureLoggerAdmin(admin.ModelAdmin):
     pass
 
+class DeclaredAnagraficaAdmin(admin.ModelAdmin):
+    pass
+
 admin.site.register(Patient, PatientAdmin)
 admin.site.register(Hospital, HospitalAdmin)
 admin.site.register(Totem, HospitalAdmin)
@@ -49,3 +52,4 @@ admin.site.register(TriageAccess, TriageAccessAdmin)
 admin.site.register(PatientVideo, PatientVideoAdmin)
 admin.site.register(PatientMeasureResult, PatientMeasureResultAdmin)
 admin.site.register(MeasureLogger, MeasureLoggerAdmin)
+admin.site.register(DeclaredAnagrafica, DeclaredAnagraficaAdmin)

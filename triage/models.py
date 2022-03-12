@@ -2,6 +2,7 @@ import datetime
 import json
 import os
 import base64
+from tabnanny import verbose
 import pytz
 from functools import lru_cache
 from logger.utils import add_log
@@ -93,10 +94,80 @@ class Totem(models.Model):
     def __str__(self):
         return self.name
     
+class DeclaredAnagrafica(models.Model):
+    GENDER_CHOICES = (
+        ("male","Maschio"),
+        ("female","Femmina"),
+    )
+    patient = models.ForeignKey('Patient',on_delete=models.CASCADE,null=True,blank=True)
+    
+    birth_year = models.IntegerField(verbose_name="Anno di nascita",null=True,blank=True)
+    gender = models.CharField(verbose_name="Sesso",max_length=31,choices=GENDER_CHOICES,null=True,blank=True)
+    height = models.PositiveIntegerField(verbose_name="Altezza",null=True,blank=True)
+    weight = models.PositiveIntegerField(verbose_name="Peso",null=True,blank=True)
+    smoking = models.BooleanField(verbose_name="Fumatore",null=True,blank=True)
+    diabetes = models.BooleanField(verbose_name="Diabetico",null=True,blank=True)
+    bloodpressuremedication = models.BooleanField(verbose_name="Assume antipertensivi",null=True,blank=True)
+    
+    expired = models.BooleanField(null=False,blank=False)
+    created = models.DateTimeField(verbose_name="Data di creazione",auto_now_add=True)
+    modified = models.DateTimeField(verbose_name="Data di creazione",blank=True, null=True,auto_now=True)
+    
+    @property
+    def age(self):
+        today_year = timezone.localtime().year
+        return today_year - self.birth_year
+    @age.setter
+    def age(self,value):
+        today_year = timezone.localtime().year
+        self.birth_year = today_year - value
+        
+    @property
+    def to_dict(self):
+        return {
+            "gender": self.gender,
+            "age": self.age,
+            "height": self.height,
+            "weight": self.weight,
+            "smoking": self.smoking,
+            "diabetes": self.diabetes,
+            "bloodpressuremedication": self.bloodpressuremedication
+        }
+    
+    @classmethod
+    def from_dict(cls,value):
+        new_anag = cls(
+            gender = value["gender"],
+            height = value["height"],
+            weight = value["weight"],
+            smoking = value["smoking"],
+            diabetes = value["diabetes"],
+            bloodpressuremedication = value["bloodpressuremedication"],
+        )
+        new_anag.age = value["age"]
+        cls.save()
+        return cls
+        
+    def update_expired(self):
+        result = True
+        now = timezone.localtime().date()
+        created = self.created.date()
+        delta = now-created
+        delta_seconds = delta.days * 86400 # 24*60*60
+        if delta_seconds < self.ANAG_EXPIRES_AFTER:
+            result = False
+        if result:
+            self.expired = True
+            self.save()
+        return result
+    
 class Patient(models.Model):
     """
     Model Patient
     """
+    
+    ANAG_EXPIRES_AFTER = 31536000 # seconds (1 year)
+    
     id = models.AutoField(primary_key=True)
     # user = models.OneToOneField(User, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
@@ -128,6 +199,11 @@ class Patient(models.Model):
     domicile_country = models.ForeignKey(Country, blank=True, null=True,on_delete=models.PROTECT, related_name="domicile_country")
     hospital = models.ForeignKey(Hospital, blank=True, null=True, on_delete=models.PROTECT)
     
+    class Meta:
+        verbose_name = "Paziente"
+        verbose_name_plural = "Pazienti"
+        ordering = ('last_name',)
+        
     def __str__(self):
         return self.fiscal_code
     
@@ -141,13 +217,26 @@ class Patient(models.Model):
             self.birth_place_province = decoded['birthplace']['province'] if not self.birth_place_province else self.birth_place_province
         super(Patient, self).save(*args, **kwargs)
 
+    @property
+    def declared_anag(self):
+        latest_anag = None
+        latest_datetime = DeclaredAnagrafica.objects.latest('created')
+        if latest_datetime:
+            latest_anag = DeclaredAnagrafica.objects.get(created=latest_datetime)
+        return latest_anag
+    
+    @declared_anag.setter
+    def declared_anag(self,value):
+        _ = DeclaredAnagrafica.from_dict(value)
+        
+    def update_expired_anag(self):
+        result = True
+        declared_anag = self.declared_anag
+        if declared_anag is not None:
+            result = declared_anag.update_expired()
+        return result
     
     
-    class Meta:
-        verbose_name = "Paziente"
-        verbose_name_plural = "Pazienti"
-        ordering = ('last_name',)
-
 class TriageCode(models.Model):
     
     id = models.AutoField(primary_key=True)
