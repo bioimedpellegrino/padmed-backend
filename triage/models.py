@@ -148,6 +148,7 @@ class DeclaredAnagrafica(models.Model):
             "bloodpressuremedication": self.bloodpressuremedication
         }
         
+    @property    
     def compiled(self):
         values = self.to_dict
         for key,value in values.items():

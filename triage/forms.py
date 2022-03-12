@@ -14,14 +14,44 @@ class AnagraficaForm(forms.ModelForm):
     class Meta:
         from .models import DeclaredAnagrafica
         model = DeclaredAnagrafica
-        exclude = ("id","expired","created","modified")
+        fields = (
+            'patient',
+            'gender',
+            'birth_year',
+            'height',
+            'weight',
+            'smoking',
+            'diabetes',
+            'bloodpressuremedication',
+        )
+        widgets = {
+            'patient': forms.HiddenInput(),
+            'gender': forms.HiddenInput(),
+            'birth_year': forms.HiddenInput(),
+        }
         labels = {
             "patient":"Paziente",
             "birth_year":"Anno di nascita",
             "gender":"Sesso",
             "height":"Altezza",
+            "weight":"Peso",
             "smoking":"Fumatore",
             "diabetes":"Diabetico",
             "bloodpressuremedication":"Assumi antipertensivi",
         }
+        required = (
+            'patient',
+            'birth_year',
+            'gender',
+            'height',
+            'weight',
+            'smoking',
+            'diabetes',
+            'bloodpressuremedication',
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.Meta.required:
+            self.fields[field].required = True
     
