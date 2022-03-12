@@ -3,7 +3,13 @@
 {% block title %} Receptions {% endblock title %}
 
 <!-- Specific CSS goes HERE -->
-{% block stylesheets %}{% endblock stylesheets %}
+{% block stylesheets %}
+<style>
+  input[name="height"] {
+    width:100%;
+  }
+</style>
+{% endblock stylesheets %}
 
 {% block content %}    
   <!-- Header container -->
@@ -31,13 +37,26 @@
     <div class="com-area-out" style="text-align:center;">
     </div>
   </div> {% endcomment %}
-  <div class="com-area" style="margin: -20px auto auto auto; width: 540px; height: 70px;" >
+  <div class="com-area" style="margin: -20px auto auto auto; padding-top:50px;width: 670px;" >
     <div class="row">
       <div class="col-md-1"></div>
         <div class="col-md-10">
-          <form id="reason_form" action="" method="post" enctype='multipart/form-data'>
+          <form id="form" action="" method="post" enctype='multipart/form-data'>
             {% csrf_token %}
-            {{form}}
+
+            {{ form.patient }}
+            {{ form.gender }}
+            {{ form.age }}
+
+            <div style="border-left: solid 1px gray;border-right: solid 1px gray;border-radius:10px;" class="form-group col-xs-12 col-md-12">
+              <label for="{{form.height.name}}" title="">{{ form.height.label }}:</label>
+              <span id="#id_height_value" style="padding-left:10px;"></span>
+              <div>
+                {{ form.height }}
+              </div>
+              {{form.height.errors}}
+            </div>
+
             <input type="submit" value="Submit">
           </form>
         </div>
@@ -51,5 +70,16 @@
 <!-- Specific JS goes HERE --> 
 {% block javascripts %}
 <script>
+  $(document).ready(function(){
+    show_height();
+    $("#id_height_value").change(function(){show_height()});
+  });
+
+  function show_height(){
+    var value = $("#id_height").val();
+    $("#id_height_value").text(value);
+    console.log(value)
+  }
+
 </script>
 {% endblock javascripts %}

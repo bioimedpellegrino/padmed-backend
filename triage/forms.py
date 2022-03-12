@@ -28,6 +28,7 @@ class AnagraficaForm(forms.ModelForm):
             'patient': forms.HiddenInput(),
             'gender': forms.HiddenInput(),
             'birth_year': forms.HiddenInput(),
+            'height': forms.TextInput(attrs={'type': 'range','min':0,'max':220})
         }
         labels = {
             "patient":"Paziente",
