@@ -91,7 +91,7 @@
     let stopButton = document.getElementById("stopButton");
     let logElement = document.getElementById("log");
 
-    let recordingTimeMS = 50000;
+    let recordingTimeMS = 48000;
     let p_measure_result;
 
 
@@ -172,7 +172,7 @@
 
     function doMeasure(){
       startButton.click();
-      let stop = setTimeout(stopMeasure, 60000);
+      let stop = setTimeout(stopMeasure, 53000);
     }
 
     function sendData(data, access_id) {
@@ -195,7 +195,7 @@
                   deviceId: { exact: devId },
                   height: { min: 500, max: 500 },
                   width: { min: 500, max: 500 },
-                  frameRate: { min: 30, max: 30 },
+                  frameRate: { min: 15, ideal: 24, max: 30 },
                 },
               audio: false
         }).then(stream => {
