@@ -89,6 +89,7 @@ class ReceptionsView(APIView):
             already_compiled = False
             if declared_anag is not None:
                 already_compiled = declared_anag.compiled
+                print("already_compiled",already_compiled)
             if not already_compiled:
                 patient.declared_anag = {
                     "birth_year":fiscal_code_decoded["birthdate"].year,
@@ -137,12 +138,12 @@ class AnagraficaView(APIView):
         access = get_object_or_404(TriageAccess,pk=access_id)
         patient = access.patient
         declared_anag = patient.declared_anag
-        form = AnagraficaForm(
-            initial={
-                "patient":patient,
-                "birth_year":declared_anag.birth_year,
-                "gender":declared_anag.gender,
-            })
+        form = AnagraficaForm(instance=declared_anag)
+            # initial={
+            #     "patient":patient,
+            #     "birth_year":declared_anag.birth_year,
+            #     "gender":declared_anag.gender,
+            # })
         return render(request, self.TEMPLATE_NAME, {'form': form, 'user': user})
     
     @method_decorator(totem_login_required(login_url="/login/"))
@@ -159,7 +160,9 @@ class AnagraficaView(APIView):
 
         access_id = int(kwargs.get('access_id', None))
         access = get_object_or_404(TriageAccess,pk=access_id)
-        form = AnagraficaForm(request.POST)
+        patient = access.patient
+        declared_anag = patient.declared_anag
+        form = AnagraficaForm(request.POST,instance=declared_anag)
         
         if form.is_valid():
             declared_anag = form.save()
