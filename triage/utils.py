@@ -23,7 +23,7 @@ def generate_video_measure(file_path, video_id):
     fourcc = cv2.VideoWriter_fourcc(*'MPEG')
     video_name = 'tmp/' + "{}.avi".format(video_id)
     video_path = os.path.join(settings.MEDIA_ROOT, video_name)
-    out = cv2.VideoWriter(video_path,fourcc, 17, (frame_height, frame_width)) 
+    out = cv2.VideoWriter(video_path,fourcc, 15, (frame_height, frame_width)) 
     video_frames = []
     ret = True
     # Iterate frame by frame and store into a numpy array
