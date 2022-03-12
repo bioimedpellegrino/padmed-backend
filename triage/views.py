@@ -178,9 +178,9 @@ class RecordVideoView(APIView):
         triage_access.status_tracker.status = triage_access.status_tracker.loading_configurations
         config_path = os.path.join(settings.CORE_DIR, "config.json")
         config = load_config(config_path)
-        measurement_id, logs = asyncio.run(make_measure(config=config, config_path=config_path, video_path=video_path, start_time=settings.START_TIME, end_time=settings.END_TIME,access_tracker=triage_access.status_tracker))
+        measurement_id, logs = asyncio.run(make_measure(config=config, config_path=config_path, video_path=video_path, start_time=settings.START_TIME, end_time=settings.END_TIME,access_tracker=None))
         # Logger
-        triage_access.status_tracker.status = triage_access.status_tracker.saving_logs
+        #triage_access.status_tracker.status = triage_access.status_tracker.saving_logs
         log = MeasureLogger()
         log.triage_access = triage_access
         log.log = json.dumps(logs)
@@ -191,14 +191,14 @@ class RecordVideoView(APIView):
         p_measure_result.measurement_id = measurement_id
         # Retrive comprehensive measurement informations
         time.sleep(2)
-        triage_access.status_tracker.status = triage_access.status_tracker.receiving_results
+        #triage_access.status_tracker.status = triage_access.status_tracker.receiving_results
         result = asyncio.run(get_measurement(config=config, measurement_id=measurement_id))
         p_measure_result.result = result
         p_measure_result.save()
         triage_access.status_tracker.status = triage_access.status_tracker.unpack_results
         p_measure_result.measure_short = unpack_result_deepaffex(result)
         p_measure_result.save()
-        triage_access.status_tracker.status = triage_access.status_tracker.printing_results
+        #triage_access.status_tracker.status = triage_access.status_tracker.printing_results
         
         return Response({'p_measure_result': p_measure_result.pk }, status=status.HTTP_200_OK)
     
