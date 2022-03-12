@@ -214,12 +214,15 @@ class Patient(models.Model):
 
     @property
     def declared_anag(self):
-        latest_anag = None
-        latest_datetime = DeclaredAnagrafica.objects.latest('created')
-        if latest_datetime:
+        try:
+            latest_anag = None
+            latest_datetime = DeclaredAnagrafica.objects.latest('created')
+            if latest_datetime:
+                latest_anag = DeclaredAnagrafica.objects.get(created=latest_datetime)
+        except:
             latest_anag = DeclaredAnagrafica.objects.get(created=latest_datetime)
             
-        return latest_anag
+        return latest_anag = DeclaredAnagrafica.objects.get(patient=self)
     
     @declared_anag.setter
     def declared_anag(self,values):
