@@ -236,7 +236,7 @@ class Patient(models.Model):
         latest_anag = None
         all_anagrafica =  self.declaredanagrafica_set.filter(expired=False)
         if all_anagrafica:
-            latest_anag = DeclaredAnagrafica.objects.latest('created')
+            latest_anag = all_anagrafica.latest('created')
             # latest_anag = DeclaredAnagrafica.objects.get(created=latest_datetime)
             expired = latest_anag.update_expired()
             if expired:

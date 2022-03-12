@@ -216,7 +216,7 @@ async def retrieve_sdk_config(config, config_file, sdk_id):
 
         return base64.standard_b64decode(config["study_cfg_data"])
     
-async def make_measure(config, config_path, video_path, demographics={}, start_time=0, end_time=30, rotation=None, fps=None, debug_study_cfg_file=None, profile_id="", partner_id=""):
+async def make_measure(config, config_path, video_path, demographics={}, start_time=0, end_time=40, rotation=None, fps=None, debug_study_cfg_file=None, profile_id="", partner_id=""):
     
     # access_tracker.status = access_tracker.initializing_dfx
     token = dfxapi.Settings.user_token if dfxapi.Settings.user_token else dfxapi.Settings.device_token
@@ -282,7 +282,7 @@ async def make_measure(config, config_path, video_path, demographics={}, start_t
     chunk_duration_s = float(settings.CHUNK_DURATION)
     frames_per_chunk = math.ceil(chunk_duration_s * imreader.fps)
     app.number_chunks = math.ceil(imreader.frames_to_process / frames_per_chunk)
-    print(imreader.frames_to_process, frames_per_chunk, app.number_chunks)
+    print(imreader.frames_to_process, frames_per_chunk, app.number_chunks, imreader.fps)
     app.begin_frame = imreader.start_frame
     app.end_frame = imreader.stop_frame
     logs["4"] = "Created DFX Collector: %s %s %s" %(imreader.frames_to_process, frames_per_chunk, app.number_chunks)
