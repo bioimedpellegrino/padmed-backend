@@ -233,6 +233,7 @@ async def make_measure(config, config_path, video_path, demographics={}, start_t
         #     with open(demographics, "r") as f:
         #         app.demographics = json.load(f)
         app.demographics = demographics
+        print(demographics)
         
         # Create a face tracker
         if settings.FACE_TRACKER == 'VISAGE':

@@ -237,7 +237,7 @@ class RecordVideoView(APIView):
             patient_video.video = video
             patient_video.save()
             #Make the measure
-            anagrafica = triage_access.patient.declared_anag
+            anagrafica = triage_access.patient.declared_anag.to_anag()
             video_path = os.path.join(settings.MEDIA_ROOT, video)
             triage_access.status_tracker.status = triage_access.status_tracker.loading_configurations
             config_path = os.path.join(settings.CORE_DIR, "config.json")
