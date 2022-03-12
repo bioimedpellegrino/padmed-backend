@@ -136,6 +136,17 @@ class DeclaredAnagrafica(models.Model):
             "diabetes": self.diabetes,
             "bloodpressuremedication": self.bloodpressuremedication
         }
+    
+    def to_anag(self):
+        return {
+            "gender": self.gender,
+            "age": self.age,
+            "height": self.height,
+            "weight": self.weight,
+            "smoking": self.smoking,
+            "diabetes": self.diabetes,
+            "bloodpressuremedication": self.bloodpressuremedication
+        }
         
     @property    
     def compiled(self):
