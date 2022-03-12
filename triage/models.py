@@ -99,6 +99,8 @@ class DeclaredAnagrafica(models.Model):
         ("male","Maschio"),
         ("female","Femmina"),
     )
+    ANAG_EXPIRES_AFTER = 31536000 # seconds (1 year)
+    
     patient = models.ForeignKey('Patient',on_delete=models.CASCADE,null=True,blank=True)
     
     birth_year = models.IntegerField(verbose_name="Anno di nascita",null=True,blank=True)
@@ -109,7 +111,7 @@ class DeclaredAnagrafica(models.Model):
     diabetes = models.BooleanField(verbose_name="Diabetico",null=True,blank=True)
     bloodpressuremedication = models.BooleanField(verbose_name="Assume antipertensivi",null=True,blank=True)
     
-    expired = models.BooleanField(null=False,blank=False)
+    expired = models.BooleanField(null=False,blank=False,default=False)
     created = models.DateTimeField(verbose_name="Data di creazione",auto_now_add=True)
     modified = models.DateTimeField(verbose_name="Data di creazione",blank=True, null=True,auto_now=True)
     
@@ -134,14 +136,21 @@ class DeclaredAnagrafica(models.Model):
             "diabetes": self.diabetes,
             "bloodpressuremedication": self.bloodpressuremedication
         }
-    
+        
+    def compiled(self):
+        values = self.to_dict
+        for key,value in values.items():
+            if value is None:
+                return False
+        return True
+        
     @classmethod
     def from_dict(cls,patient,values={}):
         new_anag = cls(patient=patient)
         for key,value in values.items():
             setattr(new_anag,key,value)
-        cls.save()
-        return cls
+        new_anag.save()
+        return new_anag
     
     def update_expired(self):
         result = True
@@ -160,8 +169,6 @@ class Patient(models.Model):
     """
     Model Patient
     """
-    
-    ANAG_EXPIRES_AFTER = 31536000 # seconds (1 year)
     
     id = models.AutoField(primary_key=True)
     # user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -215,9 +222,13 @@ class Patient(models.Model):
     @property
     def declared_anag(self):
         latest_anag = None
-        latest_datetime = DeclaredAnagrafica.objects.latest('created')
-        if latest_datetime:
-            latest_anag = DeclaredAnagrafica.objects.get(created=latest_datetime)
+        all_anagrafica =  self.declaredanagrafica_set.filter(expired=False)
+        if all_anagrafica:
+            latest_anag = DeclaredAnagrafica.objects.latest('created')
+            # latest_anag = DeclaredAnagrafica.objects.get(created=latest_datetime)
+            expired = latest_anag.update_expired()
+            if expired:
+                latest_anag = None
             
         return latest_anag
     

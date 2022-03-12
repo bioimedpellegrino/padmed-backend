@@ -87,7 +87,7 @@ class ReceptionsView(APIView):
             
             declared_anag = patient.declared_anag
             already_compiled = False
-            if declared_anag is not None and not declared_anag.update_expired():
+            if declared_anag is not None:
                 already_compiled = declared_anag.compiled
             if not already_compiled:
                 patient.declared_anag = {
@@ -140,8 +140,8 @@ class AnagraficaView(APIView):
         form = AnagraficaForm(
             initial={
                 "patient":patient,
-                "birth_year":declared_anag["birth_year"],
-                "gender":declared_anag["gender"],
+                "birth_year":declared_anag.birth_year,
+                "gender":declared_anag.gender,
             })
         return render(request, self.TEMPLATE_NAME, {'form': form, 'user': user})
     

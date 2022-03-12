@@ -11,7 +11,7 @@ class PatientForm(forms.Form):
         css = {'all': ('/staticfiles/assets/css/argon-dashboard.css')}
 
 class AnagraficaForm(forms.ModelForm):
-    class Media:
+    class Meta:
         from .models import DeclaredAnagrafica
         model = DeclaredAnagrafica
         exclude = ("id","expired","created","modified")

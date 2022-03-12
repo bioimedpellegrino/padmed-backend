@@ -1,0 +1,55 @@
+{% extends 'layouts/base-triage.html' %}
+
+{% block title %} Receptions {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}    
+  <!-- Header container -->
+  <div class="container-fluid">
+      <div class="row"><div class="col-md-12 mb-5"></div></div>
+      <div class="row header-bar">
+          <div class="col-md-2 "></div>
+          <div class="col-md-1">
+              <div class="com-triangle-left"></div>
+          </div>
+          <div class="col-md-6">
+              <span><b>INSERIRE I PROPRI DATI ANAGRAFICI</b></span>
+          </div>
+          <div class="col-md-1">
+              <div class="com-triangle-right"></div>
+          </div>
+          <div class="col-md-2"></div>
+      </div>
+  </div>
+  <!-- Header container -->
+  
+  <!-- Main communication div -->
+  {% comment %} <div class="com-area">
+    <div class="com-area-triangle"></div>
+    <div class="com-area-out" style="text-align:center;">
+    </div>
+  </div> {% endcomment %}
+  <div class="com-area" style="margin: -20px auto auto auto; width: 540px; height: 70px;" >
+    <div class="row">
+      <div class="col-md-1"></div>
+        <div class="col-md-10">
+          <form id="reason_form" action="" method="post" enctype='multipart/form-data'>
+            {% csrf_token %}
+            {{form}}
+            <input type="submit" value="Submit">
+          </form>
+        </div>
+      <div class="col-md-1"></div>
+    </div>
+  </div>
+  <!-- Main communication div -->
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+<script>
+</script>
+{% endblock javascripts %}
