@@ -220,7 +220,7 @@ class Patient(models.Model):
             if latest_datetime:
                 latest_anag = DeclaredAnagrafica.objects.get(created=latest_datetime)
         except:
-            latest_anag = DeclaredAnagrafica.objects.get(created=latest_datetime)
+            latest_anag = DeclaredAnagrafica.objects.filter(patient=self).first()
             
         return latest_anag
     
