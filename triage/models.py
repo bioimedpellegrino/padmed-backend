@@ -222,7 +222,7 @@ class Patient(models.Model):
         except:
             latest_anag = DeclaredAnagrafica.objects.get(created=latest_datetime)
             
-        return latest_anag = DeclaredAnagrafica.objects.get(patient=self)
+        return latest_anag
     
     @declared_anag.setter
     def declared_anag(self,values):
