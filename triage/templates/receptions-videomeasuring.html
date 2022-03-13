@@ -28,6 +28,18 @@
     padding: 0 10px;
     height: 35px;
   }
+  .overlay {
+    position: relative;
+  }
+  .overlay img{
+    position:absolute;
+    margin-top:10%;
+    height:70%;
+    width:auto;
+    object-fit:cover;
+    pointer-events:none;
+    z-index:2;
+  }
   /* ------------- */
 </style>
 {% endblock stylesheets %}
@@ -35,49 +47,52 @@
 
     <!-- Header container -->
     <div class="container-fluid">
-      <div class="row"><div class="col-md-12 mb-5"></div></div>
+      <div class="row">
+        <div class="col-md-12 mb-5">
+        </div>
+      </div>
       <div class="row header-bar">
-          <div class="col-md-2 "></div>
-          <div class="col-md-1">
-              <div class="com-triangle-left"></div>
-          </div>
-          <div class="col-md-6">
-              <span><b>MANTENERE IL VISO DENTRO AL RIQUADRO</b></span>
-          </div>
-          <div class="col-md-1">
-              <div class="com-triangle-right"></div>
-          </div>
-          <div class="col-md-2"></div>
+        <div class="col-md-2 "></div>
+        <div class="col-md-1">
+            <div class="com-triangle-left"></div>
+        </div>
+        <div class="col-md-6">
+            <span><b>MANTENERE IL VISO DENTRO AL RIQUADRO</b></span>
+        </div>
+        <div class="col-md-1">
+            <div class="com-triangle-right"></div>
+        </div>
+        <div class="col-md-2"></div>
       </div>
     </div>
     <!-- Header container -->
 
     <!-- Main communication div -->
     <div class="com-area com-area-video">
-        <div class="com-area-triangle"></div>
-        <div id="startButton" class="button"></div>
-        <div class="com-area-out-base-video com-area-out-video"> <!--rot-90-->
-          {% if ROTATE_90_COUNTERCLOCKWISE %}
+      <div class="com-area-triangle"></div>
+      <div id="startButton" class="button"></div>
+      <div class="com-area-out-base-video com-area-out-video overlay"> <!--rot-90-->
+        {% if ROTATE_90_COUNTERCLOCKWISE %}
           <div class="flip-horizontal">
             <video id="preview" class="rot-270" width="500" autoplay muted></video>
           </div>
-          {% else %}
-            <video id="preview" width="500" autoplay muted></video>
-          {% endif %}
-          <div style="display:none">
-            <div id="stopButton" class="button"></div>
-            <video id="recording" width="500" height="500" controls></video>
-          </div>
-
+        {% else %}
+          <img src="/static/assets/img/triage/face-2.png" alt="...">
+          <video id="preview" width="500" autoplay muted></video>
+        {% endif %}
+        <div style="display:none">
+          <div id="stopButton" class="button"></div>
+          <video id="recording" width="500" height="500" controls></video>
         </div>
-        <div class="com-area-in">
-          <div id="progressBar">
-            <div class="bar"></div>
-          </div>
-          <div id="progressComplete">
-            <span></span>
-          </div>
+      </div>
+      <div class="com-area-in">
+        <div id="progressBar">
+          <div class="bar"></div>
         </div>
+        <div id="progressComplete">
+          <span></span>
+        </div>
+      </div>
     </div>
     <!-- Main communication div -->
 
