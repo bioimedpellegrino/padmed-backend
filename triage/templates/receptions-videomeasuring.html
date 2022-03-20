@@ -74,11 +74,12 @@
       <div class="com-area-out-base-video com-area-out-video overlay"> <!--rot-90-->
         {% if ROTATE_90_COUNTERCLOCKWISE %}
           <div class="flip-horizontal">
-            <video id="preview" class="rot-270" width="500" autoplay muted></video>
+            <video id="preview" width="500" autoplay muted></video>
           </div>
         {% else %}
-          <img src="/static/assets/img/triage/face-2.png" alt="...">
-          <video id="preview" width="500" autoplay muted></video>
+          <div class="flip-horizontal">
+            <video id="preview" width="500" autoplay muted></video>
+          </div>
         {% endif %}
         <div style="display:none">
           <div id="stopButton" class="button"></div>
