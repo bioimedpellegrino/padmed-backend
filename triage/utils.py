@@ -30,8 +30,8 @@ def generate_video_measure(file_path, video_id):
     while (ret): 
         ret, frame = cap.read() 
         if ret:
-            if settings.ROTATE_90_COUNTERCLOCKWISE:
-                frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
+            # if settings.ROTATE_90_COUNTERCLOCKWISE:
+            #     frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
             video_frames.append(frame)
     video_frames = np.array(video_frames)
     # Save frame array into file
