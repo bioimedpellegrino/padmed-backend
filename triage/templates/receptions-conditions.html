@@ -38,29 +38,40 @@
         </div>
         <div class="com-area-in">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-4"></div>
+                <div class="col-md-2">
+                    <div class="com-area-out mr-5" style="width: 110px; height: 115px">
+                        <img class="info-solid" width="70px" height="70px">
+                    </div>
+                </div>
+                <div class="col-md-5"></div>
+            </div>
+            <div class="row mt-5">
+                <div class="col-md-1"></div>
+                <div class="col-md-5">
                     <form action="" method="post" enctype='multipart/form-data'>
                         {% csrf_token %}
                         <div class="form-check">
                             <button type="submit" class="button-check-input" name="input_true" id="id_input_true">
                                 <img class="image-check v-image-check">
                             </button>
-                            <label class="label-check v-label-check" for="id_input_true">
-                                ACCONSENTO
-                            </label>
                         </div>
+                        <label class="label-check v-label-check" for="id_input_true" style="font-size: 18px">
+                            ACCONSENTO
+                        </label>
                     </form>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-check">
+                <div class="col-md-5">
+                    <div class="form-check ml-4">
                         <button type="checkbox" class="button-check-input" name="input_false" id="id_input_false">
                             <img class="image-check x-image-check">
                         </button>
-                        <label class="label-check x-label-check" for="id_input_false">
-                            NON ACCONSENTO
-                        </label>
                     </div>
+                    <label class="label-check x-label-check ml-3" for="id_input_false" style="font-size: 18px">
+                        NON ACCONSENTO
+                    </label>
                 </div>
+                <div class="col-md-1"></div>
             </div>
         </div>
     </div>
