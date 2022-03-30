@@ -37,24 +37,30 @@
             </p>
         </div>
         <div class="com-area-in">
-            <form action="" method="post" enctype='multipart/form-data'>
-                {% csrf_token %}
-                <div class="form-check">
-                    <button type="submit" class="button-check-input" name="input_true" id="id_input_true">
-                        <img class="image-check v-image-check">
-                    </button>
-                    <label class="label-check v-label-check" for="id_input_true">
-                        ACCONSENTO
-                    </label>
+            <div class="row">
+                <div class="col-md-6">
+                    <form action="" method="post" enctype='multipart/form-data'>
+                        {% csrf_token %}
+                        <div class="form-check">
+                            <button type="submit" class="button-check-input" name="input_true" id="id_input_true">
+                                <img class="image-check v-image-check">
+                            </button>
+                            <label class="label-check v-label-check" for="id_input_true">
+                                ACCONSENTO
+                            </label>
+                        </div>
+                    </form>
                 </div>
-            </form>
-            <div class="form-check">
-                <button type="checkbox" class="button-check-input" name="input_false" id="id_input_false">
-                    <img class="image-check x-image-check">
-                </button>
-                <label class="label-check x-label-check" for="id_input_false">
-                    NON ACCONSENTO
-                </label>
+                <div class="col-md-6">
+                    <div class="form-check">
+                        <button type="checkbox" class="button-check-input" name="input_false" id="id_input_false">
+                            <img class="image-check x-image-check">
+                        </button>
+                        <label class="label-check x-label-check" for="id_input_false">
+                            NON ACCONSENTO
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
