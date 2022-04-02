@@ -23,7 +23,7 @@ class TriageCodeAdmin(admin.ModelAdmin):
     pass
 
 class TriageAccessReasonAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['reason', 'order']
 
 class TriageAccessAdmin(admin.ModelAdmin):
     pass

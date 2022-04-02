@@ -183,7 +183,7 @@ class ReceptionsReasonsView(APIView):
         access_id = int(kwargs.get('access_id', None))
         access = get_object_or_404(TriageAccess,pk=access_id)
         
-        reasons = TriageAccessReason.objects.filter(hospital=access.hospital) #TODO: filter by "enable" (to be defined)
+        reasons = TriageAccessReason.objects.filter(hospital=access.hospital).order_by('order') #TODO: filter by "enable" (to be defined)
 
         return render(request, self.TEMPLATE_NAME, {'access_id': access_id, 'reasons': reasons, 'user': user})
     

@@ -291,6 +291,7 @@ class TriageAccessReason(models.Model):
     hospital = models.ForeignKey(Hospital, blank=True, null=True, on_delete=models.CASCADE)
     reason = models.CharField(blank=True, null=True, max_length=512, default="")
     related_code = models.ForeignKey(TriageCode, blank=True, null=True, on_delete=models.PROTECT)
+    order = models.IntegerField(null=True, default=0)
     
     def __str__(self):
         return self.reason

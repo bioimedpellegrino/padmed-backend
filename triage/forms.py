@@ -37,9 +37,9 @@ class AnagraficaForm(forms.ModelForm):
             "gender":"Sesso",
             "height":"ALTEZZA",
             "weight":"PESO",
-            "smoking":"Fumatore",
-            "diabetes":"Diabetico",
-            "bloodpressuremedication":"Assumi antipertensivi",
+            "smoking":"FUMATORE",
+            "diabetes":"DIABETICO",
+            "bloodpressuremedication":"IPERTESO",
         }
         required = (
             'patient',
