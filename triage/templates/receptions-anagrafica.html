@@ -112,16 +112,11 @@
               <input style="position:absolute;right:.5em;right:.5em;bottom:5%;display:inline-block;width:100px;" type="checkbox" name="bloodpressuremedication" id="id_bloodpressuremedication" class="form-control" {% if form.bloodpressuremedication.value == True %}checked="checked"{% endif %}>
               {{form.bloodpressuremedication.errors}}
             </div>
-
-            <div class="form-check">
-              <div style="text-align: center; margin-left:10px; margin-top:30px;" class="form-check">
-                <label style="" class="label-check v-label-check" for="id_input_true">
-                    Conferma
-                </label>
-                <button style="" type="submit" class="button-check-input" name="submit" value="Submit" id="id_input_true">
-                    <img class="image-check v-image-check">
-                </button>
-              </div>
+            <div style="text-align:center">
+              <button style="font-weight: bold;" type="submit" class="btn btn-triage mb-3" name="submit" value="Submit" id="id_input_true">
+                  CONFERMA
+              </button>
+            </div>
             </div>
           </form>
         </div>
