@@ -40,8 +40,8 @@
             <div class="row">
                 <div class="col-md-4"></div>
                 <div class="col-md-2">
-                    <div class="com-area-out mr-5" style="width: 110px; height: 115px">
-                        <img class="info-solid" width="70px" height="70px">
+                    <div class="com-area-out mr-5" style="width: 110px; height: 115px" onclick="openModal()">
+                        <img class="info-solid" onclick="openModal()" width="70px" height="70px">
                     </div>
                 </div>
                 <div class="col-md-5"></div>
@@ -75,10 +75,61 @@
             </div>
         </div>
     </div>
+    <div class="modal" tabindex="-1" role="dialog" id="modal">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">INFORMATIVA SULLA PRIVACY</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                <strong>Generale</strong></br>
+                Si prega di leggere attentamente le presenti Condizioni prima di utilizzare i Servizi PadMed. 
+                Accedendo o utilizzando i Servizi, l'utente dichiara di aver letto, compreso e accettato di essere legalmente vincolato da queste Condizioni. Lei dichiara di possedere tutta l'autorità legale necessaria per accettare questi Termini a nome suo. Se non accetta di essere vincolato da questi Termini nella loro interezza, non può utilizzare i Servizi</br></br>
+                <strong>Politica sulla privacy</strong></br>
+                Accedendo o utilizzando i Servizi PadMed, l'utente accetta che possiamo raccogliere e utilizzare le sue informazioni di identificazione personale e altri dati (come altezza, peso, età, sesso, ecc.) in conformità con l'Informativa sulla privacy del GDPR.
+                Il trattamento dei dati personali si basa sull'Art. 6. (1) (a) GDPR  e sull'Art. 6. (1) (b) GDPR. La base giuridica per il trattamento dei dati sensibili (dati sanitari) è l'Art. 9 (2) (a) GDPR, cioè il tuo consenso esplicito.</br></br>
+                <strong>I NOSTRI SERVIZI NON SONO DESTINATI A SCOPI MEDICI.</strong></br>
+                I SERVIZI NON OFFRONO ALCUN TIPO DI CONSULENZA MEDICA E NON SONO DESTINATI AD ALCUN USO O SCOPO MEDICO. I NOSTRI SERVIZI SONO INTESI SOLO PER IL BENESSERE GENERALE.
+                LE MISURAZIONI ESTIMATIVE ("MISURAZIONI") FORNITE ALL'UTENTE DI STATI FISIOLOGICI E PSICOLOGICI TRA CUI LA FREQUENZA CARDIACA, LO STRESS E LA PRESSIONE SANGUIGNA NON DEVONO ESSERE TRATTATE COME CONSIGLI MEDICI. 
+                LE MISURAZIONI CHE VI FORNIAMO NON SONO DESTINATE AD ESSERE UTILIZZATE PER SCOPI MEDICI O PER DIAGNOSTICARE, TRATTARE, CURARE O PREVENIRE QUALSIASI MALATTIA, DISTURBO O LESIONE. NELLA MISURA MASSIMA CONSENTITA DALLA LEGGE APPLICABILE, L'UTENTE ACCETTA ESPRESSAMENTE CHE NON STIAMO FORNENDO ALCUN CONSIGLIO MEDICO ATTRAVERSO I NOSTRI SERVIZI. 
+                TUTTI I CONTENUTI FORNITI DAI NOSTRI SERVIZI, COMPRESE LE MISURAZIONI, NON SONO DESTINATI AD ESSERE E NON DEVONO ESSERE UTILIZZATI AL POSTO DI (A) IL CONSIGLIO DEL VOSTRO MEDICO O DI ALTRI PROFESSIONISTI DEL SETTORE MEDICO, E (B) UNA VISITA, CHIAMATA O CONSULTAZIONE CON IL VOSTRO MEDICO O ALTRI PROFESSIONISTI DEL SETTORE MEDICO. </br></br>
+                L'USO DEI NOSTRI SERVIZI NON COSTITUISCE O CREA UN RAPPORTO MEDICO-PAZIENTE, TERAPISTA-PAZIENTE O ALTRO PROFESSIONISTA SANITARIO TRA PADMED E L’UTENTE.</br></br>
+                <strong>Accuratezza</strong></br>
+                LE MISURAZIONI FORNITE ALL'UTENTE SI BASANO SU INDICATORI E STANDARD SVILUPPATI DA PADMED STESSA E SONO SOLO PER SCOPI GENERALI DI BENESSERE, SENZA ALCUNA DICHIARAZIONE O GARANZIA, ESPRESSA O IMPLICITA. ANCHE SE FACCIAMO OGNI SFORZO PER FORNIRE MISURE ESTIMATIVE ACCURATE, NON DIAMO ALCUNA GARANZIA E DECLINIAMO OGNI RESPONSABILITÀ PER QUALSIASI ACCURATEZZA, AFFIDABILITÀ, DISPONIBILITÀ, SICUREZZA, COMPLETEZZA O USO CORRETTO DELLE MISURE, DEI CONTENUTI E DI QUALSIASI ALTRA INFORMAZIONE O RISULTATO CHE RICEVI ATTRAVERSO I SERVIZI.</br></br>
+                <strong>Esclusione di garanzie e danni</strong></br>
+                L'USO DEI SERVIZI, DEL SOFTWARE E DEI CONTENUTI (COLLETTIVAMENTE, LA "SOLUZIONE PADMED"), E QUALSIASI APPLICAZIONE DI TERZE PARTI È INTERAMENTE A RISCHIO DELL'UTENTE, E AD ECCEZIONE DI QUANTO DESCRITTO IN QUESTI TERMINI, SONO FORNITI "COME SONO". 
+                PADMED, LE SUE FILIALI E I SUOI AFFILIATI E FORNITORI NON GARANTISCONO CHE LA SOLUZIONE PADMED SIA O SARÀ SICURA, PRIVA DI BUG, VIRUS, INTERRUZIONE, PERDITA DI DATI, ERRORI, FURTO O DISTRUZIONE.
+                PADMED DECLINA OGNI RESPONSABILITÀ PER QUALSIASI USO IMPROPRIO O CATTIVO USO DEI SERVIZI (COME QUALSIASI MISURAZIONE NON AUTORIZZATA DI QUALSIASI ALTRA PERSONA SENZA IL CONSENSO ESPLICITO DI QUEST'ULTIMA), O USO DEI SERVIZI PER QUALSIASI SCOPO NON PREVISTO.</br></br>
+                <strong>Politica di feedback</strong></br>
+                Se ci inviate o rilasciate commenti o feedback, accettate che possiamo usarli, riprodurli e sfruttarli senza alcuna restrizione e compenso per voi, a meno che non sia stato concordato diversamente tra voi e PadMed.</br></br>
+                <strong>Sicurezza delle informazioni</strong></br>
+                Prendiamo sul serio l'affidabilità e la sicurezza, e mettiamo un grande sforzo per garantire che il nostro servizio funzioni sempre, e che sia un ambiente sicuro per i vostri dati. Usiamo ciò che crediamo essere i servizi di hosting "best-of-class" e tecnologie e servizi di sicurezza che crediamo forniscano un ambiente sicuro e protetto.
+                Tuttavia, nessun sistema è perfettamente sicuro o affidabile, Internet è un mezzo intrinsecamente insicuro e l'affidabilità dei servizi di hosting, degli intermediari Internet, del tuo fornitore di servizi Internet e di altri fornitori di servizi non può essere garantita. Quando utilizzi i Servizi, accetti questi rischi e la responsabilità di aver scelto di utilizzare una tecnologia che non fornisce sicurezza o affidabilità perfette.</br></br>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeModal()">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
     <!-- Main communication div -->
 
 <!-- Specific JS goes HERE --> 
 {% endblock content %}
 
 {% block javascripts %}
+<script>
+    function openModal(){
+        document.getElementById("modal").style.display = "block";
+        document.getElementById("modal").style.overflow = "auto";
+    }
+    function closeModal(){
+        document.getElementById("modal").style.display = "none";
+        document.getElementById("modal").style.overflow = "auto";
+
+    }
+</script>
 {% endblock javascripts %}
