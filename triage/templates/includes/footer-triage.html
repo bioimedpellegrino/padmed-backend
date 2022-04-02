@@ -8,11 +8,12 @@
             {{ user.totem_logged.hospital }}
             {% comment %} <span class="normal-text" style="color: black;">{{ user.totem_logged.hospital }}</span> {% endcomment %}
         </h2>
+        {% if show_arrow %}
+        <div class="row full-bottom-left">
+            <img src="/static/assets/img/triage/arrow90.png" onclick="sendToQuickPrinterChrome();">
+        </div>
+        {% endif %}
     </div>
-    {% if show_arrow %}
-    <div class="row full-bottom-left">
-        <img src="/static/assets/img/triage/arrow90.png" onclick="sendToQuickPrinterChrome();">
-      </div>
-    {% endif %}
+
 </footer>
 
