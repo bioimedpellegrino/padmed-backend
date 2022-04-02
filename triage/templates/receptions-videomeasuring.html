@@ -10,7 +10,7 @@
     width: 90%;
     margin: 10px auto;
     height: 35px;
-    background-color: #00a99d;
+    background-color: #5C5C5C;
   }
   #progressBar .bar {
     height: 100%;
@@ -18,8 +18,9 @@
     padding: 0 10px;
     line-height: 35px; /* same as #progressBar height if we want text middle aligned */
     width: 0;
-    background-color: #CBEA00;
+    background-color: #00a99d;
     box-sizing: border-box;
+    color: yellow;
   }
   #progressComplete {
     display:none;
@@ -57,7 +58,7 @@
             <div class="com-triangle-left"></div>
         </div>
         <div class="col-md-6">
-            <span><b>MANTENERE IL VISO DENTRO AL RIQUADRO</b></span>
+            <span><b>MANTENERE IL VISO DENTRO AL RIQUADRO E STARE FERMI</b></span>
         </div>
         <div class="col-md-1">
             <div class="com-triangle-right"></div>
@@ -87,8 +88,10 @@
         </div>
       </div>
       <div class="com-area-in">
-        <div id="progressBar">
-          <div class="bar"></div>
+        <div style="background-color: #828282">
+          <div id="progressBar">
+            <div class="bar"></div>
+          </div>
         </div>
         <div id="progressComplete">
           <span></span>
@@ -294,7 +297,7 @@
 
     function progress(timeleft, timetotal, $element) {
       var progressBarWidth = timeleft * $element.width() / timetotal;
-      $element.find('.bar').animate({ width: progressBarWidth }, 500).html(Math.floor(timeleft/60) + ":"+ timeleft%60);
+      $element.find('.bar').animate({ width: progressBarWidth }, 500).html(timeleft%60);
       if(timeleft > 0) {
           setTimeout(function() {
               progress(timeleft - 1, timetotal, $element);
