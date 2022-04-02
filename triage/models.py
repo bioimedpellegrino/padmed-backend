@@ -314,7 +314,7 @@ class TriageAccess(models.Model):
     hospital = models.ForeignKey(Hospital, blank=True, null=True, related_name='accesses', on_delete=models.CASCADE)
     totem = models.ForeignKey(Totem, blank=True, null=True, related_name='accesses', on_delete=models.CASCADE)
     triage_code = models.ForeignKey(TriageCode, blank=True, null=True, on_delete=models.PROTECT)
-    access_reason = models.ForeignKey(TriageAccessReason, blank=True, null=True, on_delete=models.PROTECT)
+    access_reason = models.ForeignKey(TriageAccessReason, blank=True, null=True, on_delete=models.CASCADE)
     access_date = models.DateTimeField(blank=True, null=True)
     exit_date = models.DateTimeField(blank=True, null=True)
     _status = models.CharField(max_length=32, blank=True, null=True)
