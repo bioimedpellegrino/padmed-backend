@@ -115,6 +115,9 @@ class DeclaredAnagrafica(models.Model):
     created = models.DateTimeField(verbose_name="Data di creazione",auto_now_add=True)
     modified = models.DateTimeField(verbose_name="Data di creazione",blank=True, null=True,auto_now=True)
     
+    def __str__(self):
+        return "{}".format(self.patient)
+    
     @property
     def age(self):
         today_year = timezone.localtime().year
@@ -176,6 +179,10 @@ class DeclaredAnagrafica(models.Model):
             self.expired = True
             self.save()
         return result
+
+    class Meta:
+        verbose_name = "Demografica - DeepAffex"
+        verbose_name_plural = "Demografiche"
     
 class Patient(models.Model):
     """
