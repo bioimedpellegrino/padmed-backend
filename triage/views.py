@@ -320,7 +320,7 @@ class PatientResultsError(APIView):
         user = AppUser.get_or_create_from_parent(request.user)
         access_id = request.POST.get('access_id')
         error = request.POST.get('error')
-        return render(request,'receptions-results-error.html', {'error': error, 'user': user,'access_id':access_id})
+        return render(request,'receptions-results.html', {'error': error, 'user': user,'access_id':access_id})
 
 class TestNFC(APIView):
     """[summary]
