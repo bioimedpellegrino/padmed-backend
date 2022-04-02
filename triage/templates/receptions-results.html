@@ -15,7 +15,7 @@
             <div class="com-triangle-left"></div>
         </div>
         <div class="col-md-6">
-            <span><b>RITIRA I TUOI RISULTATI!</b></span>
+            <span><b>CHECK UP COMPLETATO CON SUCCESSO!</b></span>
         </div>
         <div class="col-md-1">
             <div class="com-triangle-right"></div>
@@ -33,14 +33,18 @@
     <div class="row">
       <div class="col-md-4"></div>
       <div class="col-md-4" style="text-align:center;">
-        <h3>I TUOI RISULTATI VERRANNO STAMPATI A BREVE</h3>
+        <h3>I RISULTATI SARANNO DISPONIBILI A BREVE</h3>
       </div>
       <div class="col-md-4"></div>
     </div>
     <div class="row">
       <div class="col-md-4"></div>
       <div class="col-md-4" style="text-align:center;">
-        <h1>GRAZIE!</h1>
+        <h4>
+          RICORDIAMO CHE I RILEVAMENTI DI PADMED NON OFFRONO ALCUN TIPO DI CONSULENZA MEDICA
+          E NON SONO DESTINATI AD ALCUN USO A SCOPO MEDICO.
+          
+        </h4>
       </div>
       <div class="col-md-4"></div>
     </div>
@@ -76,8 +80,6 @@
   function sendHome(){
     location.href="{% url 'user_conditions' %}";
   }
-
- const printerTimeout = setTimeout(sendToQuickPrinterChrome, 7000);
 
 </script>
 
