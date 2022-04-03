@@ -52,14 +52,14 @@
             <div class="col-md-6 cit-command-l">
               <div class="cit-triangle-l"></div>
               <button class="button-check-input cit-button-l" type="submit" form="reason_form" value="{{reason.id}}" name="reason_id">
-                <img class="button-circle">
+                <img class="button-circle-{{forloop.counter}}">
               </button>
             </div>
         {% else %}
             <div class="col-md-6 cit-command-r">
               <div class="cit-triangle-r"></div>
               <button class="button-check-input cit-button-r"  type="submit" form="reason_form" value="{{reason.id}}" name="reason_id">
-                <img class="button-circle">
+                <img class="button-circle-{{forloop.counter}}">
               </button>
             </div>
           </div>
@@ -68,7 +68,7 @@
           {% if not forloop.counter|divisibleby:2 %}
               <div class="col-md-4 cit-command-r" style="visibility:hidden;">
                 <button class="button-check-input" name="hiddenbutton" id="id_hiddenbutton">
-                  <img class="button-circle">
+                  <img class="button-circle-{{forloop.counter}}">
                 </button>
                 <div class="cit-triangle-r"></div>
               </div>
