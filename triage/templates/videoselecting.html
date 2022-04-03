@@ -34,7 +34,7 @@
       <div class="com-area-triangle"></div>
       <div class="com-area-out-base-video com-area-out-video overlay">
         <div id="startButton" class="button"></div>
-        <select id="video-source" style="width: 95%"></select>
+        <select id="video-source" style="width: 95%" onchange="hideDeviceId()"></select>
         <div style="display:none">
             <label>Select Audio Source (Microphone)</label>
             <select id="audio-source"></select>
@@ -101,6 +101,10 @@
         let videoId = document.getElementById("video-source").value;
         setCookie("videoId", videoId, 1000);
         update_text_video_source(videoId);
+    }
+
+    function hideDeviceId(){
+        document.getElementById("output").style.display = 'none';
     }
 
     function setCookie(name,value,days) {
