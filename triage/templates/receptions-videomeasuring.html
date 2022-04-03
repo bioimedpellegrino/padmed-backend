@@ -8,14 +8,13 @@
   // progress bar //
   #progressBar {
     width: 90%;
-    margin: 10px auto;
     height: 35px;
     background-color: #5C5C5C;
   }
   #progressBar .bar {
     height: 100%;
     text-align: right;
-    padding: 0 10px;
+    padding-top: 7px;
     line-height: 35px; /* same as #progressBar height if we want text middle aligned */
     width: 0;
     background-color: #00a99d;
@@ -24,9 +23,8 @@
   }
   #progressComplete {
     display:none;
+    padding-top: 7px;
     text-align: center;
-    margin: 10px auto;
-    padding: 0 10px;
     height: 35px;
   }
   .overlay {
@@ -74,13 +72,13 @@
       <div id="startButton" class="button"></div>
       <div class="com-area-out-base-video com-area-out-video overlay"> <!--rot-90-->
         {% if ROTATE_90_COUNTERCLOCKWISE %}
-          <div class="flip-horizontal" style="width:500px; height:380px; overflow:hidden">
-            <video  id="preview" style="width:150%; left:-50%; top:-25%; position:relative" autoplay muted>
+          <div class="flip-horizontal" style="width:500px; height:340px; overflow:hidden">
+            <video  id="preview" style="width:125%; position:relative" autoplay muted>
             </video>
           </div>
         {% else %}
-          <div class="flip-horizontal" style="width:500px; height:500px; overflow:hidden">
-            <video  id="preview" style="width:200%; left:-50%; top:-25%; position:relative" autoplay muted>
+          <div class="flip-horizontal" style="width:500px; height:340px; overflow:hidden">
+            <video  id="preview" style="width:125%; position:relative" autoplay muted>
             </video>
           </div>
         {% endif %}
