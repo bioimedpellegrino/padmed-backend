@@ -34,7 +34,9 @@
       <div class="com-area-triangle"></div>
       <div class="com-area-out-base-video com-area-out-video overlay">
         <div id="startButton" class="button"></div>
-        <select id="video-source" style="width: 95%" onchange="hideDeviceId()"></select>
+        <select id="video-source" style="width: 95%">
+            <option></option>
+        </select>
         <div style="display:none">
             <label>Select Audio Source (Microphone)</label>
             <select id="audio-source"></select>
@@ -42,8 +44,10 @@
         <label class="mt-3 mb-3"> Anteprima:</label>
         <!-- Important to set autoplay to true, otherwise the video won't play anything at the beginning -->
         <video autoplay="true" id="player" controls muted></video>
-        <p id="output" class="mt-3" style="display:none; width:100%; font-weight:bold;"></p>
-        <button class="mb-3" onclick="selectVideo()">Seleziona camera</button>
+        <div id="devid" style="display: none;">
+            <p id="output" class="mt-3"></p>
+        </div>
+        <button class="mt-3 mb-3" onclick="selectVideo()">Seleziona camera</button>
     </div>
     <!-- Main communication div -->
 
@@ -94,17 +98,14 @@
 
     function update_text_video_source(videoSource){
         document.getElementById("output").innerHTML = 'Device ID selezionato: ' + videoSource.slice(0,10) + "..." + videoSource.slice(-10);
-        document.getElementById("output").style.display = 'block';
+        document.getElementById("devid").style.display = 'block';
     }
 
     function selectVideo(){
         let videoId = document.getElementById("video-source").value;
         setCookie("videoId", videoId, 1000);
         update_text_video_source(videoId);
-    }
-
-    function hideDeviceId(){
-        document.getElementById("output").style.display = 'none';
+        alert("OK!");
     }
 
     function setCookie(name,value,days) {
