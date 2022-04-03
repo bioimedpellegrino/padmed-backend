@@ -93,14 +93,14 @@
     });
 
     function update_text_video_source(videoSource){
-        document.getElementById("output").innerHTML = 'Device ID selezionato: ' + videoSource;
+        document.getElementById("output").innerHTML = 'Device ID selezionato: ' + videoSource.slice(0,10) + "..." + videoSource.slice(-10);
         document.getElementById("output").style.display = 'block';
     }
 
     function selectVideo(){
         let videoId = document.getElementById("video-source").value;
         setCookie("videoId", videoId, 1000);
-        update_text_video_source(document.getElementById("video-source").innerHTML);
+        update_text_video_source(videoId);
     }
 
     function setCookie(name,value,days) {
