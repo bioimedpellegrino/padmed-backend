@@ -36,7 +36,7 @@
         </div>
       </div>
       <div style="text-align:center;">
-        <img src="/static/assets/img/triage/smile.png">
+        <img src="/static/assets/img/triage/smile.png" onclick="sendHome();">
       </div>
       <div class="row">
         <div class="col-md-12 mt-3" style="text-align:center;">
@@ -73,6 +73,8 @@
   function sendHome(){
     location.href="{% url 'user_conditions' %}";
   }
+
+  setTimeout(sendHome, 10000);
 
 </script>
 
