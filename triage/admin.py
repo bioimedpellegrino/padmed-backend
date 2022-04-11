@@ -35,7 +35,7 @@ class PatientMeasureResultAdmin(admin.ModelAdmin):
     pass
 
 class MeasureLoggerAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['pk', 'triage_access']
 
 class DeclaredAnagraficaAdmin(admin.ModelAdmin):
     pass

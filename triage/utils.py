@@ -117,7 +117,7 @@ def unpack_result_deepaffex(deep_affex_result):
         except KeyError as ke:
             traceback.print_exc()
             message = "Key warning at unpack_result_deepaffex. Missing key: %s"%str(ke)
-            add_log(level=4, message=1, exception=traceback.format_exc(), custom_message=message)
+            #add_log(level=4, message=1, exception=traceback.format_exc(), custom_message=message)
         
     # hb = deep_affex_measures["HR_BPM"]
     # snr = deep_affex_measures["SNR"]
