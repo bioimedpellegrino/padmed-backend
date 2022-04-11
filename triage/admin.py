@@ -2,7 +2,8 @@ from django.contrib import admin
 from .models import *
 
 class PatientAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['fiscal_code', 'first_name', 'last_name', 'hospital']
+    list_filter = ['hospital']
 
 class HospitalAdmin(admin.ModelAdmin):
     pass
@@ -30,16 +31,17 @@ class TriageAccessAdmin(admin.ModelAdmin):
     list_filter = ['patient', 'hospital', 'totem', 'triage_code', 'access_reason']
 
 class PatientVideoAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['id', 'triage_access']
 
 class PatientMeasureResultAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['id','measurement_id','patient_video']
 
 class MeasureLoggerAdmin(admin.ModelAdmin):
     list_display = ['pk', 'triage_access']
 
 class DeclaredAnagraficaAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['gender','height','weight','smoking','diabetes','bloodpressuremedication']
+    list_filter = ['gender','smoking','diabetes','bloodpressuremedication', 'expired']
 
 admin.site.register(Patient, PatientAdmin)
 admin.site.register(Hospital, HospitalAdmin)
