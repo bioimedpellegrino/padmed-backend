@@ -14,6 +14,7 @@ class DeepAffexPoint(models.Model):
     id = models.AutoField(primary_key=True)
     signal_key = models.CharField(max_length=32, null=True, blank=True, default="")
     signal_name = models.CharField(max_length=1024, null=True, blank=True, default="")
+    signal_name_ita = models.CharField(max_length=1024, null=True, blank=True, default="")
     signal_description = models.TextField(null=True, blank=True, default="")
     signal_config = models.CharField(max_length=32, blank=True, null=True, choices=SIGNAL_CONFIG, default="")
     signal_unit = models.CharField(max_length=32, blank=True, null=True, default="")
@@ -27,6 +28,7 @@ class DeepAffexPoint(models.Model):
         return {
             "signal_key": self.signal_key,
             "signal_name": self.signal_name,
+            "signal_name_ita": self.signal_name_ita,
             "signal_description": self.signal_description,
             "signal_config": self.signal_config,
             "signal_unit": self.signal_unit,

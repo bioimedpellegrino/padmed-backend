@@ -11,6 +11,7 @@ from dateutil.relativedelta import relativedelta
 
 from generic.models import City, Province, Country
 from app.models import RestrictedClass
+from dfx.models import DeepAffexPoint
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -514,11 +515,18 @@ class PatientMeasureResult(models.Model):
         result = ast.literal_eval(self.result)
         return result
     @property
-    @lru_cache(maxsize=None)
+    #@lru_cache(maxsize=None)
     def get_clean_result(self):
         import ast
         all_results = ast.literal_eval(self.measure_short)
         all_indexes_result = all_results.get("measure",{})
+        deep_affex_points = list(DeepAffexPoint.objects.all().values('signal_name', 'signal_name_ita'))
+        try:
+            for k,v in all_indexes_result.items():
+                point = list(filter(lambda deep_affex_point: deep_affex_point['signal_name']==v['name'], deep_affex_points))[0]
+                all_indexes_result[k]['name_ita'] = point['signal_name_ita']
+        except Exception as e:
+            pass
         return all_indexes_result
             
     @property

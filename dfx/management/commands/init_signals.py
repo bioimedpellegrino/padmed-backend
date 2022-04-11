@@ -14,6 +14,7 @@ class Command(BaseCommand):
             deep_affex_point, _c = DeepAffexPoint.objects.get_or_create(signal_key=signal['KEY'])
             deep_affex_point.signal_key = signal['KEY']
             deep_affex_point.signal_name = signal['NAME']
+            deep_affex_point.signal_name_ita = signal['NAME_ITA']
             deep_affex_point.signal_description = signal['DESCR']
             deep_affex_point.signal_config = signal['CONFIG']
             deep_affex_point.signal_unit = "" if signal['UNIT'] == 'None' else signal['UNIT'] 
