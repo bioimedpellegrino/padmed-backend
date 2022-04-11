@@ -515,7 +515,7 @@ class PatientMeasureResult(models.Model):
         result = ast.literal_eval(self.result)
         return result
     @property
-    #@lru_cache(maxsize=None)
+    @lru_cache(maxsize=None)
     def get_clean_result(self):
         import ast
         all_results = ast.literal_eval(self.measure_short)
@@ -526,7 +526,8 @@ class PatientMeasureResult(models.Model):
                 point = list(filter(lambda deep_affex_point: deep_affex_point['signal_name']==v['name'], deep_affex_points))[0]
                 all_indexes_result[k]['name_ita'] = point['signal_name_ita']
         except Exception as e:
-            pass
+            import traceback
+            traceback.print_exc()
         return all_indexes_result
             
     @property
