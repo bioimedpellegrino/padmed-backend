@@ -26,7 +26,8 @@ class TriageAccessReasonAdmin(admin.ModelAdmin):
     list_display = ['reason', 'order']
 
 class TriageAccessAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['created','patient','triage_code','access_reason','access_date']
+    list_filter = ['patient', 'hospital', 'totem', 'triage_code', 'access_reason']
 
 class PatientVideoAdmin(admin.ModelAdmin):
     pass
