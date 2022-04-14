@@ -215,4 +215,4 @@ DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
 ## Behaviour variables
 USE_CARD_READER = env("USE_CARD_READER", cast=bool, default=True)
-ROTATE_90_COUNTERCLOCKWISE = env("ROTATE_90_COUNTERCLOCKWISE", cast=bool, default=True)
+ROTATE_90_COUNTERCLOCKWISE = env("ROTATE_90_COUNTERCLOCKWISE", cast=bool, default=False)

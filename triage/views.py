@@ -229,7 +229,7 @@ class RecordVideoView(APIView):
             triage_access.status_tracker.status = triage_access.status_tracker.saving_video
             
             file_path = default_storage.save('tmp/' + "{}.webm".format(access_id), video)
-
+            time.sleep(1)
             video = generate_video_measure(file_path, access_id)
             
             patient_video = PatientVideo()

@@ -23,7 +23,6 @@ def generate_video_measure(file_path, video_id):
     fourcc = cv2.VideoWriter_fourcc(*'MPEG')
     video_name = 'tmp/' + "{}.avi".format(video_id)
     video_path = os.path.join(settings.MEDIA_ROOT, video_name)
-    out = cv2.VideoWriter(video_path,fourcc, 15, (frame_height, frame_width)) 
     video_frames = []
     ret = True
     # Iterate frame by frame and store into a numpy array
@@ -34,7 +33,16 @@ def generate_video_measure(file_path, video_id):
             #     frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
             video_frames.append(frame)
     video_frames = np.array(video_frames)
+    try:
+        frame_rate = int(len(video_frames)/47)
+    except Exception as e:
+        import traceback
+        message = "Error at video conversion"
+        add_log(level=5, message=1, exception=traceback.format_exc(), custom_message=message)
+        frame_rate = 24
+
     # Save frame array into file
+    out = cv2.VideoWriter(video_path,fourcc, frame_rate, (frame_height, frame_width)) 
     for frame in video_frames: 
         out.write(frame)
         
