@@ -67,6 +67,7 @@ class ReceptionsView(APIView):
         totem = user.totem_logged
         if not totem:
             raise PermissionDenied("Solo gli utenti Totem sono abilitati all'inserimento dei dati. Effettura il login con un utente Totem o contattare l'assistenza.")
+        
         hospital = totem.hospital
         
         if not hospital:
@@ -101,8 +102,8 @@ class ReceptionsView(APIView):
                 patient_logged=patient,
                 )
             
-            hospital = Hospital.objects.all().first() #TODO
-            totem = Totem.objects.all().first() #TODO
+            # hospital = Hospital.objects.all().first() #TODO
+            # totem = Totem.objects.all().first() #TODO
             
             access = TriageAccess()
             access.patient = patient
