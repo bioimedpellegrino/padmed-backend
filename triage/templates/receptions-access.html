@@ -84,7 +84,7 @@
       suffixKeyCodes: [13], // enter-key expected at the end of a scan
       reactToPaste: false, // Compatibility to built-in scanners in paste-mode (as opposed to keyboard-mode)
       onScan: function(sCode, iQty) { // Alternative to document.addEventListener('scan')
-          if(sCode.startsWith("%")){
+          if(sCode[0] === "%"){
             document.getElementById("id_fiscal_code").value = "";
             var fiscal_code = sCode.substring(1,17);
             const fiscal_code_found = fiscal_code.match(regex);
@@ -134,7 +134,7 @@
       }
   });
   } catch(err){
-    //document.getElementById("output").innerHTML = err + " " + err.message;
+    console.log(err);
   }
 </script>
 {% endblock javascripts %}
