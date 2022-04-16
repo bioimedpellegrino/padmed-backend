@@ -25,6 +25,7 @@ class TriageCodeAdmin(admin.ModelAdmin):
 
 class TriageAccessReasonAdmin(admin.ModelAdmin):
     list_display = ['reason', 'order']
+    list_filter = ['hospital', 'related_code']
 
 class TriageAccessAdmin(admin.ModelAdmin):
     list_display = ['created','patient','triage_code','access_reason','access_date']
