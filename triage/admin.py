@@ -24,7 +24,7 @@ class TriageCodeAdmin(admin.ModelAdmin):
     pass
 
 class TriageAccessReasonAdmin(admin.ModelAdmin):
-    list_display = ['reason', 'order']
+    list_display = ['reason', 'order', 'related_code']
     list_filter = ['hospital', 'related_code']
 
 class TriageAccessAdmin(admin.ModelAdmin):
