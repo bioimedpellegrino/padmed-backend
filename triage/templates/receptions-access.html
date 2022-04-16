@@ -81,7 +81,7 @@
 
   try{
     onScan.attachTo(document, {
-      suffixKeyCodes: [13], // enter-key expected at the end of a scan
+      //suffixKeyCodes: [13], // enter-key expected at the end of a scan
       reactToPaste: false, // Compatibility to built-in scanners in paste-mode (as opposed to keyboard-mode)
       onScan: function(sCode, iQty) { // Alternative to document.addEventListener('scan')
           if(sCode.startsWith("%")){
@@ -108,7 +108,7 @@
               form.submit();
             }
           }
-          /*else{
+          else{
             let fiscal_code_element = document.getElementById("id_fiscal_code")
             let fc = sCode.replace(/\s/g, '');
             fiscal_code_element.innerHTML = fc;
@@ -127,7 +127,7 @@
             form.appendChild(hiddenField);
             document.body.appendChild(form);
             form.submit();
-          }*/
+          }
       },
       onKeyDetect: function(iKeyCode){ // output all potentially relevant key events - great for debugging!
         //document.getElementById("fiscal_code").innerHTML = 'Pressed: ' + iKeyCode;
