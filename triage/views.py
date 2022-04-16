@@ -77,7 +77,10 @@ class ReceptionsView(APIView):
         
         if form.is_valid():
             fiscal_code = str(form.cleaned_data['fiscal_code']).upper()
-            fiscal_code_decoded = codicefiscale.decode(fiscal_code)
+            try:
+                fiscal_code_decoded = codicefiscale.decode(fiscal_code)
+            except:
+                return render(request, self.TEMPLATE_NAME, {'form': form, 'user': user,'use_card_reader':settings.USE_CARD_READER})
             patient, created = Patient.objects.get_or_create(
                 fiscal_code=fiscal_code_decoded['code']
                 )
