@@ -6,7 +6,7 @@
     <thead class="thead-light">
       <tr>
         <th scope="col">Codice</th>
-        <th scope="col">Nome</th>
+        <th scope="col">ID - Codice Fiscale</th>
         <th scope="col">Ragione</th>
         <th scope="col">In attesa da</th>
         <th scope="col">Pressione ({{units.BP_DIASTOLIC}})</th>
@@ -32,7 +32,7 @@
           <td scope="row">
             <div class="media align-items-center">
               <div class="media-body">
-                <span class="mb-0 text-sm">{{item.patient.last_name|default_if_none:""}} {{item.patient.first_name|default_if_none:""}}</span>
+                <span class="mb-0 text-sm">{{item.id}} - {{item.patient.fiscal_code|default_if_none:""}}</span>
               </div>
             </div>
           </td>
