@@ -121,7 +121,7 @@
     let stopButton = document.getElementById("stopButton");
     let logElement = document.getElementById("log");
 
-    let recordingTimeMS = 48000;
+    let recordingTimeMS = 36000;
     let p_measure_result;
 
 
@@ -202,7 +202,7 @@
 
     function doMeasure(){
       startButton.click();
-      let stop = setTimeout(stopMeasure, 53000);
+      let stop = setTimeout(stopMeasure, 41000);
     }
 
     function sendData(data, access_id) {
@@ -224,7 +224,7 @@
               video: {
                   deviceId: { exact: devId },
                   height: { min: 500, max: 500 },
-                  width: { min: 500, max: 500 },
+                  width: { min: 400, max: 400 },
                   frameRate: { min: 15, ideal: 30, max: 30 },
                 },
               audio: false
@@ -316,7 +316,7 @@
       }
     };
     
-    progress(50, 50, $('#progressBar'));
+    progress(38, 38, $('#progressBar'));
 
     function show_complete() {
       $('#progressBar').animate({ width: 0 }, 500);
