@@ -293,6 +293,15 @@ async def make_measure(config, config_path, video_path, demographics={}, start_t
     print(f"    mode: {factory.getMode()}")
     print(f"    number chunks: {collector.getNumberChunks()}")
     print(f"    chunk duration: {collector.getChunkDurationSeconds()}s")
+    
+    collector.disableConstraint("checkDistance")
+    collector.disableConstraint("checkLighting")
+    collector.disableConstraint("checkFaceDirection")
+    collector.disableConstraint("checkMovement")
+    collector.disableConstraint("checkBackLight")
+    collector.disableConstraint("checkEyebrowMovement")
+    collector.disableConstraint("checkCentered")
+
     for constraint in collector.getEnabledConstraints():
         print(f"    enabled constraint: {constraint}")
 
