@@ -432,6 +432,7 @@ class AppUser(User):
     _dashboard_options = models.TextField(verbose_name=_("Opzioni Dashboard"),default="{}")
     _dashboard_hospital = models.ForeignKey(Hospital,verbose_name=_("Ospedale attualmente loggato"),on_delete=models.SET_NULL,blank=True,null=True)
     _has_accepted_tec = models.BooleanField(verbose_name="Ha accettato i termini e condizioni", default=False)
+    use_card_reader = models.BooleanField(verbose_name="Usa lettore tessera", default=True)
     
     ## Other types of users
     totem_logged = models.OneToOneField(Totem,verbose_name=_("Totem"),on_delete=models.CASCADE,blank=True,null=True)

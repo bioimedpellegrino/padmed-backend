@@ -71,7 +71,7 @@ class ReceptionsView(APIView):
         hospital = totem.hospital
         
         if not hospital:
-            raise PermissionDenied("Questo Totem non ha un hospedale associato. Associare un ospedale al Totem o contattare l'assistenza.")
+            raise PermissionDenied("Questo Totem non ha un ospedale associato. Associare un ospedale al Totem o contattare l'assistenza.")
 
         form = PatientForm(request.POST)
         
