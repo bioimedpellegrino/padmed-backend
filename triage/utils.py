@@ -10,6 +10,8 @@ from logger.utils import add_log
 
 
 def generate_video_measure(file_path, video_id):
+    import time
+    s=time.time()
     # Read video-blob
     cap = cv2.VideoCapture(os.path.join(settings.MEDIA_ROOT, file_path))
     # Get video resolution
@@ -45,7 +47,8 @@ def generate_video_measure(file_path, video_id):
     out = cv2.VideoWriter(video_path,fourcc, frame_rate, (frame_height, frame_width)) 
     for frame in video_frames: 
         out.write(frame)
-        
+    e=time.time()
+    print("CONVERTING TIME: ", e-s)
     return video_name
 
 def test_dictionary_keys(dictionary,necessary_keys,non_necessary_keys):
