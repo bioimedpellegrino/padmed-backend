@@ -192,7 +192,7 @@ DEEPAFFEX_DEBUG=env("DEEPAFFEX_DEBUG", cast=bool, default=False)
 DEEPAFFEX_DEBUG_SAVE_CHUNKS_FOLDER=env("DEEPAFFEX_DEBUG_SAVE_CHUNKS_FOLDER", cast=str, default=os.path.join(MEDIA_ROOT, "debug_chunks"))
 FACE_TRACKER = env("FACE_TRACKER", cast=str, default="DLIB")
 USE_VISAGE_ANALYZER = env("USE_VISAGE_ANALYZER", cast=bool, default=False)
-VISAGE_LICENSE = "libvisagepython/261-950-580-656-848-495-358-849-859-104-795.vlc"
+VISAGE_LICENSE = "libvisagepython/251-558-584-486-848-495-358-849-601-138-972.vlc"
 START_TIME = env("START_TIME", cast=int, default=0)
 END_TIME = env("END_TIME", cast=int, default=30)
 ## CUSTOM SETTINGS VARIABLES FOR GRAPHS
