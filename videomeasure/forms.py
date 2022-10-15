@@ -18,13 +18,13 @@ class VideoSettingForm(forms.ModelForm):
             'sharpness'
         )
         widgets = {
-            'red_value': forms.TextInput(attrs={'type': 'range','min':0,'max':10, 'default': 1}),
-            'blue_value' : forms.TextInput(attrs={'type': 'range','min':0,'max':10, 'default': 1}), 
-            'green_value' : forms.TextInput(attrs={'type': 'range','min':0,'max':10, 'default': 1}),
-            'color': forms.TextInput(attrs={'type': 'range','min':0,'max':10, 'default': 1}),
-            'contrast': forms.TextInput(attrs={'type': 'range','min':0,'max':10, 'default': 1}),
-            'brightness': forms.TextInput(attrs={'type': 'range','min':0,'max':10, 'default': 1}), 
-            'sharpness': forms.TextInput(attrs={'type': 'range','min':0,'max':10, 'default': 1}),
+            'red_value': forms.TextInput(attrs={'type': 'range','min':1,'max':10, 'default': 1}),
+            'blue_value' : forms.TextInput(attrs={'type': 'range','min':1,'max':10, 'default': 1}), 
+            'green_value' : forms.TextInput(attrs={'type': 'range','min':1,'max':10, 'default': 1}),
+            'color': forms.TextInput(attrs={'type': 'range','min':1,'max':10, 'default': 1}),
+            'contrast': forms.TextInput(attrs={'type': 'range','min':1,'max':10, 'default': 1}),
+            'brightness': forms.TextInput(attrs={'type': 'range','min':1,'max':10, 'default': 1}), 
+            'sharpness': forms.TextInput(attrs={'type': 'range','min':1,'max':10, 'default': 1}),
         }
         labels = {
             "is_active": "Attiva",
