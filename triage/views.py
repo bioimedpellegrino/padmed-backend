@@ -21,6 +21,7 @@ from deepaffex.utils import save_config, load_config
 import asyncio, datetime, os, json, time, traceback
 
 from app.models import AppUser
+from videomeasure.models import VideoSettings
 from logger.utils import add_log
 from .forms import PatientForm
 from .models import Hospital, Patient, TriageCode, TriageAccessReason, TriageAccess, \
@@ -234,7 +235,8 @@ class RecordVideoView(APIView):
             
             file_path = default_storage.save('tmp/' + "{}.webm".format(access_id), video)
             time.sleep(1)
-            video = generate_video_measure(file_path, access_id)
+            video_setting = VideoSettings.objects.filter(totem=triage_access.totem, is_active=True).first()
+            video = generate_video_measure(file_path, access_id, video_settings=video_setting)
             
             patient_video = PatientVideo()
             patient_video.triage_access = triage_access

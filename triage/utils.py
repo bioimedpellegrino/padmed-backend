@@ -9,7 +9,7 @@ from dfx.models import DeepAffexPoint
 from logger.utils import add_log
 
 
-def generate_video_measure(file_path, video_id):
+def generate_video_measure(file_path, video_id, video_settings=None):
     """_summary_
 
     Args:
@@ -41,6 +41,9 @@ def generate_video_measure(file_path, video_id):
         ret, frame = cap.read() 
         if ret:
             frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE) if settings.ROTATE_90_COUNTERCLOCKWISE else frame
+            if video_settings:
+                #TODO -> video manipulation
+                pass
             video_frames.append(frame)
     # CONVERT INTO NUMPY ARRAY
     video_frames = np.array(video_frames)
