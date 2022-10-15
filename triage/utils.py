@@ -10,31 +10,41 @@ from logger.utils import add_log
 
 
 def generate_video_measure(file_path, video_id):
+    """_summary_
+
+    Args:
+        file_path (str): path to video file, usually "/media/tmp/video.webm"
+        video_id (int): video id database
+
+    Returns:
+        str: video_name -> path to new video file
+        
+    This algorithm is necessary because video from browser arrive without any meta data
+    """
+    # --------
     import time
     s=time.time()
-    # Read video-blob
+    # --------
+    # READ VIDEO BLOB
     cap = cv2.VideoCapture(os.path.join(settings.MEDIA_ROOT, file_path))
-    # Get video resolution
-    if settings.ROTATE_90_COUNTERCLOCKWISE:
-        frame_width = int(cap.get(3))
-        frame_height = int(cap.get(4))
-    else:
-        frame_width = int(cap.get(4))
-        frame_height = int(cap.get(3))        
-    # Define video codecs and writer
+    # GET VIDEO RESOLUTION -> VIDEO COULD BE ROTATED
+    frame_width = int(cap.get(3)) if settings.ROTATE_90_COUNTERCLOCKWISE else int(cap.get(4))
+    frame_height = int(cap.get(4)) if settings.ROTATE_90_COUNTERCLOCKWISE else int(cap.get(3))   
+    # DEFINE VIDEO CODER AND WRITED
     fourcc = cv2.VideoWriter_fourcc(*'MPEG')
     video_name = 'tmp/' + "{}.avi".format(video_id)
     video_path = os.path.join(settings.MEDIA_ROOT, video_name)
     video_frames = []
     ret = True
-    # Iterate frame by frame and store into a numpy array
+    # ITERATE FRAME BY FRAME AND STORE INTO A NUMPY ARRAY
     while (ret): 
         ret, frame = cap.read() 
         if ret:
-            # if settings.ROTATE_90_COUNTERCLOCKWISE:
-            #     frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
+            frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE) if settings.ROTATE_90_COUNTERCLOCKWISE else frame
             video_frames.append(frame)
+    # CONVERT INTO NUMPY ARRAY
     video_frames = np.array(video_frames)
+    # COMPUTE FRAME RATE
     try:
         frame_rate = int(len(video_frames)/38)
     except Exception as e:
@@ -42,13 +52,14 @@ def generate_video_measure(file_path, video_id):
         message = "Error at video conversion"
         add_log(level=5, message=1, exception=traceback.format_exc(), custom_message=message)
         frame_rate = 24
-
-    # Save frame array into file
+    # SAVE TO VIDEO FILE, WITH METADATA
     out = cv2.VideoWriter(video_path,fourcc, frame_rate, (frame_height, frame_width)) 
     for frame in video_frames: 
         out.write(frame)
+    # --------
     e=time.time()
     print("CONVERTING TIME: ", e-s)
+    # --------
     return video_name
 
 def test_dictionary_keys(dictionary,necessary_keys,non_necessary_keys):
