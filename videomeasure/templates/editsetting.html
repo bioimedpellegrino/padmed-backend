@@ -1,0 +1,164 @@
+{% extends 'layouts/base.html' %}
+{% block title %} Profile {% endblock title %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center" 
+        style="min-height: 600px; background-image: url(/static/assets/img/theme/medicina-sfondo.jpg); background-size: cover; background-position: center top;">
+    <!-- Mask -->
+    <span class="mask bg-gradient-default opacity-8"></span>
+    <!-- Header container -->
+    <div class="container-fluid d-flex align-items-center">
+      <div class="row">
+        <div class="col-lg-7 col-md-10">
+          <h1 class="display-2 text-white">Ciao {{ request.user.username }}</h1>
+          <p class="text-white mt-0 mb-5">
+            Da questa pagina è possibile creare e modificare le impostazioni del video di acquisizione.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid mt--7">
+    <div class="row">
+      <div class="col-xl-12 order-xl-1">
+        <div class="card bg-secondary shadow">
+          <div class="card-header bg-white border-0">
+            <div class="row align-items-center">
+              <div class="col-8">
+                <h3 class="mb-0">Nuova impostazione video</h3>
+              </div>
+            </div>
+          </div>
+          <form id="form" method="post" enctype='multipart/form-data'>
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="md-form">
+                        <label class="bmd-label-floating">Totem</label>
+                        {{ form.totem }}
+                        {{ form.totem.errors }}
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="md-form">
+                        <label class="bmd-label-floating">Attivo</label>
+                        {{ form.is_active }}
+                        {{ form.is_active.errors }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="md-form">
+                        <label class="bmd-label-floating">Nome</label>
+                        {{ form.name }}
+                        {{ form.name.errors }}
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="md-form">
+                        <label class="bmd-label-floating">Rotazione camera</label>
+                        {{ form.camera_rotation }}
+                        {{ form.camera_rotation.errors }}
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <div class="md-form">
+                        <label class="bmd-label-floating">Guadagno canale R</label>
+                        {{ form.red_value }}
+                        {{ form.red_value.errors }}
+                        <span id="id_red_value_value" style="padding-left:10px;font-weight: bold;"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="md-form">
+                        <label class="bmd-label-floating">Guadagno canale G</label>
+                        {{ form.green_value }}
+                        {{ form.green_value.errors }}
+                        <span id="id_green_value_value" style="padding-left:10px;font-weight: bold;"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="md-form">
+                        <label class="bmd-label-floating">Guadagno canale B</label>
+                        {{ form.blue_value }}
+                        {{ form.blue_value.errors }}
+                        <span id="id_blue_value_value" style="padding-left:10px;font-weight: bold;"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <div class="md-form">
+                        <label class="bmd-label-floating">Colore</label>
+                        {{ form.color }}
+                        {{ form.color.errors }}
+                        <span id="id_color_value" style="padding-left:10px;font-weight: bold;"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="md-form">
+                        <label class="bmd-label-floating">Contrasto</label>
+                        {{ form.contrast }}
+                        {{ form.contrast.errors }}
+                        <span id="id_contrast_value" style="padding-left:10px;font-weight: bold;"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <div class="md-form">
+                        <label class="bmd-label-floating">Luminosità</label>
+                        {{ form.brightness }}
+                        {{ form.brightness.errors }}
+                        <span id="id_brightness_value" style="padding-left:10px;font-weight: bold;"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="md-form">
+                        <label class="bmd-label-floating">Nitidezza</label>
+                        {{ form.sharpness }}
+                        {{ form.sharpness.errors }}
+                        <span id="id_sharpness_value" style="padding-left:10px;font-weight: bold;"></span>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-sm btn-primary mt-3">Salva</button>
+          </form>
+        </div>
+        </div>
+      </div>
+    </div>
+
+    {% include "includes/footer.html" %}
+
+  </div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+    <script>
+        $(document).ready(function(){
+          show_value();
+          $("#id_red_value").change(function(){show_value("#id_red_value")});
+          $("#id_blue_value").change(function(){show_value("#id_blue_value")});
+          $("#id_green_value").change(function(){show_value("#id_green_value")});
+          $("#id_color").change(function(){show_value("#id_color")});
+          $("#id_contrast").change(function(){show_value("#id_contrast")});
+          $("#id_brightness").change(function(){show_value("#id_brightness")});
+          $("#id_sharpness").change(function(){show_value("#id_sharpness")});
+        });
+      
+        function show_value(id){
+          var value = $(id).val();
+          $(id+"_value").text(value);
+        }
+      
+    </script>
+{% endblock javascripts %}

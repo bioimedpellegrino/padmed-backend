@@ -680,4 +680,4 @@ class MeasureLogger(models.Model):
             self.save()
         else:
             self.log = text
-            self.save()
+            self.save()      

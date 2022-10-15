@@ -65,6 +65,17 @@ def side_menu_context(current_url_name):
         }
     side_menu.append(item)
     
+    url_name = "videosettings"
+    item = {
+        "type":"url",
+        "text":"Impostazioni video",
+        "url":url_name,
+        "active":current_url_name==url_name,
+        "icon_classes":"fa fa-camera text-warning",
+        "childs":None,
+        }
+    side_menu.append(item)
+    
     # url_name = "user_profile"
     # item = {
     #     "type":"url",

@@ -18,6 +18,7 @@ urlpatterns = [
     path("triage/", include("triage.urls")),
     path("", include("app.urls")),             # UI Kits Html files - must be last one
     path("dashboards/",include("dashboards.urls")),
+    path("videomeasure/",include("videomeasure.urls")),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,114 @@
+{% extends 'layouts/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %} Profile {% endblock title %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center" 
+        style="min-height: 600px; background-image: url(/static/assets/img/theme/medicina-sfondo.jpg); background-size: cover; background-position: center top;">
+    <!-- Mask -->
+    <span class="mask bg-gradient-default opacity-8"></span>
+    <!-- Header container -->
+    <div class="container-fluid d-flex align-items-center">
+      <div class="row">
+        <div class="col-lg-7 col-md-10">
+          <h1 class="display-2 text-white">Ciao {{ request.user.username }}</h1>
+          <p class="text-white mt-0 mb-5">
+            Da questa pagina è possibile creare e modificare le impostazioni del video di acquisizione.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid mt--7">
+    <div class="row">
+      <div class="col-xl-12 order-xl-1">
+        <div class="card bg-secondary shadow">
+          <div class="card-header bg-white border-0">
+            <div class="row align-items-center">
+              <div class="col-8">
+                <h3 class="mb-0">Impostazioni</h3>
+              </div>
+              <div class="col-4 text-right">
+                <a class="btn btn-sm btn-primary" href="{% url 'new_setting' %}">Nuovo</a>
+              </div>
+            </div>
+          </div>
+            <!-- Table -->
+            <div class="row">
+                <div class="col">
+                <div class="card shadow">
+                    <div class="table-responsive">
+                        <table class="table align-items-center table-flush">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Totem</th>
+                                <th scope="col">Attivo</th>
+                                <th scope="col">Nome</th>
+                                <th scope="col">Rotazione camera</th>
+                                <th scope="col">Canale R</th>
+                                <th scope="col">Canale B</th>
+                                <th scope="col">Canale G</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for setting in settings %}
+                            <tr>
+                                <td>{{setting.totem}}</td>
+                                <td>
+                                    <span class="badge badge-dot mr-4">
+                                        {% if setting.is_active %}
+                                        <i class="bg-success"></i> Attivo
+                                        {% else %}
+                                        <i class="bg-warning"></i> Non attivo
+                                        {% endif %}
+                                    </span>
+                                </td>
+                                <td>{{setting.name}}</td>
+                                <td>{{setting.camera_rotation}}</td>
+                                <td>{{setting.red_value}}</td>
+                                <td>{{setting.blue_value}}</td>
+                                <td>{{setting.green_value}}</td>
+                                <td class="text-right">
+                                    <div class="dropdown">
+                                        <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                          <a class="dropdown-item text-darkgreen btn" href="{% url 'edit_setting' setting_id=setting.id %}">Modifica</a>
+                                          <form class="dropdown-item" action="{% url 'delete_setting' setting_id=setting.id %}" method="post">
+                                            {% csrf_token %}
+                                            <input type="submit" class="text-darkred" value="Elimina" />
+                                          </form>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer py-4">
+                    <nav aria-label="..."></nav>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    {% include "includes/footer.html" %}
+
+  </div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+{% endblock javascripts %}

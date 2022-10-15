@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'dashboards',
     'crispy_forms',
     'rest_framework',
-    'dfx'
+    'dfx',
+    'videomeasure'
 ]
 
 MIDDLEWARE = [
