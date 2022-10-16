@@ -53,4 +53,18 @@ class VideoSettings(models.Model):
             "sharpness": self.sharpness
         }
     
+    @property
+    def get_settings(self):
+        
+        return {
+            "camera_rotation": self.camera_rotation,
+            "adjust_color": self.red_value != 10 or self.blue_value != 10 or self.green_value != 10,
+            "red_value": self.red_value / 10,
+            "blue_value": self.blue_value / 10,
+            "green_value": self.green_value / 10,
+            "color": self.color / 10,
+            "contrast": self.contrast / 10,
+            "brightness": self.brightness / 10,
+            "sharpness": self.sharpness / 10
+        }
     

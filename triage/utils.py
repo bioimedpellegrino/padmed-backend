@@ -8,6 +8,7 @@ import os
 from dfx.models import DeepAffexPoint
 from logger.utils import add_log
 
+from PIL import Image, ImageEnhance
 
 def generate_video_measure(file_path, video_id, video_settings=None):
     """_summary_
@@ -42,8 +43,7 @@ def generate_video_measure(file_path, video_id, video_settings=None):
         if ret:
             frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE) if settings.ROTATE_90_COUNTERCLOCKWISE else frame
             if video_settings:
-                #TODO -> video manipulation
-                pass
+                frame = frame_enhance(frame, video_settings=video_settings.get_settings)
             video_frames.append(frame)
     # CONVERT INTO NUMPY ARRAY
     video_frames = np.array(video_frames)
@@ -64,6 +64,30 @@ def generate_video_measure(file_path, video_id, video_settings=None):
     print("CONVERTING TIME: ", e-s)
     # --------
     return video_name
+
+def frame_enhance(frame, video_settings):
+    
+    frame = Image.fromarray(frame)
+    # CHANNEL CORRECTION
+    if video_settings['adjust_color']:
+        b, g, r = frame.split()
+        r = r.point(lambda i: i * video_settings['red_value']) 
+        g = g.point(lambda i: i * video_settings['green_value']) 
+        b = b.point(lambda i: i * video_settings['blue_value']) 
+        frame = Image.merge('RGB', (b, g, r))   
+    # COLOR-CONTRAST CORRECTION
+    frame = frame if video_settings['color'] == 1 else ImageEnhance.Color(frame).enhance(video_settings['color'])
+    frame = frame if video_settings['contrast'] == 1 else ImageEnhance.Contrast(frame).enhance(video_settings['color'])
+    # BRIGHTNESS-SHARPNESS CORRECTION
+    frame = frame if video_settings['brightness'] == 1 else ImageEnhance.Brightness(frame).enhance(video_settings['brightness'])
+    frame = frame if video_settings['sharpness'] == 1 else ImageEnhance.Sharpness(frame).enhance(video_settings['sharpness'])
+    # RECONVERT TO FRAME
+    tmp_frame = frame.copy()
+    tmp_frame = cv2.cvtColor(np.array(tmp_frame), cv2.COLOR_RGB2BGR)
+    tmp_frame = cv2.cvtColor(np.array(tmp_frame), cv2.COLOR_BGR2RGB)
+    # RETURN IT
+    return tmp_frame
+    
 
 def test_dictionary_keys(dictionary,necessary_keys,non_necessary_keys):
         
