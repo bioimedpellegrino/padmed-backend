@@ -32,7 +32,11 @@
               </div>
             </div>
           </div>
-          <form id="form" action="{% url 'edit_setting' setting_id=setting_id %}" method="post" enctype='multipart/form-data'>
+          {% if setting_id %}
+            <form id="form" action="{% url 'edit_setting' setting_id=setting_id %}" method="post" enctype='multipart/form-data'>
+          {% else %}
+            <form id="form" method="post" enctype='multipart/form-data'>
+          {% endif %}
             {% csrf_token %}
             <div class="row">
                 <div class="col-md-5">
@@ -135,61 +139,63 @@
         </div>
         </div>
     </div>
-    <hr style="border-top: 3px solid #bbb">
-    <div class="row mt-3">
-      <div class="col-12">
-        <div class="card bg-secondary shadow">
-          <div class="card-header bg-white border-0">
-            <div class="row align-items-center">
-              <div class="col-8">
-                <h3 class="mb-0">Anteprima</h3>
-              </div>
-            </div>
-          </div>
-          <form id="filterForm" action="{% url 'preview_image' setting_id=setting_id %}" method="post" enctype='multipart/form-data'>
-            {% csrf_token %}
-            <div class="row">
-              <div class="col-md-5">
-                <div class="col-md-5">
-                    <div class="md-form">
-                        {{ filterForm.original_image }}
-                        {{ form.original_image.errors }}
-                    </div>
+    {% if setting_id %}
+      <hr style="border-top: 3px solid #bbb">
+      <div class="row mt-3">
+        <div class="col-12">
+          <div class="card bg-secondary shadow">
+            <div class="card-header bg-white border-0">
+              <div class="row align-items-center">
+                <div class="col-8">
+                  <h3 class="mb-0">Anteprima</h3>
                 </div>
-                <button type="submit" class="btn btn-sm btn-primary mt-3 ml-3">Salva</button>
               </div>
             </div>
-          </form>
-          {% if preview %}
-          <div class="row">
-            <div class="col-6 text-sm-center">
-              <h4>Originale</h4>
-            </div>
-            <div class="col-6 text-sm-center">
-              <h4>Filtrata</h4>
-            </div>
-          </div>
-          <div class="row">
+            <form id="filterForm" action="{% url 'preview_image' setting_id=setting_id %}" method="post" enctype='multipart/form-data'>
+              {% csrf_token %}
+              <div class="row">
+                <div class="col-md-5">
+                  <div class="col-md-5">
+                      <div class="md-form">
+                          {{ filterForm.original_image }}
+                          {{ form.original_image.errors }}
+                      </div>
+                  </div>
+                  <button type="submit" class="btn btn-sm btn-primary mt-3 ml-3">Salva</button>
+                </div>
+              </div>
+            </form>
+            {% if preview %}
+            <div class="row">
               <div class="col-6 text-sm-center">
-                <Image 
-                  thumbnails 
-                  src="{{preview.original_image.url}}"
-                  style="border: 3px solid"
-                />
+                <h4>Originale</h4>
               </div>
               <div class="col-6 text-sm-center">
-                <Image 
-                  thumbnails 
-                  src="{{preview.filtered_image.url}}"
-                  style="border: 3px solid"
-                />
+                <h4>Filtrata</h4>
               </div>
+            </div>
+            <div class="row">
+                <div class="col-6 text-sm-center">
+                  <Image 
+                    thumbnails 
+                    src="{{preview.original_image.url}}"
+                    style="border: 3px solid"
+                  />
+                </div>
+                <div class="col-6 text-sm-center">
+                  <Image 
+                    thumbnails 
+                    src="{{preview.filtered_image.url}}"
+                    style="border: 3px solid"
+                  />
+                </div>
+            </div>
+            {% endif %}
           </div>
-          {% endif %}
-        </div>
+          </div>
         </div>
       </div>
-    </div>
+    {% endif %}
 
     {% include "includes/footer.html" %}
 

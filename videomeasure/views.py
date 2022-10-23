@@ -91,7 +91,8 @@ class EditSettingView(APIView):
             setting.save()
             
             preview = FilterPreview.objects.filter(video_setting=setting).first()
-            preview.save()
+            if preview:
+                preview.save()
 
             #if is active, deactivate other setting
             if setting.is_active:
