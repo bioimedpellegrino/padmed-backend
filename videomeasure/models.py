@@ -67,4 +67,46 @@ class VideoSettings(models.Model):
             "brightness": self.brightness / 10,
             "sharpness": self.sharpness / 10
         }
+        
+class FilterPreview(models.Model):
+    """_summary_
+
+    Args:
+        models (_type_): _description_
+    """
+    video_setting = models.ForeignKey(VideoSettings, blank=True, null=True, on_delete=models.SET_NULL)
+    original_image = models.ImageField(upload_to="original_image")
+    filtered_image = models.ImageField(upload_to="filtered_image")
+    
+    def __str__(self):
+        return "{}".format(self.video_setting.pk)
+    
+    def save(self, *args, **kwargs):
+        
+        from PIL import Image
+        from io import BytesIO
+        from django.core.files import File
+        from triage.utils import frame_enhance
+
+        if self.original_image and self.video_setting:
+            original_image = Image.open(self.original_image).convert('RGB')
+            if self.filtered_image:
+                import os
+                try:
+                    os.remove(self.filtered_image.path)
+                except:
+                    pass
+            filtered_image = frame_enhance(original_image, self.video_setting.get_settings, convert_from_array=False, return_pil_image=True)
+            blob = BytesIO()
+            filtered_image.save(blob, 'JPEG')
+            name = self.original_image.name.split("/")[-1]
+            self.filtered_image.save(name, File(blob), save=False)
+            
+        super(FilterPreview, self).save(*args, **kwargs) # Call the "real" save() method.
+
+    class Meta:
+        verbose_name = "Anteprima filtri"
+        verbose_name_plural = "Anteprime filtri"
+    
+    
     

@@ -1,13 +1,11 @@
-from keyword import kwlist
 from django.shortcuts import render,redirect,get_object_or_404
 from django.urls import reverse
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
 
 from app.models import AppUser
-from triage.models import Hospital, Totem
-from .models import VideoSettings
-from .forms import VideoSettingForm
+from .models import VideoSettings, FilterPreview
+from .forms import VideoSettingForm, FilterPreviewForm
 
 from logger.utils import add_log
 
@@ -46,7 +44,8 @@ class EditSettingView(APIView):
         user = AppUser.get_or_create_from_parent(request.user)
         hospital = user.dashboard_hospital
         setting_id = kwargs.get('setting_id', None)
-            
+        filterForm = FilterPreviewForm()
+        preview = None
         if not hospital:
             raise PermissionDenied("Questo Totem non ha un hospedale associato. Associare un ospedale al Totem o contattare l'assistenza.")
         
@@ -55,14 +54,27 @@ class EditSettingView(APIView):
         else:
             setting = VideoSettings.objects.get(pk=setting_id)
             form = VideoSettingForm(instance=setting)
+            preview = FilterPreview.objects.filter(video_setting=setting).first()            
 
-        return render(request, self.template_name, { 'form': form, 'user' : user })
+        return render(request, self.template_name, 
+                      { 'form': form, 
+                       'user' : user, 
+                       'filterForm': filterForm, 
+                       'setting_id': setting_id,
+                       'filterForm': filterForm,
+                       'preview': preview
+                       })
 
     def post(self, request, *args, **kwargs):
         
         user = AppUser.get_or_create_from_parent(request.user)
+        setting_id = kwargs.get('setting_id', None)
         
         form = VideoSettingForm(request.POST)
+        filterForm = FilterPreviewForm()
+        
+        preview = None
+
         if form.is_valid():
             setting, _created = VideoSettings.objects.get_or_create(name=form.cleaned_data['name'], totem=form.cleaned_data['totem'])
             setting.totem = form.cleaned_data['totem']
@@ -78,14 +90,27 @@ class EditSettingView(APIView):
             setting.sharpness = form.cleaned_data['sharpness']
             setting.save()
             
+            preview = FilterPreview.objects.filter(video_setting=setting).first()
+            preview.save()
+
             #if is active, deactivate other setting
             if setting.is_active:
                 VideoSettings.objects.filter(totem=setting.totem).exclude(pk=setting.pk).update(is_active=False)
                 
-            return HttpResponseRedirect(reverse('videosettings'))
+            return render(request, self.template_name, { 'form': form, 
+                                                        'user' : user, 
+                                                        'setting_id': setting_id, 
+                                                        'filterForm': filterForm,
+                                                        'preview': preview
+                                                        })
         
         else:
-            return render(request, self.template_name, { 'form': form, 'user' : user })
+            return render(request, self.template_name, { 'form': form, 
+                                                        'user' : user, 
+                                                        'setting_id': setting_id, 
+                                                        'filterForm': filterForm,
+                                                        'preview': preview
+                                                        })
         
 
 class DeleteSettingView(APIView):
@@ -101,5 +126,29 @@ class DeleteSettingView(APIView):
         
         VideoSettings.objects.get(pk=setting_id).delete()
         return HttpResponseRedirect(reverse('videosettings'))
+
+
+class PreviewImageView(APIView):
+    
+    def post(self, request, *args, **kwargs):
         
+        user = AppUser.get_or_create_from_parent(request.user)
+        setting_id = kwargs.get('setting_id', None)
+                    
+        setting = VideoSettings.objects.get(pk=setting_id)
+        form = VideoSettingForm(instance=setting)
         
+        filterForm = FilterPreviewForm(request.POST)
+        
+        preview, _created = FilterPreview.objects.get_or_create(video_setting=setting)
+        preview.original_image = request.FILES['original_image']
+        preview.save()
+        
+        return render(request, 'editsetting.html', 
+                      { 
+                       'form': form, 
+                       'user' : user, 
+                       'filterForm': filterForm, 
+                       'preview': preview,
+                       'setting_id': setting_id 
+                    })

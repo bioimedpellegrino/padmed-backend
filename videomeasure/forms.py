@@ -1,6 +1,14 @@
 from django import forms
-from .models import VideoSettings, ROTATION_CHOICES
+from .models import VideoSettings, FilterPreview
 
+class FilterPreviewForm(forms.ModelForm):
+    
+    class Meta:
+        model = FilterPreview
+        fields = ('original_image',)
+    class Media:
+        css = {'all': ('/staticfiles/assets/css/argon-dashboard.css')}
+    
 class VideoSettingForm(forms.ModelForm):
     class Meta:
         model = VideoSettings

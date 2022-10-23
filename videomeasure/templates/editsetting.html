@@ -32,7 +32,7 @@
               </div>
             </div>
           </div>
-          <form id="form" method="post" enctype='multipart/form-data'>
+          <form id="form" action="{% url 'edit_setting' setting_id=setting_id %}" method="post" enctype='multipart/form-data'>
             {% csrf_token %}
             <div class="row">
                 <div class="col-md-5">
@@ -70,9 +70,9 @@
                 <div class="col-md-4">
                     <div class="md-form">
                         <label class="bmd-label-floating">Guadagno canale R</label>
-                        {{ form.red_value }}
-                        {{ form.red_value.errors }}
-                        <span id="id_red_value_value" style="padding-left:10px;font-weight: bold;"></span>
+                        {{ form.blue_value }}
+                        {{ form.blue_value.errors }}
+                        <span id="id_blue_value_value" style="padding-left:10px;font-weight: bold;"></span>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -86,16 +86,16 @@
                 <div class="col-md-4">
                     <div class="md-form">
                         <label class="bmd-label-floating">Guadagno canale B</label>
-                        {{ form.blue_value }}
-                        {{ form.blue_value.errors }}
-                        <span id="id_blue_value_value" style="padding-left:10px;font-weight: bold;"></span>
+                        {{ form.red_value }}
+                        {{ form.red_value.errors }}
+                        <span id="id_red_value_value" style="padding-left:10px;font-weight: bold;"></span>
                     </div>
                 </div>
             </div>
             <div class="row mt-3">
                 <div class="col-md-6">
                     <div class="md-form">
-                        <label class="bmd-label-floating">Colore</label>
+                        <label class="bmd-label-floating">Saturazione</label>
                         {{ form.color }}
                         {{ form.color.errors }}
                         <span id="id_color_value" style="padding-left:10px;font-weight: bold;"></span>
@@ -129,7 +129,63 @@
                 </div>
             </div>
             <button type="submit" class="btn btn-sm btn-primary mt-3">Salva</button>
+            <button action="#" class="btn btn-sm btn-warning mt-3 ml-10" onclick="setDefault()">Ripristina impostazioni</button>
           </form>
+
+        </div>
+        </div>
+    </div>
+    <hr style="border-top: 3px solid #bbb">
+    <div class="row mt-3">
+      <div class="col-12">
+        <div class="card bg-secondary shadow">
+          <div class="card-header bg-white border-0">
+            <div class="row align-items-center">
+              <div class="col-8">
+                <h3 class="mb-0">Anteprima</h3>
+              </div>
+            </div>
+          </div>
+          <form id="filterForm" action="{% url 'preview_image' setting_id=setting_id %}" method="post" enctype='multipart/form-data'>
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-md-5">
+                <div class="col-md-5">
+                    <div class="md-form">
+                        {{ filterForm.original_image }}
+                        {{ form.original_image.errors }}
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-sm btn-primary mt-3 ml-3">Salva</button>
+              </div>
+            </div>
+          </form>
+          {% if preview %}
+          <div class="row">
+            <div class="col-6 text-sm-center">
+              <h4>Originale</h4>
+            </div>
+            <div class="col-6 text-sm-center">
+              <h4>Filtrata</h4>
+            </div>
+          </div>
+          <div class="row">
+              <div class="col-6 text-sm-center">
+                <Image 
+                  thumbnails 
+                  src="{{preview.original_image.url}}"
+                  style="border: 3px solid"
+                />
+              </div>
+              <div class="col-6 text-sm-center">
+                <Image 
+                  thumbnails 
+                  src="{{preview.filtered_image.url}}"
+                  style="border: 3px solid"
+                />
+              </div>
+          </div>
+          {% endif %}
         </div>
         </div>
       </div>
@@ -138,6 +194,8 @@
     {% include "includes/footer.html" %}
 
   </div>
+
+
 
 {% endblock content %}
 
@@ -159,6 +217,27 @@
           var value = $(id).val();
           $(id+"_value").text(value);
         }
+
+        function setDefault(){
+          console.log("ok")
+          document.getElementById("id_red_value").value = 10
+          document.getElementById("id_blue_value").value = 10
+          document.getElementById("id_green_value").value = 10
+          document.getElementById("id_color").value = 10
+          document.getElementById("id_contrast").value = 10
+          document.getElementById("id_brightness").value = 10
+          document.getElementById("id_sharpness").value = 10
+        }
+        
+        // This prevent to change scroll-position on reload event
+        document.addEventListener("DOMContentLoaded", function(event) { 
+          var scrollpos = localStorage.getItem('scrollpos');
+          if (scrollpos) window.scrollTo(0, scrollpos);
+        });
+
+        window.onbeforeunload = function(e) {
+            localStorage.setItem('scrollpos', window.scrollY);
+        };
       
     </script>
 {% endblock javascripts %}

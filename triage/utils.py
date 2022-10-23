@@ -65,9 +65,9 @@ def generate_video_measure(file_path, video_id, video_settings=None):
     # --------
     return video_name
 
-def frame_enhance(frame, video_settings):
+def frame_enhance(frame, video_settings, convert_from_array=True, return_pil_image=False):
     
-    frame = Image.fromarray(frame)
+    frame = Image.fromarray(frame) if convert_from_array else frame
     # CHANNEL CORRECTION
     if video_settings['adjust_color']:
         b, g, r = frame.split()
@@ -81,6 +81,8 @@ def frame_enhance(frame, video_settings):
     # BRIGHTNESS-SHARPNESS CORRECTION
     frame = frame if video_settings['brightness'] == 1 else ImageEnhance.Brightness(frame).enhance(video_settings['brightness'])
     frame = frame if video_settings['sharpness'] == 1 else ImageEnhance.Sharpness(frame).enhance(video_settings['sharpness'])
+    if return_pil_image:
+        return frame
     # RECONVERT TO FRAME
     tmp_frame = frame.copy()
     tmp_frame = cv2.cvtColor(np.array(tmp_frame), cv2.COLOR_RGB2BGR)
