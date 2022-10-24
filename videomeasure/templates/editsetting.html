@@ -76,7 +76,7 @@
                         <label class="bmd-label-floating">Guadagno canale R</label>
                         {{ form.blue_value }}
                         {{ form.blue_value.errors }}
-                        <span id="id_blue_value_value" style="padding-left:10px;font-weight: bold;"></span>
+                        <span id="id_blue_value_value" style="padding-left:10px;font-weight: bold;">{{ form.blue_value.value }}</span>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -84,7 +84,7 @@
                         <label class="bmd-label-floating">Guadagno canale G</label>
                         {{ form.green_value }}
                         {{ form.green_value.errors }}
-                        <span id="id_green_value_value" style="padding-left:10px;font-weight: bold;"></span>
+                        <span id="id_green_value_value" style="padding-left:10px;font-weight: bold;">{{ form.green_value.value }}</span>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -92,7 +92,7 @@
                         <label class="bmd-label-floating">Guadagno canale B</label>
                         {{ form.red_value }}
                         {{ form.red_value.errors }}
-                        <span id="id_red_value_value" style="padding-left:10px;font-weight: bold;"></span>
+                        <span id="id_red_value_value" style="padding-left:10px;font-weight: bold;">{{ form.red_value.value }}</span>
                     </div>
                 </div>
             </div>
@@ -102,7 +102,7 @@
                         <label class="bmd-label-floating">Saturazione</label>
                         {{ form.color }}
                         {{ form.color.errors }}
-                        <span id="id_color_value" style="padding-left:10px;font-weight: bold;"></span>
+                        <span id="id_color_value" style="padding-left:10px;font-weight: bold;">{{ form.color.value }}</span>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -110,7 +110,7 @@
                         <label class="bmd-label-floating">Contrasto</label>
                         {{ form.contrast }}
                         {{ form.contrast.errors }}
-                        <span id="id_contrast_value" style="padding-left:10px;font-weight: bold;"></span>
+                        <span id="id_contrast_value" style="padding-left:10px;font-weight: bold;">{{ form.contrast.value }}</span>
                     </div>
                 </div>
             </div>
@@ -120,7 +120,7 @@
                         <label class="bmd-label-floating">Luminosità</label>
                         {{ form.brightness }}
                         {{ form.brightness.errors }}
-                        <span id="id_brightness_value" style="padding-left:10px;font-weight: bold;"></span>
+                        <span id="id_brightness_value" style="padding-left:10px;font-weight: bold;">{{ form.brightness.value }}</span>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -128,7 +128,7 @@
                         <label class="bmd-label-floating">Nitidezza</label>
                         {{ form.sharpness }}
                         {{ form.sharpness.errors }}
-                        <span id="id_sharpness_value" style="padding-left:10px;font-weight: bold;"></span>
+                        <span id="id_sharpness_value" style="padding-left:10px;font-weight: bold;">{{ form.sharpness.value }}</span>
                     </div>
                 </div>
             </div>
@@ -212,42 +212,45 @@
 <!-- Specific JS goes HERE --> 
 {% block javascripts %}
     <script>
-        $(document).ready(function(){
-          show_value();
-          $("#id_red_value").change(function(){show_value("#id_red_value")});
-          $("#id_blue_value").change(function(){show_value("#id_blue_value")});
-          $("#id_green_value").change(function(){show_value("#id_green_value")});
-          $("#id_color").change(function(){show_value("#id_color")});
-          $("#id_contrast").change(function(){show_value("#id_contrast")});
-          $("#id_brightness").change(function(){show_value("#id_brightness")});
-          $("#id_sharpness").change(function(){show_value("#id_sharpness")});
-        });
+
+      const id_settings = ["id_red_value","id_blue_value","id_green_value","id_color","id_contrast","id_brightness","id_sharpness"]
+
+      $(document).ready(function(){
+        show_value();
+        $("#id_red_value").change(function(){show_value("#id_red_value")});
+        $("#id_blue_value").change(function(){show_value("#id_blue_value")});
+        $("#id_green_value").change(function(){show_value("#id_green_value")});
+        $("#id_color").change(function(){show_value("#id_color")});
+        $("#id_contrast").change(function(){show_value("#id_contrast")});
+        $("#id_brightness").change(function(){show_value("#id_brightness")});
+        $("#id_sharpness").change(function(){show_value("#id_sharpness")});
+
+      });
+    
+      function show_value(id){
+        var value = $(id).val();
+        $(id+"_value").text(value);
+      }
+
+      function setDefault(){
+        document.getElementById("id_red_value").value = 10
+        document.getElementById("id_blue_value").value = 10
+        document.getElementById("id_green_value").value = 10
+        document.getElementById("id_color").value = 10
+        document.getElementById("id_contrast").value = 10
+        document.getElementById("id_brightness").value = 10
+        document.getElementById("id_sharpness").value = 10
+      }
       
-        function show_value(id){
-          var value = $(id).val();
-          $(id+"_value").text(value);
-        }
+      // This prevent to change scroll-position on reload event
+      document.addEventListener("DOMContentLoaded", function(event) { 
+        var scrollpos = localStorage.getItem('scrollpos');
+        if (scrollpos) window.scrollTo(0, scrollpos);
+      });
 
-        function setDefault(){
-          console.log("ok")
-          document.getElementById("id_red_value").value = 10
-          document.getElementById("id_blue_value").value = 10
-          document.getElementById("id_green_value").value = 10
-          document.getElementById("id_color").value = 10
-          document.getElementById("id_contrast").value = 10
-          document.getElementById("id_brightness").value = 10
-          document.getElementById("id_sharpness").value = 10
-        }
-        
-        // This prevent to change scroll-position on reload event
-        document.addEventListener("DOMContentLoaded", function(event) { 
-          var scrollpos = localStorage.getItem('scrollpos');
-          if (scrollpos) window.scrollTo(0, scrollpos);
-        });
-
-        window.onbeforeunload = function(e) {
-            localStorage.setItem('scrollpos', window.scrollY);
-        };
+      window.onbeforeunload = function(e) {
+          localStorage.setItem('scrollpos', window.scrollY);
+      };
       
     </script>
 {% endblock javascripts %}
