@@ -213,10 +213,7 @@
 {% block javascripts %}
     <script>
 
-      const id_settings = ["id_red_value","id_blue_value","id_green_value","id_color","id_contrast","id_brightness","id_sharpness"]
-
       $(document).ready(function(){
-        show_value();
         $("#id_red_value").change(function(){show_value("#id_red_value")});
         $("#id_blue_value").change(function(){show_value("#id_blue_value")});
         $("#id_green_value").change(function(){show_value("#id_green_value")});
