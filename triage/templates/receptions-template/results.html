@@ -1,0 +1,81 @@
+{% extends 'layouts/base-triage.html' %}
+
+{% block title %} Receptions {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<!-- Header container -->
+  <div class="container-fluid">
+    <div class="row"><div class="col-md-12 mb-5"></div></div>
+    <div class="row header-bar">
+        <div class="col-md-2 "></div>
+        <div class="col-md-1">
+            <div class="com-triangle-left"></div>
+        </div>
+        <div class="col-md-6">
+            <span><b>CHECK UP COMPLETATO CON SUCCESSO!</b></span>
+        </div>
+        <div class="col-md-1">
+            <div class="com-triangle-right"></div>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+  </div>
+<!-- Header container -->
+<!-- Main communication div -->
+  <div class="com-area">
+    <div class="com-area-triangle"></div>
+    <div class="com-area-out">
+      <div class="row">
+        <div class="col-md-12 mt-3" style="text-align:center; font-size: 35px; font-weight: bold;">
+          <h1>
+            GRAZIE PER AVER USATO PADMED
+          </h1>
+        </div>
+      </div>
+      <div style="text-align:center;">
+        <img src="/static/assets/img/triage/smile.png" onclick="sendHome();">
+      </div>
+      <div class="row">
+        <div class="col-md-12 mt-3" style="text-align:center;">
+          <h1>I RISULTATI SARANNO DISPONIBILI A BREVE</h1>
+        </div>
+      </div>
+      <div style="margin-top: 10px"></div>
+      <div class="row">
+        <div class="col-md-12" style="margin-top: 85px;">
+          <h4>
+            RICORDIAMO CHE I RILEVAMENTI DI PADMED NON OFFRONO ALCUN TIPO DI CONSULENZA MEDICA
+            E NON SONO DESTINATI AD ALCUN USO A SCOPO MEDICO.
+          </h4>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Main communication div -->
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+<script>
+  function sendToQuickPrinterChrome(){
+    var commandsToPrint =  '{{print_command}}';
+    commandsToPrint = commandsToPrint.replaceAll("&lt;", "<");
+    commandsToPrint = commandsToPrint.replaceAll("&gt;", ">");
+    var textEncoded = encodeURI(commandsToPrint);
+    window.location.href="intent://"+textEncoded+"#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;";
+  }
+
+  function sendHome(){
+    location.href="{% url 'user_conditions' %}";
+  }
+
+  setTimeout(sendHome, 15000);
+
+</script>
+
+{% endblock javascripts %}

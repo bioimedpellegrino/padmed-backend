@@ -6,6 +6,7 @@ from .views import *
 urlpatterns=[
     # Triage
     path('', RedirectView.as_view(), name='triage_first_page',kwargs={"url_name":"user_conditions"}),
+    path('splash/', SplashView.as_view(), name='splash'),
     path('userconditions/', UserConditions.as_view(), name='user_conditions'),
     path('receptions/', ReceptionsView.as_view(), name='receptions'),
     path('accessanagrafica/<int:access_id>', AnagraficaView.as_view(), name='access_anagrafica'),

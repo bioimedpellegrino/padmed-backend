@@ -52,7 +52,7 @@ class ReceptionsView(APIView):
     Args:
         APIView ([type]): [description]
     """
-    TEMPLATE_NAME = 'receptions-access.html'
+    TEMPLATE_NAME = os.path.join(settings.TEMPLATE_MISURATION, 'access.html')
     
     @method_decorator(totem_login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
@@ -133,7 +133,7 @@ class AnagraficaView(APIView):
     Args:
         APIView ([type]): [description]
     """
-    TEMPLATE_NAME = 'receptions-anagrafica.html'
+    TEMPLATE_NAME = os.path.join(settings.TEMPLATE_MISURATION, 'anagrafica.html')
     
     @method_decorator(totem_login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
@@ -180,7 +180,7 @@ class ReceptionsReasonsView(APIView):
         APIView ([type]): [description]
     """
     
-    TEMPLATE_NAME = 'receptions-accessreason.html'
+    TEMPLATE_NAME = os.path.join(settings.TEMPLATE_MISURATION, 'accessreason.html')
     
     @method_decorator(totem_login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
@@ -212,7 +212,7 @@ class RecordVideoView(APIView):
     Args:
         APIView ([type]): [description]
     """
-    TEMPLATE_NAME = "receptions-videomeasuring.html"
+    TEMPLATE_NAME = os.path.join(settings.TEMPLATE_MISURATION,"videomeasuring.html")
     
     @method_decorator(totem_login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
@@ -305,6 +305,8 @@ class PatientResults(APIView):
     Args:
         ApiView ([type]): [description]
     """
+    TEMPLATE_NAME = os.path.join(settings.TEMPLATE_MISURATION, 'results.html')
+    
     @method_decorator(totem_login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
         
@@ -313,20 +315,22 @@ class PatientResults(APIView):
         measure = eval(patient_result.measure_short)
         today_date = datetime.datetime.today().strftime('%Y-%m-%d')
         print_command = print_command_measure(measure, today_date)
-        return render(request,'receptions-results.html', {'measure': measure, 'date': today_date, 'user': user, 'print_command': print_command, 'show_arrow': True})
+        return render(request, self.TEMPLATE_NAME, {'measure': measure, 'date': today_date, 'user': user, 'print_command': print_command, 'show_arrow': True})
     
 class PatientResultsError(APIView):
     """
     Args:
         ApiView ([type]): [description]
     """
+    TEMPLATE_NAME = os.path.join(settings.TEMPLATE_MISURATION, 'results-error.html')
+    
     @method_decorator(totem_login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
         
         user = AppUser.get_or_create_from_parent(request.user)
         access_id = request.POST.get('access_id')
         error = request.POST.get('error')
-        return render(request,'receptions-results-error.html', {'error': error, 'user': user,'access_id':access_id})
+        return render(request, self.TEMPLATE_NAME, {'error': error, 'user': user,'access_id':access_id})
 
 class TestNFC(APIView):
     """[summary]
@@ -350,18 +354,43 @@ class VideoSelecting(APIView):
 
         return render(request,'videoselecting.html')
 
+
+class SplashView(APIView):
+    """[summary]
+
+    Args:
+        APIView ([type]): [description]
+    """
+    TEMPLATE_NAME = os.path.join(settings.TEMPLATE_MISURATION, 'splash.html')
+    
+    @method_decorator(totem_login_required(login_url="/login/"))
+    def get(self, request, *args, **kwargs):
+        
+        user = AppUser.get_or_create_from_parent(request.user)
+        
+        return render(request, self.TEMPLATE_NAME, {'user': user})
+    
+    @method_decorator(totem_login_required(login_url="/login/"))
+    def post(self, request, *args, **kwargs):
+        
+        user = AppUser.get_or_create_from_parent(request.user)
+        
+        return HttpResponseRedirect(reverse('user_conditions'))
+
 class UserConditions(APIView):
     """[summary]
 
     Args:
         APIView ([type]): [description]
     """
+    TEMPLATE_NAME = os.path.join(settings.TEMPLATE_MISURATION, 'conditions.html')
+    
     @method_decorator(totem_login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
         
         user = AppUser.get_or_create_from_parent(request.user)
         
-        return render(request,'receptions-conditions.html', {'user': user}) # receptions-conditions.html
+        return render(request, self.TEMPLATE_NAME, {'user': user})
     
     @method_decorator(totem_login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):

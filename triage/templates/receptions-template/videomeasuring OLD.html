@@ -1,0 +1,231 @@
+{% extends 'layouts/base-triage.html' %}
+
+{% block title %} Receptions {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<!-- Header -->
+<div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center" 
+        style="min-height: 600px; background-image: url(/static/assets/img/triage/doctor-group.png); background-size: cover; background-position: center top;">
+    <!-- Mask -->
+    <span class="mask bg-gradient-default opacity-4"></span>
+    <!-- Header container -->
+    <div class="container-fluid d-flex align-items-center">
+        <div class="row">
+            <div class="col-lg-7 col-md-10">
+                <h1 class="display-2 text-white">Benvenuto</h1>
+                <p class="text-white lead mt-0 mb-5">
+                    <b>
+                        Questo è PadMed. 
+                        Per ottenere il tuo codice di accesso al pronto soccorso usa la 
+                        tua tessera sanitaria oppure inserisci il tuo codice fiscale
+                    </b>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="container-fluid mt--7">
+      <div class="row justify-content-center">
+        <div class="col-xl-12 order-xl-1">
+          <div class="card bg-secondary shadow">
+            <div class="card-header bg-white border-0">
+              <div class="row align-items-center">
+                <div class="col-sm" align="center">
+                  <h3 class="mb-0">La misurazione sta per partire</h3>
+                </div>
+              </div>
+            </div>
+              <div class="body">
+                <div class="row">
+                  <div class="col-sm"></div>
+                  <div class="col-sm">
+                      <div id="startButton" class="button"></div>
+                      <div style="width:800px border-radius:10px; overflow:hidden">
+                        <video id="preview" width="800" height="800" autoplay muted></video>
+                      </div>
+                      <div style="display:none">
+                        <div id="stopButton" class="button"></div>
+                        <video id="recording" width="800" height="800" controls></video>
+                      </div>
+                  </div>
+                  <div class="col-sm"></div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% block javascripts %}
+<!-- Specific JS goes HERE --> 
+    <script>
+
+    let preview = document.getElementById("preview");
+    let recording = document.getElementById("recording");
+    let startButton = document.getElementById("startButton");
+    let stopButton = document.getElementById("stopButton");
+    let logElement = document.getElementById("log");
+
+    let recordingTimeMS = 35000;
+    let p_measure_result;
+
+
+    function log(msg) {
+        //logElement.innerHTML += msg + "\n";
+    }
+
+    function wait(delayInMS) {
+        return new Promise(resolve => setTimeout(resolve, delayInMS));
+    }
+
+    function startRecording(stream, lengthInMS) {
+        let options = { mimeType: 'video/webm'}
+        let recorder = new MediaRecorder(stream, options);
+        let data = [];
+
+        recorder.ondataavailable = event => data.push(event.data);
+        recorder.start();
+        log(recorder.state + " for " + (lengthInMS/1000) + " seconds...");
+
+        let stopped = new Promise((resolve, reject) => {
+        recorder.onstop = resolve;
+        recorder.onerror = event => reject(event.name);
+        });
+
+        let recorded = wait(lengthInMS).then(
+        () => recorder.state == "recording" && recorder.stop()
+        );
+
+        return Promise.all([
+            stopped,
+            recorded
+        ])
+        .then(() => data);
+    }
+
+    async function getUserCameraID(){
+      let devices = await navigator.mediaDevices.enumerateDevices();
+      console.log("devices", devices);
+      devices = devices.filter(function(device){
+        return device.kind == 'videoinput';
+      })
+      if (devices.length == 0) return null;
+      else{
+        default_device = devices[0];
+        let rakinda_device = devices.filter(function(device){return device.label.includes("JSK USB2.0 Camera RGB")})[0];
+        if (rakinda_device){
+          return rakinda_device.deviceId;
+        } 
+        else {
+          return default_device.deviceId;
+        }
+      }
+    }
+
+    function getCookie (name) {
+      var cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          var cookies = document.cookie.split(';');
+          for (var i = 0; i < cookies.length; i++) {
+              var cookie = cookies[i].trim();
+              if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+    }
+
+    function stop(stream) {
+        stream.getTracks().forEach(track => track.stop());
+    }
+
+    function stopMeasure(){
+      stopButton.click();
+    }
+
+    function doMeasure(){
+      startButton.click();
+      let stop = setTimeout(stopMeasure, 40000);
+    }
+
+    function sendData(data, access_id) {
+      let csrftoken = getCookie('csrftoken');
+      let response=fetch("/triage/recordvideo/" + access_id + "/", {
+      method: "post",
+      body: data,
+      headers: { "X-CSRFToken": csrftoken, "Content-Type": 'video/webm'},
+      })
+   }
+   function getDevices() {
+      return navigator.mediaDevices.enumerateDevices();
+    }
+
+    startButton.addEventListener("click", function() {
+        getUserCameraID().then(devId => {
+          navigator.mediaDevices.getUserMedia({
+              video: {
+                  deviceId: { exact: devId },
+                  height: { min: 720, max: 1280 },
+                  width: { min: 1080, max: 1920 },
+                  frameRate: { min: 15, ideal: 24, max: 30 },
+                },
+              audio: false
+        }).then(stream => {
+                preview.srcObject = stream;
+                preview.captureStream = preview.captureStream || preview.mozCaptureStream;
+                return new Promise(resolve => preview.onplaying = resolve);
+              }).then(() => startRecording(preview.captureStream(), recordingTimeMS))
+              .then (recordedChunks => {
+                //console.log(recordedChunks, typeof recordedChunks)
+                let recordedBlob = new Blob(recordedChunks, { type: 'video/webm' });
+                recording.src = URL.createObjectURL(recordedBlob);  
+                var url = "/triage/recordvideo/" + '{{access_id}}' + "/";
+                var xhr = new XMLHttpRequest();
+                var fd = new FormData();
+                fd.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+                fd.append('video', recordedBlob);
+
+                xhr.onreadystatechange = function() {
+                  if (xhr.readyState === 4) {
+                    p_measure_result = eval('('+xhr.response+')' );
+                    if(p_measure_result){
+                      const form = document.createElement('form');
+                      form.method = "post";
+                      form.action = "{% url 'patient_results' %}";
+                      const csfrtoken = document.createElement('input');
+                      csfrtoken.name = "csrfmiddlewaretoken";
+                      csfrtoken.type = "hidden";
+                      csfrtoken.value = getCookie('csrftoken');
+                      form.appendChild(csfrtoken);
+                      const hiddenField = document.createElement('input');
+                      hiddenField.type = 'hidden';
+                      hiddenField.name = 'p_measure_result';
+                      hiddenField.value = p_measure_result['p_measure_result'];
+                      form.appendChild(hiddenField);
+                      document.body.appendChild(form);
+                      form.submit();
+                    }
+                  }
+                }
+                xhr.open("post", url, true);
+                xhr.send( fd );
+              })
+              .catch(console.log(log));
+        }, false)});
+
+        
+
+        stopButton.addEventListener("click", function() {
+        stop(preview.srcObject);
+        }, false);
+
+        measure_started = setTimeout(doMeasure, 100);
+      
+    </script>
+{% endblock javascripts %}
+{% endblock content %}

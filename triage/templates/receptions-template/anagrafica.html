@@ -1,0 +1,150 @@
+{% extends 'layouts/base-triage.html' %}
+
+{% block title %} Receptions {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+<style>
+  input[name="height"] {
+    width:100%;
+  }
+  input[name="weight"] {
+    width:100%;
+  }
+</style>
+{% endblock stylesheets %}
+
+{% block content %}    
+  <!-- Header container -->
+  <div class="container-fluid">
+      <div class="row"><div class="col-md-12 mb-5"></div></div>
+      <div class="row header-bar">
+          <div class="col-md-2 "></div>
+          <div class="col-md-1">
+              <div class="com-triangle-left"></div>
+          </div>
+          <div class="col-md-6">
+              <span><b>INSERIRE LE INFORMAZIONI RICHIESTE</b></span>
+          </div>
+          <div class="col-md-1">
+              <div class="com-triangle-right"></div>
+          </div>
+          <div class="col-md-2"></div>
+      </div>
+  </div>
+  <!-- Header container -->
+  
+  <!-- Main communication div -->
+  {% comment %} <div class="com-area">
+    <div class="com-area-triangle"></div>
+    <div class="com-area-out" style="text-align:center;">
+    </div>
+  </div> {% endcomment %}
+  <div class="com-area" style="margin: -20px auto auto auto; padding-top:50px;width: 670px;" >
+    <div class="row">
+      <div class="col-md-1"></div>
+        <div class="col-md-10 com-area-border">
+          <form id="form" action="" method="post" enctype='multipart/form-data'>
+            {% csrf_token %}
+
+            {{ form.patient }}
+            {{ form.gender }}
+            {{ form.birth_year }}
+
+            <div class="form-group col-xs-12 col-md-12">
+              <div style="text-align:center;">
+                <div>
+                  <label for="{{form.height.name}}" title="">{{ form.height.label }}</label>
+                </div>
+                <div>
+                  <span id="id_height_value" style="padding-left:10px;font-weight: bold;"></span>
+                </div>
+              </div>
+              <div class="mt-3">
+                {{ form.height }}
+              </div>
+              <div class="row">
+                <div class="col-md-1" style="text-align:right;">
+                  <p style="font-weight: bold;">130</p>
+                </div>
+                <div class="col-md-8"></div>
+                <div class="col-md-1 ml-6">
+                  <p style="font-weight: bold;">200</p>
+                </div>
+              </div>
+              {{form.height.errors}}
+            </div>
+            <div class="form-group col-xs-12 col-md-12">
+              <div style="text-align:center;">
+                <div>
+                  <label for="{{form.weight.name}}" title="">{{ form.weight.label }}</label>
+                </div>
+                <div>
+                  <span id="id_weight_value" style="padding-left:10px;font-weight: bold;"></span>
+                </div>
+              </div>
+              <div class="mt-3">
+                {{ form.weight }}
+              </div>
+              <div class="row">
+                <div class="col-md-1" style="text-align:right;">
+                  <p style="font-weight: bold;">50</p>
+                </div>
+                <div class="col-md-8"></div>
+                <div class="col-md-1 ml-6">
+                  <p style="font-weight: bold;">150</p>
+                </div>
+              </div>
+              {{form.weight.errors}}
+            </div>
+            <div class="form-group col-xs-12 col-md-12 mt-5">
+              <label style="" for="id_smoking" class="css-label-check">Fumi?</label>
+              <input style="position:absolute;right:.5em;right:.5em;bottom:5%;display:inline-block;width:100px;" type="checkbox" name="smoking" id="id_smoking" class="form-control" {% if form.smoking.value == True %}checked="checked"{% endif %}>
+              {{form.smoking.errors}}
+            </div>
+            <div class="form-group col-xs-12 col-md-12">
+              <label style="" for="id_diabetes" class="css-label-check">Hai il diabete?</label>
+              <input style="position:absolute;right:.5em;right:.5em;bottom:5%;display:inline-block;width:100px;" type="checkbox" name="diabetes" id="id_diabetes" class="form-control" {% if form.diabetes.value == True %}checked="checked"{% endif %}>
+              {{form.diabetes.errors}}
+            </div>
+            <div class="form-group col-xs-12 col-md-12">
+              <label style="" for="id_bloodpressuremedication" class="css-label-check">Assumi antipertensivi?</label>
+              <input style="position:absolute;right:.5em;right:.5em;bottom:5%;display:inline-block;width:100px;" type="checkbox" name="bloodpressuremedication" id="id_bloodpressuremedication" class="form-control" {% if form.bloodpressuremedication.value == True %}checked="checked"{% endif %}>
+              {{form.bloodpressuremedication.errors}}
+            </div>
+            <div style="text-align:center">
+              <button style="font-weight: bold;" type="submit" class="btn btn-triage mb-3" name="submit" value="Submit" id="id_input_true">
+                  CONFERMA
+              </button>
+            </div>
+            </div>
+          </form>
+        </div>
+      <div class="col-md-1"></div>
+    </div>
+  </div>
+  <!-- Main communication div -->
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+<script>
+  $(document).ready(function(){
+    show_height();
+    show_weight();
+    $("#id_height").change(function(){show_height()});
+    $("#id_weight").change(function(){show_weight()});
+  });
+
+  function show_height(){
+    var value = $("#id_height").val();
+    $("#id_height_value").text(value+" cm");
+  }
+  function show_weight(){
+    var value = $("#id_weight").val();
+    $("#id_weight_value").text(value+" Kg");
+  }
+
+</script>
+{% endblock javascripts %}
