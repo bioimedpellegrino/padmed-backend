@@ -79,6 +79,27 @@
       text-align: center;
     }
 
+    .text-white {
+      color: white;
+      text-align: center;
+    }
+
+    .conditions-text {
+      font: 21px/125% AcuminVariableConcept, sans-serif;
+    }
+
+    .button-info {
+      cursor: pointer;
+      content:url(/static/assets/img/pharma/btn-info.png);
+      width: 100px;
+    }
+
+    .button-info:active,
+    .button-info:focus,
+    .button-info:checked {
+      content:url(/static/assets/img/pharma/btn-info-pressed.png);
+    }
+
     .button-splash {
       cursor: pointer;
       content:url(/static/assets/img/pharma/button.png);
