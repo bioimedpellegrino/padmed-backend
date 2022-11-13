@@ -35,21 +35,24 @@
     }
 
     .pharma-area {
-      width: 50%;
+      width: 35%;
       background: linear-gradient(#8E9396, #F9F9F9);
-      border-radius: 0px 0px 25px 25px;
-      margin: 0 240px 0 240px;
-      padding: 30px 50px 30px 50px;
+      border-radius: 0px 0px 15px 15px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 30px 5px 30px 5px;
+      border: 2px #FFFF solid;
     }
 
     .pharma-area-out {
+      width: 100%;
       margin: 30px;
       margin-left: auto !important;
       margin-right: auto !important;
       background-color: #A9A9A9;
-      border: 2px solid #FFFF;
-      border-radius: 25px;
-      padding: 15px 15px 0px 15px;
+      border: 2px solid #C0C0C0;
+      border-radius: 5px;
+      padding: 15px 15px 0px 0px;
       color: black;
     }
 
@@ -57,17 +60,51 @@
       width: 0;
       height: 0;
       margin-top: -30px;
-      margin-left: auto;
-      margin-right: auto;
+      margin-left: auto !important;
+      margin-right: auto !important;
       border-left: 45px solid transparent;
       border-right: 45px solid transparent;
       border-top: 35px solid #127C84;
+    }
 
+    .text-splash {
+      font-weight: 100;
+      font-size: 30px;
+      color: black;
+      text-align: center;
+    }
+
+    .pharma-text {
+      font: 21px/125% AcuminVariableConcept, sans-serif;
+      text-align: center;
+    }
+
+    .button-splash {
+      cursor: pointer;
+      content:url(/static/assets/img/pharma/button.png);
+      width: 100px;
+    }
+
+    .button-splash:active,
+    .button-splash:focus,
+    .button-splash:checked {
+      content:url(/static/assets/img/pharma/button-pressed.png);
+    }
+
+    .logo-footer {
+      margin-top: 35px;
+      content:url(/static/assets/img/pharma/logo.png);
     }
 
     .vertical-center {
       display: flex;
       align-items: center; 
+      justify-content: center;
+    }
+
+    .vertical-bottom {
+      display: flex;
+      align-items: bottom; 
       justify-content: center;
     }
 
@@ -294,7 +331,7 @@
 
     .button-check-input {
       border: 0;
-      background-color: #e7e7e7;
+      background-color: none;
       outline: none;
     }
 

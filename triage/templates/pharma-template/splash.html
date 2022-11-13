@@ -32,14 +32,14 @@
 
 <!-- Main communication div -->
 <div class="pharma-area">
-    <div class="pharma-area-triangle"></div>
+    <div class="pharma-area-triangle vertical-center"></div>
     <div class="pharma-area-out vertical-center">
         <div class="row">
-            <div class="col-md-6 vertical-center">
-                <img src="/static/assets/img/pharma/doctor.png">
+            <div class="col-md-4 vertical-bottom">
+                <img width="80%" src="/static/assets/img/pharma/doctor.png">
             </div>
-            <div class="col-md-6">
-                <p class="normal-text">
+            <div class="col-md-8 vertical-center">
+                <p class="pharma-text">
                     EFFETTUA UN <b>CHECK-UP</b> <br>
                     IN <b>1</b> MINUTO <br>
                     PER CONOSCERE <br> IL TUO STATO <br> DI <b>SALUTE GENERALE</b>
@@ -47,40 +47,17 @@
             </div>
         </div>
     </div>
-    {% comment %} <div class="com-area-in">
-        <div style="text-align:center !important" onclick="openModal()">
-            <button class="com-area-i" style="width: 110px; height: 115px;" onclick="openModal()">
-                <img class="info-solid" onclick="openModal()" width="70px" height="70px">
-            </button>
-        </div>
-        <div class="row mt-5">
-            <div class="col-md-1"></div>
-            <div class="col-md-5">
-                <form action="" method="post" enctype='multipart/form-data'>
-                    {% csrf_token %}
-                    <div class="form-check">
-                        <button type="submit" class="button-check-input" name="input_true" id="id_input_true">
-                            <img class="image-check v-image-check">
-                        </button>
-                    </div>
-                    <label class="label-check v-label-check" for="id_input_true" style="font-size: 18px">
-                        ACCONSENTO
-                    </label>
-                </form>
-            </div>
-            <div class="col-md-5">
-                <div class="form-check ml-4">
-                    <button type="checkbox" class="button-check-input" name="input_false" id="id_input_false">
-                        <img class="image-check x-image-check">
-                    </button>
-                </div>
-                <label class="label-check x-label-check ml-3" for="id_input_false" style="font-size: 18px">
-                    NON ACCONSENTO
-                </label>
-            </div>
-            <div class="col-md-1"></div>
-        </div>
-    </div> {% endcomment %}
+    <div class="vertical-center mt-5">
+        <p class="text-splash">PREMI IL TASTO PER INIZIARE</p>
+    </div>
+    <div class="vertical-center">
+        <a href="{% url 'user_conditions' %}">
+            <img class="button-splash">
+        </a>
+    </div>
+</div>
+<div class="vertical-center">
+    <img class="logo-footer" onclick="">
 </div>
 <!-- Main communication div -->
 
