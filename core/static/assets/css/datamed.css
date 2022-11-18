@@ -80,6 +80,8 @@
       box-shadow: none;
       margin-top: 10px;
       margin-bottom: 70px;
+      margin-left: auto;
+      margin-right: auto;
       transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     }
 
