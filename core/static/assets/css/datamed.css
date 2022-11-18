@@ -35,7 +35,7 @@
     }
 
     .pharma-area {
-      width: 35%;
+      width: 20%;
       background: linear-gradient(#8E9396, #F9F9F9);
       border-radius: 0px 0px 15px 15px;
       margin-left: auto;
@@ -82,6 +82,7 @@
     .text-white {
       color: white;
       text-align: center;
+      font-size: 27px;
     }
 
     .conditions-text {
@@ -110,6 +111,35 @@
     .button-splash:focus,
     .button-splash:checked {
       content:url(/static/assets/img/pharma/button-pressed.png);
+    }
+
+    .button-check-red {
+      cursor: pointer;
+      content:url(/static/assets/img/pharma/check-red.png);
+      width: 100px;
+    }
+
+    .button-check-red:active,
+    .button-check-red:focus,
+    .button-check-red:checked {
+      content:url(/static/assets/img/pharma/check-red-pressed.png);
+    }
+
+    .button-check-green {
+      cursor: pointer;
+      content:url(/static/assets/img/pharma/check-green.png);
+      width: 100px;
+    }
+
+    .button-check-green:active,
+    .button-check-green:focus,
+    .button-check-green:checked {
+      content:url(/static/assets/img/pharma/check-green-pressed.png);
+    }
+
+    .hide-white {
+      border-width:0px;
+      padding:0px;
     }
 
     .logo-footer {

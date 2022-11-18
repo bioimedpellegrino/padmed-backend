@@ -19,17 +19,17 @@
 <!-- Header container -->
 <div class="row pharma-header-bar">
     <div class="col-md-1"></div>
-    <div class="col-md-1"></div>
+    <div class="col-md-2"></div>
     <div class="col-md-2 align-right">
-        <img width="50%" height="80%" src="/static/assets/img/pharma/triangle-left.png">
+        <img width="35%" height="80%" src="/static/assets/img/pharma/triangle-left.png">
     </div>
-    <div class="col-md-4 vertical-center">
+    <div class="col-md-2 vertical-center">
         <span class="text-white">PRIMA DI INIZIARE <br>SERVE IL TUO CONSENSO</span>
     </div>
     <div class="col-md-2 align-left">
-        <img width="50%" height="80%" class="flip-horizontal" src="/static/assets/img/pharma/triangle-left.png">
+        <img width="35%" height="80%" class="flip-horizontal" src="/static/assets/img/pharma/triangle-left.png">
     </div>
-    <div class="col-md-1"></div>
+    <div class="col-md-2"></div>
     <div class="col-md-1"></div>
 </div>
 <!-- Header container -->
@@ -41,11 +41,13 @@
         <div class="row">
             <div class="col-md-12 vertical-center">
                 <p class="conditions-text p-2">
-                    Ho letto i Termini di Utilizzo e l'Informativa sulla Privacy.
-                    Acconsento al trattamento dei miei dati personali relativi al mio stato
-                    di salute da parte di Pad Med s.r.l. con la finalità di fornirmi i servizi
-                    erogati tramite questo dispositivo così come descritti nelle rispettive
-                    condizioni d'uso disponibili al tasto info.
+                    Ho letto i Termini di Utilizzo e l'Informativa
+                    sulla Privacy. Acconsento al trattamento
+                    dei miei dati personali relativi al mio stato
+                    di salute da parte di Pad Med s.r.l. con la fi-
+                    nalità di fornirmi i servizi erogati tramite
+                    questo dispositivo così come descritti
+                    nelle rispettive condizioni d'uso.
                 </p>
             </div>
         </div>
@@ -55,35 +57,33 @@
             <img class="button-info" onclick="openModal()">
         </a>
     </div>
-    <div class="vertical-center mt-5">
-        <div class="row mt-5">
-            <div class="col-md-1"></div>
-            <div class="col-md-5">
+    <div class="d-flex justify-content-around mt-5">
+        <div class="col-md-6 vertical-center">
+            <label class="x-label-check" for="id_input_false" style="font-size: 20px">
+                NON ACCONSENTO
+            </label>
+        </div>
+        <div class="col-md-6 vertical-center">
+            <label class="v-label-check" for="id_input_true" style="font-size: 20px">
+                ACCONSENTO
+            </label>
+        </div>
+    </div>
+        <div class="d-flex justify-content-around">
+            <div>
+                <div class="form-check">
+                    <img class="button-check-red">
+                </div>
+            </div>
+            <div>
                 <form action="" method="post" enctype='multipart/form-data'>
                     {% csrf_token %}
                     <div class="form-check">
-                        <button type="submit" class="button-check-input" name="input_true" id="id_input_true">
-                            <img class="image-check v-image-check">
-                        </button>
+                        <img type="submit" class="button-check-green"/>
                     </div>
-                    <label class="label-check v-label-check" for="id_input_true" style="font-size: 18px">
-                        ACCONSENTO
-                    </label>
                 </form>
             </div>
-            <div class="col-md-5">
-                <div class="form-check ml-4">
-                    <button type="checkbox" class="button-check-input" name="input_false" id="id_input_false">
-                        <img class="image-check x-image-check">
-                    </button>
-                </div>
-                <label class="label-check x-label-check ml-3" for="id_input_false" style="font-size: 18px">
-                    NON ACCONSENTO
-                </label>
-            </div>
-            <div class="col-md-1"></div>
         </div>
-    </div>
 </div>
 <div class="vertical-center">
     <img class="logo-footer" onclick="">
