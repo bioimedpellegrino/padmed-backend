@@ -72,8 +72,9 @@
         <div class="d-flex justify-content-around">
             <div>
                 <div class="form-check">
-                    <img class="button-check-red">
+                    <img class="button-check-red" onclick="refuse()">
                 </div>
+                <a href="{% url 'splash' %}" style="display: none;" id="#goPrev"></a>
             </div>
             <div>
                 <form action="" method="post" enctype='multipart/form-data'>
@@ -176,6 +177,10 @@
 
     function submitForm(){
         document.getElementById("#goOn").click();
+    }
+
+    function refuse(){
+        document.getElementById("#goPrev").click();
     }
 
     function openModal() {
