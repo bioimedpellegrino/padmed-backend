@@ -79,8 +79,9 @@
                 <form action="" method="post" enctype='multipart/form-data'>
                     {% csrf_token %}
                     <div class="form-check">
-                        <img type="submit" class="button-check-green"/>
+                        <img type="submit" class="button-check-green" onclick="submitForm()"/>
                     </div>
+                    <button type="submit" style="display: none;" id="#goOn"></button>
                 </form>
             </div>
         </div>
@@ -172,6 +173,11 @@
 
 {% block javascripts %}
 <script>
+
+    function submitForm(){
+        document.getElementById("#goOn").click();
+    }
+
     function openModal() {
         document.getElementById("modal").style.display = "block";
         document.getElementById("modal").style.overflow = "auto";
