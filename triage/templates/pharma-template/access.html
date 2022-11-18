@@ -1,4 +1,4 @@
-{% extends 'layouts/base-triage.html' %}
+{% extends 'layouts/base-triage-pharma.html' %}
 
 {% block title %} Receptions {% endblock title %}
 
@@ -7,54 +7,52 @@
 <style>
   body {
     overflow-y: hidden;
+    font: 30px/100% AcuminVariableConcept, sans-serif;
+    background: url("/static/assets/img/pharma/background-pharma-body.png") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
   }
 </style>{% endblock stylesheets %}
 
 {% block content %}    
   <!-- Header container -->
-  <div class="container-fluid">
-      <div class="row"><div class="col-md-12 mb-5"></div></div>
-      <div class="row header-bar">
-          <div class="col-md-2 "></div>
-          <div class="col-md-1">
-              <div class="com-triangle-left"></div>
-          </div>
-          <div class="col-md-6">
-              <span><b>PASSARE LA TESSERA SANITARIA NEL LETTORE</b></span>
-          </div>
-          <div class="col-md-1">
-              <div class="com-triangle-right"></div>
-          </div>
-          <div class="col-md-2"></div>
-      </div>
-  </div>
-  <!-- Header container -->
-  
-  <!-- Main communication div -->
-  <div class="com-area">
-    <div class="com-area-triangle"></div>
-    <div class="com-area-out" style="text-align:center;">
-      <img src="/static/assets/img/triage/TS.png">
+  <div class="row pharma-header-bar">
+    <div class="col-md-2"></div>
+    <div class="col-md-2 align-right">
+        <img width="35%" height="80%" src="/static/assets/img/pharma/triangle-left.png">
     </div>
-    <div class="row">
-      <div class="col-md-1"></div>
-      <div class="col-md-10">
-        {% if use_card_reader and request.user.appuser.use_card_reader %}
-          <input type="text" id="id_fiscal_code" class="text-box" autofocus  disabled placeholder="CODICE FISCALE" style="text-align:center"/>
+    <div class="col-md-4 vertical-center">
+        <span class="text-white">STRISCIARE LA TESSERA SANITARIA<br>NEL LETTORE</span>
+    </div>
+    <div class="col-md-2 align-left">
+        <img width="35%" height="80%" class="flip-horizontal" src="/static/assets/img/pharma/triangle-left.png">
+    </div>
+    <div class="col-md-2"></div>
+</div>
+  <!-- Header container -->
+  <!-- Main communication div -->
+  <div class="pharma-area">
+    <div class="pharma-area-triangle vertical-center"></div>
+    <div class="vertical-center">
+        <img width="35%" class="scan-img" src="/static/assets/img/triage/TS.png">
+    </div>
+    <div class="vertical-center">
+      {% if True or use_card_reader and request.user.appuser.use_card_reader %}
+          <input type="text" id="id_fiscal_code" class="pharma-text-box" autofocus  disabled placeholder="CODICE FISCALE" style="text-align:center"/>
         {% else %}
           <form id="reason_form" action="" method="post" enctype='multipart/form-data'>
             {% csrf_token %}
             {{form}}
-            <input type="submit" value="Submit">
+            <input type="submit" class="pharma-text-box" value="Submit">
           </form>    
         {% endif %}
-        </div>
-      <div class="col-md-1"></div>
     </div>
-  </div>
-  <div class="arrow-scanner flip-horizontal">
-    <img src="/static/assets/img/triage/arrow_gif_left.gif" width="30%">
-  </div>
+</div>
+<div class="vertical-center">
+    <img class="logo-footer" onclick="">
+</div>
   <!-- Main communication div -->
 
 {% endblock content %}

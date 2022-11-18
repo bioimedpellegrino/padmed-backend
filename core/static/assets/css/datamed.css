@@ -67,6 +67,22 @@
       border-top: 35px solid #127C84;
     }
 
+    .pharma-text-box {
+      display: block;
+      width: 90%;
+      font-size: 1rem;
+      line-height: 2.5;
+      color: #8898aa;
+      background-color: #fff;
+      background-clip: padding-box;
+      border: 1px solid #cad1d7;
+      border-radius: 0.375rem;
+      box-shadow: none;
+      margin-top: 10px;
+      margin-bottom: 40px;
+      transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
     .text-splash {
       font-weight: 100;
       font-size: 30px;
@@ -87,6 +103,10 @@
 
     .conditions-text {
       font: 21px/125% AcuminVariableConcept, sans-serif;
+    }
+
+    .scan-img {
+      margin: 100px 100px 20px 100px;
     }
 
     .button-info {
