@@ -1,5 +1,7 @@
 {% extends 'layouts/base-triage-pharma.html' %}
 
+{% load tags humanize  %}
+
 {% block title %} Receptions {% endblock title %}
 
 <!-- Specific CSS goes HERE -->
@@ -38,16 +40,16 @@
     <div class="vertical-center">
         <img width="35%" class="scan-img" src="/static/assets/img/triage/TS.png">
     </div>
-    <div class="vertical-center">
-      {% if True or use_card_reader and request.user.appuser.use_card_reader %}
-          <input type="text" id="id_fiscal_code" class="pharma-text-box" autofocus  disabled placeholder="CODICE FISCALE" style="text-align:center"/>
+    <div>
+      {% if use_card_reader and request.user.appuser.use_card_reader %}
+          <input type="text" id="id_fiscal_code" class="pharma-text-box" autofocus  placeholder="CODICE FISCALE" style="text-align:center"/>
         {% else %}
           <form id="reason_form" action="" method="post" enctype='multipart/form-data'>
             {% csrf_token %}
-            {{form}}
-            <input type="submit" class="pharma-text-box" value="Submit">
+            {{form.fiscal_code|add_css_class_attr:'pharma-text-box ml-auto mr-auto'}}
+            <input type="submit" style="display: none" class="pharma-text-box" value="Submit">
           </form>    
-        {% endif %}
+      {% endif %}
     </div>
 </div>
 <div class="vertical-center">
