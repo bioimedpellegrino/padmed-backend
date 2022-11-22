@@ -60,7 +60,7 @@ class ReceptionsView(APIView):
         form = PatientForm()
         user = AppUser.get_or_create_from_parent(request.user)
         use_card_reader = settings.USE_CARD_READER
-        return render(request, self.TEMPLATE_NAME, {'form': form, 'user': user,'use_card_reader':use_card_reader})
+        return render(request, self.TEMPLATE_NAME, {'form': form, 'user': user,'use_card_reader':use_card_reader, 'is_pharma': settings.TEMPLATE_MISURATION == 'pharma-template'})
     
     @method_decorator(totem_login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
@@ -120,7 +120,10 @@ class ReceptionsView(APIView):
             if not already_compiled:
                 return HttpResponseRedirect(reverse('access_anagrafica',kwargs={"access_id":access.id}))
             else:
-                return HttpResponseRedirect(reverse('accessreason',kwargs={"access_id":access.id}))
+                if 'is_pharma' in request.POST and request.POST['is_pharma']:
+                    return HttpResponseRedirect(reverse('prepare_video_measure',kwargs={"access_id":access.id}))
+                else:
+                    return HttpResponseRedirect(reverse('accessreason',kwargs={"access_id":access.id}))
         else:
             print("Errors",form.errors)
             # TODO
@@ -144,7 +147,7 @@ class AnagraficaView(APIView):
         patient = access.patient
         declared_anag = patient.declared_anag
         form = AnagraficaForm(instance=declared_anag)
-        return render(request, self.TEMPLATE_NAME, {'form': form, 'user': user})
+        return render(request, self.TEMPLATE_NAME, {'form': form, 'user': user, 'is_pharma': settings.TEMPLATE_MISURATION == 'pharma-template'})
     
     @method_decorator(totem_login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
@@ -162,17 +165,33 @@ class AnagraficaView(APIView):
         access = get_object_or_404(TriageAccess,pk=access_id)
         patient = access.patient
         declared_anag = patient.declared_anag
-        print("request.POST")
-        print(request.POST)
         form = AnagraficaForm(request.POST,instance=declared_anag)
-        
+        print(request.POST)
         if form.is_valid():
             declared_anag = form.save()
-            return HttpResponseRedirect(reverse('accessreason',kwargs={"access_id":access.id}))
+            if 'is_pharma' in request.POST and request.POST['is_pharma']:
+                return HttpResponseRedirect(reverse('prepare_video_measure',kwargs={"access_id":access.id}))
+            else:
+                return HttpResponseRedirect(reverse('accessreason',kwargs={"access_id":access.id}))
         else:
             print("Errors",form.errors)
             return render(request, self.TEMPLATE_NAME, {'form': form, 'has_error': True, 'user': user})
-        
+
+
+class PrepareVideoMeasureView(APIView):
+    """[summary]
+
+    Args:
+        APIView ([type]): [description]
+    """
+    TEMPLATE_NAME = os.path.join(settings.TEMPLATE_MISURATION, 'preparevideomeasure.html')
+
+    def get(self, request, *args, **kwargs):
+        user = AppUser.get_or_create_from_parent(request.user)
+        access_id = int(kwargs.get('access_id', None))
+        return render(request, self.TEMPLATE_NAME, {'access_id': access_id, 'user': user})
+
+
 class ReceptionsReasonsView(APIView):
     """[summary]
 

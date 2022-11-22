@@ -11,6 +11,7 @@ urlpatterns=[
     path('receptions/', ReceptionsView.as_view(), name='receptions'),
     path('accessanagrafica/<int:access_id>', AnagraficaView.as_view(), name='access_anagrafica'),
     path('accessreason/<int:access_id>', ReceptionsReasonsView.as_view(), name='accessreason'),
+    path('preparevideomeasure/<int:access_id>', PrepareVideoMeasureView.as_view(), name='prepare_video_measure'),
     path('recordvideo/<int:access_id>/', RecordVideoView.as_view(), name='record_video'),
     path('patientresults/', PatientResults.as_view(), name='patient_results'),
     path('patientresults_error/', PatientResultsError.as_view(), name='patient_results_error'),

@@ -48,6 +48,7 @@
           <form id="reason_form" action="" method="post" enctype='multipart/form-data'>
             {% csrf_token %}
             {{form.fiscal_code|add_css_class_attr:'pharma-text-box ml-auto mr-auto'}}
+            <input type="text" value={{is_pharma}} name="is_pharma" id="is_pharma" style="display: none">
             <input type="submit" style="display: none" class="pharma-text-box" value="Submit">
           </form>    
       {% endif %}

@@ -56,6 +56,17 @@
       color: black;
     }
 
+    .pharma-area-out-small {
+      width: 90%;
+      margin: 30px;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      background-color: #C0C0C0;
+      border: 3px solid #a32036;
+      border-radius: 15px;
+      color: black;
+    }
+
     .pharma-area-triangle {
       width: 0;
       height: 0;
@@ -92,6 +103,15 @@
       text-align: center;
     }
 
+    .text-prepare-go {
+      font-weight: bold;
+      font-size: 30px;
+      color: black;
+      text-align: center;
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+
     .label-anagrafica {
       font-weight: bolder;
       font-size: 25px;
@@ -116,6 +136,19 @@
 
     .conditions-text {
       font: 21px/125% AcuminVariableConcept, sans-serif;
+    }
+
+    .prepare-video-text {
+      font: 30px AcuminVariableConcept, sans-serif;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .prepare-video-text-red {
+      font: 30px AcuminVariableConcept, sans-serif;
+      text-align: center;
+      font-weight: bolder;
+      color: #a32036;
     }
 
     .scan-img {
@@ -203,6 +236,10 @@
     .logo-footer {
       margin-top: 35px;
       content:url(/static/assets/img/pharma/logo.png);
+    }
+
+    .prepare-image {
+      content:url(/static/assets/img/pharma/prepare-image.png);
     }
 
     .vertical-center {
