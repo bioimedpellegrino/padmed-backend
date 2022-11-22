@@ -92,6 +92,17 @@
       text-align: center;
     }
 
+    .label-anagrafica {
+      font-weight: bolder;
+      font-size: 25px;
+      text-justify: auto;
+    }
+
+    .space-btw {
+      display: flex;
+      justify-content: space-between;
+    }
+
     .pharma-text {
       font: 21px/125% AcuminVariableConcept, sans-serif;
       text-align: center;
@@ -135,6 +146,18 @@
       content:url(/static/assets/img/pharma/button-pressed.png);
     }
 
+    .btn-anagrafica {
+      cursor: pointer;
+      content:url(/static/assets/img/pharma/button-anagrafica.png);
+      width: 100px;
+    }
+
+    .btn-anagrafica:active,
+    .btn-anagrafica:focus,
+    .btn-anagrafica:checked {
+      content:url(/static/assets/img/pharma/button-anagrafica-pressed.png);
+    }
+
     .button-check-red {
       cursor: pointer;
       content:url(/static/assets/img/pharma/check-red.png);
@@ -157,6 +180,19 @@
     .button-check-green:focus,
     .button-check-green:checked {
       content:url(/static/assets/img/pharma/check-green-pressed.png);
+    }
+
+    .pharma-check {
+      content: url("/static/assets/img/pharma/pharma-check.png");
+      background-color: rgba(0,0,0,0);
+      outline: none;
+      height: 40px;
+      width: 40px;
+    }
+
+    .pharma-check:active,
+    .pharma-check:checked {
+      content: url("/static/assets/img/pharma/pharma-checked.png");
     }
 
     .hide-white {
@@ -676,13 +712,13 @@
         overflow: hidden;
         width: 80px;
         -webkit-appearance: none;
-        background-color: #5C5C5C;
-      }
+        background-color: rgba(0,0,0,0);;
+      }input
 
       input[type='range']::-webkit-slider-runnable-track {
         height: 35px;
         color: white;
-      }
+      }input
 
       input[type='range']::-webkit-slider-thumb {
         width: 30px;
@@ -692,5 +728,5 @@
         margin-bottom: auto;
         border-radius: 20px;
         background: white;
-      }
+      } 
     }

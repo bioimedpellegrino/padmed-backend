@@ -110,7 +110,10 @@ class DeclaredAnagrafica(models.Model):
     weight = models.PositiveIntegerField(verbose_name="Peso",null=True,blank=True)
     smoking = models.BooleanField(verbose_name="Fumatore",null=False,blank=True,default=False)
     diabetes = models.BooleanField(verbose_name="Diabetico",null=False,blank=True,default=False)
+    is_bloodpressure = models.BooleanField(verbose_name="Iperteso",null=False,blank=True,default=False)
     bloodpressuremedication = models.BooleanField(verbose_name="Assume antipertensivi",null=False,blank=True,default=False)
+    is_asthmatic = models.BooleanField(verbose_name="Asmatico",null=False,blank=True,default=False)
+    is_allergic  = models.BooleanField(verbose_name="Allergico ai pollini",null=False,blank=True,default=False)
     
     expired = models.BooleanField(null=False,blank=False,default=False)
     created = models.DateTimeField(verbose_name="Data di creazione",auto_now_add=True)

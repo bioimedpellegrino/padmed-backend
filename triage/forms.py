@@ -23,6 +23,9 @@ class AnagraficaForm(forms.ModelForm):
             'smoking',
             'diabetes',
             'bloodpressuremedication',
+            'is_bloodpressure',
+            'is_asthmatic',
+            'is_allergic'
         )
         widgets = {
             'patient': forms.HiddenInput(),
