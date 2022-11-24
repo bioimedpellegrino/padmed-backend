@@ -43,6 +43,16 @@
       padding: 30px 5px 30px 5px;
       border: 2px #FFFF solid;
     }
+    
+    .pharma-area-video {
+      width: 30%;
+      margin-left: auto;
+      margin-right: auto;
+      background-color: #C0C0C0;
+      border-radius: 25px;
+      margin: 0 240px 0 240px;
+      padding: 30px 50px 30px 50px;
+    }
 
     .pharma-area-out {
       width: 100%;
@@ -53,6 +63,15 @@
       border: 2px solid #C0C0C0;
       border-radius: 5px;
       padding: 15px 15px 0px 0px;
+      color: black;
+    }
+
+    .pharma-area-out-video {
+      width:500px;
+      height:460px;
+      background-color: #e7e7e7;
+      border: 15px solid #4D4D4D;
+      border-radius: 25px;
       color: black;
     }
 
@@ -132,6 +151,12 @@
       color: white;
       text-align: center;
       font-size: 27px;
+    }
+
+    .text-red {
+      color: #a32036;
+      text-align: center;
+      font-size: 40px;
     }
 
     .conditions-text {
@@ -269,6 +294,19 @@
     .align-center {
       text-align: center;
     }
+
+    .eye-line-l-pharma {
+      position: absolute;
+      bottom: 485px;
+      left: 600px;
+    }
+
+    .eye-line-r-pharma {
+      position: absolute;
+      bottom: 485px;
+      right: 600px;
+    }
+
     /*-----------*/
 
     /* Header bar style */
@@ -375,6 +413,14 @@
       background-color: #e7e7e7;
       padding: 0px;
       color: black;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      margin: 3px;
+      border-radius: 50%;
+      background-color: black;
     }
 
     .arrow-scanner {
