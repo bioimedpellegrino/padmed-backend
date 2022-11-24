@@ -16,7 +16,9 @@
   #progressBar .bar {
     height: 100%;
     text-align: right;
-    padding-top: 7px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 10px;
     line-height: 35px;
     /* same as #progressBar height if we want text middle aligned */
     width: 0;
@@ -30,7 +32,8 @@
     border-radius: 20px;
     border: 3px #7fafd1 solid;
     background-color: rbga(0,0,0,0);
-
+    margin-top: 6%;
+    width: 75%;
   }
 
   #progressComplete {
@@ -88,21 +91,22 @@
 <!-- Header container -->
 
 <!-- Main communication div -->
+<div id="detection" style="display: none;">
   <div class="pharma-area-video">
     <div class="pharma-area-triangle vertical-center"></div>
     <div id="startButton" class="button"></div>
     <div class="vertical-center mt-5">
-      <span class="text-red">RIMANI FERMO</span>
+      <span class="text-red"><b>RIMANI FERMO</b></span>
     </div>
     <div class="com-area-out-base-video pharma-area-out-video overlay"> <!--rot-90-->
       {% if ROTATE_90_COUNTERCLOCKWISE %}
-        <div class="flip-horizontal" style="width:500px; height:460px; overflow:hidden">
-          <video  id="preview" style="width:100%; left: -10%; position:relative" autoplay muted>
+        <div class="flip-horizontal" style="width:500px; height:100%; overflow:hidden">
+          <video  id="preview" style="width:100%;" autoplay muted>
           </video>
         </div>
       {% else %}
-        <div class="flip-horizontal" style="width:500px; height:460px; overflow:hidden">
-          <video  id="preview" style="width:100%; left: -10%; position:relative" autoplay muted>
+        <div class="flip-horizontal" style="width:500px; height:100%; overflow:hidden">
+          <video  id="preview" style="width:100%;" autoplay muted>
           </video>
         </div>
       {% endif %}
@@ -111,27 +115,49 @@
         <video id="recording" width="500" height="500" controls></video>
       </div>
     </div>
-    <div>
-      <div class="bar-back">
-        <div id="progressBar">
-          <div class="bar">
-            <div class="dot">d</div>
+    <div class="vertical-center">
+        <div class="bar-back">
+          <div id="progressBar">
+            <div class="bar">
+              <div class="dot"></div>
+            </div>
           </div>
         </div>
-      </div>
-      <div id="progressComplete">
-        <span></span>
+        <div id="progressComplete">
+          <span></span>
+        </div>
+    </div>
+    <div class="vertical-center">
+      <div class="row mt-5">
+        <div class="time-left" id="time-left"></div>
       </div>
     </div>
   </div>
-  <div class="eye-line-l">
-    <img src="/static/assets/img/pharma/eyesin.png" width="100px">
-  </div>
-  <div class="eye-line-label">
-    OCCHI
-  </div>
-  <div class="eye-line-r">
-    <img src="/static/assets/img/pharma/eyedx.png" width="100px">
+</div>
+<div id="waiting">
+  <div class="pharma-area">
+    <div class="pharma-area-triangle vertical-center"></div>
+      <div class="row mt-5">
+        <div class="col-md-1"></div>
+        <div class="col-md-10 vertical-center">
+            <img class="waiting-image">
+            <span class="waiting-text">RILEVAMENTO<br>COMPLETATO</span>
+        </div>
+        <div class="col-md-1"></div>
+      </div>
+      <div style="background-color: white; width: 100%;text-align: center;">
+        <span class="waiting-text">RESTA IN ATTESA</span>
+      </div>
+      <div class="row mt-3">
+        <div class="col-md-1"></div>
+        <div class="col-md-10 vertical-center" style="text-align: justify;">
+            <span class="waiting-text2">TRA POCHI SECONDI</br>TI MOSTREREMO</br>I RISULTATI</span>
+        </div>
+        <div class="col-md-1"></div>
+      </div>
+    <div class="vertical-center mt-5">
+      <div class="spinner"></div>
+    </div>
   </div>
 </div>
 <div class="vertical-center">
@@ -262,11 +288,11 @@
               exact: devId
             },
             height: {
-              min: 400,
+              min: 500,
               max: 500
             },
             width: {
-              min: 400,
+              min: 500,
               max: 500
             },
             frameRate: {
@@ -360,6 +386,7 @@
     $element.find('.bar').animate({
       width: progressBarWidth
     }, 500);
+    document.getElementById("time-left").textContent=timeleft%60 + "sec";
     if (timeleft > 0) {
       setTimeout(function () {
         progress(timeleft - 1, timetotal, $element);

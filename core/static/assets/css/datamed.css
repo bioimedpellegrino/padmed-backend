@@ -50,7 +50,6 @@
       margin-right: auto;
       background-color: #C0C0C0;
       border-radius: 25px;
-      margin: 0 240px 0 240px;
       padding: 30px 50px 30px 50px;
     }
 
@@ -71,6 +70,9 @@
       height:460px;
       background-color: #e7e7e7;
       border: 15px solid #4D4D4D;
+      margin-top: 5%;
+      margin-left: auto !important;
+      margin-right: auto !important;
       border-radius: 25px;
       color: black;
     }
@@ -157,6 +159,12 @@
       color: #a32036;
       text-align: center;
       font-size: 40px;
+    }
+
+    .time-left {
+      font-size: 60px;
+      font-weight: bold;
+      color: #4D4D4D;
     }
 
     .conditions-text {
@@ -267,6 +275,27 @@
       content:url(/static/assets/img/pharma/prepare-image.png);
     }
 
+    .waiting-image {
+      margin-bottom: 15px;
+      content:url(/static/assets/img/pharma/ok.png);
+    }
+
+    .waiting-text {
+      font-size: 40px;
+      font-weight: 250;
+      line-height: 1.3;
+      color: #333333;
+      padding: 30px;
+    }
+
+    .waiting-text2 {
+      font-size: 40px;
+      font-weight: 550;
+      color: #333333;
+      line-height: 1.2;
+      text-align: justify;
+    }
+
     .vertical-center {
       display: flex;
       align-items: center; 
@@ -306,6 +335,25 @@
       bottom: 485px;
       right: 600px;
     }
+
+    .spinner {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      padding: 1.8px;
+      background: conic-gradient(#0000 10%,#0f0f14) content-box;
+      -webkit-mask: repeating-conic-gradient(#0000 0deg,#000 1deg 20deg,#0000 21deg 36deg),
+           radial-gradient(farthest-side,#0000 calc(100% - 14.1px),#000 calc(100% - 14.1px));
+      -webkit-mask-composite: destination-in;
+      mask-composite: intersect;
+      animation: spinner-d55elj 1s infinite steps(10);
+   }
+   
+   @keyframes spinner-d55elj {
+      to {
+         transform: rotate(1turn);
+      }
+   }
 
     /*-----------*/
 
@@ -416,10 +464,10 @@
     }
 
     .dot {
-      width: 10px;
-      height: 10px;
-      margin: 3px;
-      border-radius: 50%;
+      width: 15px;
+      height: 15px;
+      margin-left: auto;
+      border-radius: 100%;
       background-color: black;
     }
 
@@ -431,8 +479,7 @@
 
     .eye-line-l {
       position: absolute;
-      bottom: 485px;
-      left: 260px;
+      margin-inline: auto;
     }
 
     .eye-line-label {
