@@ -11,6 +11,7 @@ SIGNAL_CONFIG = (
 
 class DeepAffexPoint(models.Model):
     
+
     id = models.AutoField(primary_key=True)
     signal_key = models.CharField(max_length=32, null=True, blank=True, default="")
     signal_name = models.CharField(max_length=1024, null=True, blank=True, default="")
@@ -42,3 +43,7 @@ class DeepAffexPoint(models.Model):
             "unit": self.signal_unit,
             "name": self.signal_name
         }
+    
+    def rate_value(self, data):
+        #TODO
+        return

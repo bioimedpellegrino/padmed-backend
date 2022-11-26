@@ -1,60 +1,156 @@
-{% extends 'layouts/base-triage.html' %}
+{% extends 'layouts/base-triage-pharma.html' %}
 
-{% block title %} Receptions {% endblock title %}
+{% block title %} Results {% endblock title %}
+
+{% load tags humanize  %}
 
 <!-- Specific CSS goes HERE -->
-{% block stylesheets %}{% endblock stylesheets %}
+{% block stylesheets %}
+<style>
+  // progress bar //
+  .progressBar {
+    width: 90%;
+    height: 35px;
+    background-color: #5C5C5C;
+    border-radius: 20px;
+  }
+
+  .bar {
+    height: 100%;
+    text-align: right;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 10px;
+    line-height: 35px;
+    /* same as #progressBar height if we want text middle aligned */
+    width: 0;
+    background-color: #38FF82;
+    box-sizing: border-box;
+    color: yellow;
+    border-radius: 20px;
+  }
+
+  .bar-back {
+    border-radius: 20px;
+    border: 3px #7fafd1 solid;
+    background-color: rbga(0,0,0,0);
+    width: 75%;
+  }
+
+  .overlay {
+    position: relative;
+  }
+
+  .overlay img {
+    position: absolute;
+    margin-top: 10%;
+    height: 70%;
+    width: auto;
+    object-fit: cover;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  body {
+    font: 30px/100% AcuminVariableConcept, sans-serif;
+    background: url("/static/assets/img/pharma/background-results.jpg") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    overflow: hidden;
+  }
+
+  /* ------------- */
+</style>
+{% endblock stylesheets %}
 
 {% block content %}
 <!-- Header container -->
   <div class="container-fluid">
     <div class="row"><div class="col-md-12 mb-5"></div></div>
-    <div class="row header-bar">
-        <div class="col-md-2 "></div>
-        <div class="col-md-1">
-            <div class="com-triangle-left"></div>
+    <div class="row pharma-header-results">
+        <div class="col-md-12">
+            <span>PARAMETRI VITALI</span>
         </div>
-        <div class="col-md-6">
-            <span><b>CHECK UP COMPLETATO CON SUCCESSO!</b></span>
-        </div>
-        <div class="col-md-1">
-            <div class="com-triangle-right"></div>
-        </div>
-        <div class="col-md-2"></div>
     </div>
   </div>
 <!-- Header container -->
 <!-- Main communication div -->
-  <div class="com-area">
-    <div class="com-area-triangle"></div>
-    <div class="com-area-out">
-      <div class="row">
-        <div class="col-md-12 mt-3" style="text-align:center; font-size: 35px; font-weight: bold;">
-          <h1>
-            GRAZIE PER AVER USATO PADMED
-          </h1>
-        </div>
+<div>
+  <div class="row mt-5">
+    <div class="col-md-4"></div>
+    <div class="col-md-4 d-flex justify-content-around">
+      <div class="dot-green">
+        {{measure.total_ok}}
       </div>
-      <div style="text-align:center;">
-        <img src="/static/assets/img/triage/smile.png" onclick="sendHome();">
+      <div class="dot-yellow">
+        {{measure.total_warning}}
       </div>
-      <div class="row">
-        <div class="col-md-12 mt-3" style="text-align:center;">
-          <h1>I RISULTATI SARANNO DISPONIBILI A BREVE</h1>
-        </div>
+      <div class="dot-red">
+        {{measure.total_danger}}
       </div>
-      <div style="margin-top: 10px"></div>
-      <div class="row">
-        <div class="col-md-12" style="margin-top: 85px;">
-          <h4>
-            RICORDIAMO CHE I RILEVAMENTI DI PADMED NON OFFRONO ALCUN TIPO DI CONSULENZA MEDICA
-            E NON SONO DESTINATI AD ALCUN USO A SCOPO MEDICO.
-          </h4>
+    </div>
+    <div class="col-md-4"></div>
+  </div>
+  <div class="row mt-3">
+    <div class="col-md-4"></div>
+    <div class="col-md-4 d-flex justify-content-around">
+      <div class="label-dot">
+        OK
+      </div>
+      <div class="label-dot">
+        FUORI MEDIA
+      </div>
+      <div class="label-dot">
+        A RISCHIO
+      </div>
+    </div>
+    <div class="col-md-4"></div>
+  </div>
+</div>
+<div class="pharma-glass">
+  <div class="row mt-3 mb-3 d-flex justify-content-center">
+    <div class="col-md-3 align-self-center" style="text-align: end;">
+      <span class="measure-label">{{measure.measure.HR_BPM.name}}</span>
+    </div>
+    <div class="col-md-1 align-self-center">
+      <span class="measure-unit">{{measure.measure.HR_BPM.unit}}</span>
+    </div>
+    <div class="col-md-1 align-self-center">
+      <span class="measure-value" style="color: {{measure.measure.HR_BPM.rate}}">{{measure.measure.HR_BPM.value|floatformat:0}}</span>
+    </div>
+    <div class="col-md-7 align-self-center">
+      <div class="bar-back">
+        <div class="progressBar" id="{{measure.measure.HR_BPM.short_name}}">
+          <div class="bar" style="background-color: {{measure.measure.HR_BPM.rate}}">
+            <div class="dot"></div>
+          </div>
         </div>
       </div>
     </div>
   </div>
-
+  <div class="row mt-3 mb-3 d-flex justify-content-center">
+    <div class="col-md-3 align-self-center" style="text-align: end;">
+      <span class="measure-label">{{measure.measure.HR_BPM.name}}</span>
+    </div>
+    <div class="col-md-1 align-self-center">
+      <span class="measure-unit">{{measure.measure.HR_BPM.unit}}</span>
+    </div>
+    <div class="col-md-1 align-self-center">
+      <span class="measure-value" style="color: {{measure.measure.HR_BPM.rate}}">{{measure.measure.HR_BPM.value|floatformat:0}}</span>
+    </div>
+    <div class="col-md-7 align-self-center">
+      <div class="bar-back">
+        <div class="progressBar" id="{{measure.measure.HR_BPM.short_name}}">
+          <div class="bar" style="background-color: {{measure.measure.HR_BPM.rate}}">
+            <div class="dot"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- Main communication div -->
 {% endblock content %}
 
@@ -74,7 +170,7 @@
     location.href="{% url 'user_conditions' %}";
   }
 
-  setTimeout(sendHome, 15000);
+  progress({{measure.measure.HR_BPM.value|safe}}, {{measure.measure.HR_BPM.limit_value|safe}}, $({{measure.measure.HR_BPM.short_name}}))
 
 </script>
 

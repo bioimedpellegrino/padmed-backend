@@ -418,6 +418,91 @@ class UserConditions(APIView):
         
         return HttpResponseRedirect(reverse('receptions'))
     
+
+class ResultsMock(APIView):
+    """[summary]
+
+    Args:
+        APIView ([type]): [description]
+    """
+    TEMPLATE_NAME = os.path.join(settings.TEMPLATE_MISURATION, 'results.html')
+    
+    @method_decorator(totem_login_required(login_url="/login/"))
+    def get(self, request, *args, **kwargs):
+        
+        user = AppUser.get_or_create_from_parent(request.user)
+        result_mock = {
+            "measure":{
+                "HR_BPM":{
+                    "value":85.81,
+                    "unit":"bpm",
+                    "name":"Heart Rate 140 (bpm)",
+                    "rate": "#38FF82",
+                    "short_name": "heart_rate",
+                    "limit_value": 130
+                },
+                "HEART_RATE":{
+                    "value":1.43,
+                    "unit":"Hz",
+                    "name":"Heart Rate 140 (Hz)"
+                },
+                "SNR":{
+                    "value":0.37,
+                    "unit":"dB",
+                    "name":"Signal-to-Noise Ratio (SNR)"
+                },
+                "AGE":{
+                    "value":33.0,
+                    "unit":"yrs",
+                    "name":"Facial Topographical Age"
+                },
+                "GENDER":{
+                    "value":1.0,
+                    "unit":"M/F",
+                    "name":"Gender"
+                },
+                "HEIGHT":{
+                    "value":173.73,
+                    "unit":"cm",
+                    "name":"Height (cm)"
+                },
+                "WEIGHT":{
+                    "value":80.42,
+                    "unit":"kg",
+                    "name":"Weight (kg)"
+                },
+                "WAIST_CIRCUM":{
+                    "value":91.15,
+                    "unit":"cm",
+                    "name":"Waist Circumference"
+                },
+                "ABSI":{
+                    "value":7.81,
+                    "unit":"",
+                    "name":"Body Shape Index"
+                },
+                "WAIST_TO_HEIGHT":{
+                    "value":47.97,
+                    "unit":"%",
+                    "name":"Waist-to-height Ratio"
+                },
+                "BMI_CALC":{
+                    "value":24.65,
+                    "unit":"kg/m²",
+                    "name":"Calculated Body Mass Index"
+                }
+            },
+            "total_ok": 5,
+            "total_warning": 1,
+            "total_danger": 1,
+            "Created":1669455145,
+            "Updated":1669455192,
+            "ID":"9a1ba27b-ee67-4b23-bcfd-4eee22c96011",
+            "StatusID":"COMPLETE",
+            "StudyID":"96f7f672-014d-41b1-a608-3baee02499f9"
+            }
+        return render(request, self.TEMPLATE_NAME, {'user': user, 'measure': result_mock})
+
 ### AJAX GET VIEWS ###
 
 class GetAccessStatusView(APIView):

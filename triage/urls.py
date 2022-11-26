@@ -14,6 +14,7 @@ urlpatterns=[
     path('preparevideomeasure/<int:access_id>', PrepareVideoMeasureView.as_view(), name='prepare_video_measure'),
     path('recordvideo/<int:access_id>/', RecordVideoView.as_view(), name='record_video'),
     path('patientresults/', PatientResults.as_view(), name='patient_results'),
+    path('patientresultsmock/', ResultsMock.as_view(), name='patient_results_mock'),
     path('patientresults_error/', PatientResultsError.as_view(), name='patient_results_error'),
     
     #NFC and test Pages
