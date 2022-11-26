@@ -91,7 +91,7 @@
 <!-- Header container -->
 
 <!-- Main communication div -->
-<div id="detection" style="display: none;">
+<div id="detection">
   <div class="pharma-area-video">
     <div class="pharma-area-triangle vertical-center"></div>
     <div id="startButton" class="button"></div>
@@ -134,7 +134,7 @@
     </div>
   </div>
 </div>
-<div id="waiting">
+<div id="waiting" style="display: none;">
   <div class="pharma-area">
     <div class="pharma-area-triangle vertical-center"></div>
       <div class="row mt-5">
@@ -148,12 +148,12 @@
       <div style="background-color: white; width: 100%;text-align: center;">
         <span class="waiting-text">RESTA IN ATTESA</span>
       </div>
-      <div class="row mt-3">
-        <div class="col-md-1"></div>
-        <div class="col-md-10 vertical-center" style="text-align: justify;">
-            <span class="waiting-text2">TRA POCHI SECONDI</br>TI MOSTREREMO</br>I RISULTATI</span>
+      <div class="row mt-5">
+        <div class="col-md-2"></div>
+        <div class="col-md-8 vertical-center">
+            <p class="waiting-video-text">TRA POCHI SECONDI<br>TI MOSTREREMO<br>I RISULTATI<br></p>
         </div>
-        <div class="col-md-1"></div>
+        <div clas="col-md-2"></div>
       </div>
     <div class="vertical-center mt-5">
       <div class="spinner"></div>
@@ -403,9 +403,9 @@
       width: 0
     }, 500);
     setTimeout(function () {
-      $('#progressBar').hide();
-      $('#progressComplete').show();
-      ajax_progress_text_changes();
+      $('#detection').hide();
+      $('#waiting').show();
+      //ajax_progress_text_changes();
     }, 500);
   }
 

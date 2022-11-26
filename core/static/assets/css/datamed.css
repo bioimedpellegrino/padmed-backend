@@ -282,18 +282,18 @@
 
     .waiting-text {
       font-size: 40px;
-      font-weight: 250;
+      font-weight: bold;
       line-height: 1.3;
       color: #333333;
       padding: 30px;
+      text-align: center;
     }
 
-    .waiting-text2 {
-      font-size: 40px;
-      font-weight: 550;
+    .waiting-video-text {
+      font: 40px AcuminVariableConcept, sans-serif;
+      text-align: center;
       color: #333333;
-      line-height: 1.2;
-      text-align: justify;
+      font-weight: lighter;
     }
 
     .vertical-center {
