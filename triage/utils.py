@@ -216,3 +216,153 @@ def print_command_measure(measure, date):
     print_command += "<CUT>"
     
     return print_command
+
+def get_color_score(value, deep_affex_point):
+    
+    GREEN = ("ok", "#38FF82")
+    YELLOW = ("warning", "#F7E921")
+    RED = ("danger", "#FC5C9C")
+    NEUTRAL = ("neutral", "#acafbf")
+    
+    if deep_affex_point == 'HR_BPM':
+        if value >= 60 and value <= 100:
+            return GREEN
+        else:
+            return YELLOW
+    
+    elif deep_affex_point == 'BP_DIASTOLIC':
+        if value >= 60 and value <= 80:
+            return GREEN
+        elif value < 60 or (value > 80 and value <=90):
+            return YELLOW
+        else: 
+            return RED
+        
+    elif deep_affex_point == 'BP_SYSTOLIC':
+        if value >= 90 and value <= 120:
+            return GREEN
+        elif value < 90 or (value > 120 and value <=140):
+            return YELLOW
+        else: 
+            return RED
+        
+    elif deep_affex_point == 'IHB_COUNT':
+        if value > 10: 
+            return YELLOW
+        else:
+            return GREEN
+        
+    elif deep_affex_point == 'BR_BPM':
+        if value >= 12 and value <= 25:
+            return GREEN
+        else:
+            return YELLOW
+
+    elif deep_affex_point == 'BMI_CALC':
+        if value >= 18.5 and value < 25:
+            return GREEN
+        elif value < 18.5:
+            return YELLOW
+        elif value >= 25 and value < 30:
+            return YELLOW
+        else: 
+            return RED
+
+    elif deep_affex_point == 'AGE':
+        return GREEN
+
+    elif deep_affex_point == 'WAIST_TO_HEIGHT':
+        if value >= 30 and value < 55:
+            return GREEN
+        elif value < 30:
+            return YELLOW
+        elif value >= 55 and value < 65:
+            return YELLOW
+        else: 
+            return RED
+
+    elif deep_affex_point == 'WAIST_CIRCUM':
+        return GREEN
+
+    elif deep_affex_point == 'RISKS_SCORE':
+        if value >= 3:
+            return GREEN
+        elif value >= 2 and value < 3:
+            return YELLOW
+        else: 
+            return RED
+
+    elif deep_affex_point == 'PHYSICAL_SCORE':
+        if value >= 3:
+            return GREEN
+        elif value >= 2 and value < 3:
+            return YELLOW
+        else: 
+            return RED
+    elif deep_affex_point == 'MENTAL_SCORE':
+        if value >= 3:
+            return GREEN
+        elif value >= 2 and value < 3:
+            return YELLOW
+        else: 
+            return RED
+
+    elif deep_affex_point == 'PHYSIO_SCORE':
+        if value >= 3:
+            return GREEN
+        elif value >= 2 and value < 3:
+            return YELLOW
+        else: 
+            return RED
+    
+    elif deep_affex_point == 'MSI':
+        if value < 3:
+            return GREEN
+        elif value >= 3 and value < 4:
+            return YELLOW
+        else: 
+            return RED
+
+
+    elif deep_affex_point == 'VITAL_SCORE':
+        if value >= 3:
+            return GREEN
+        elif value >= 2 and value < 3:
+            return YELLOW
+        else: 
+            return RED
+
+    elif deep_affex_point == 'HEALTH_SCORE':
+        if value >= 80:
+            return GREEN
+        elif value < 80 and value > 40:
+            return YELLOW
+        else: 
+            return RED
+        
+    elif deep_affex_point == 'BP_HEART_ATTACK':
+        if value <= 3.4:
+            return GREEN
+        elif value > 3.4 and value <= 5.1:
+            return YELLOW
+        else: 
+            return RED
+        
+    elif deep_affex_point == 'BP_STROKE':
+        if value <= 6.6:
+            return GREEN
+        elif value > 6.6 and value <= 9.9:
+            return YELLOW
+        else: 
+            return RED
+        
+    elif deep_affex_point == 'BP_CVD':
+        if value <= 10:
+            return GREEN
+        elif value > 10 and value <= 15:
+            return YELLOW
+        else: 
+            return RED
+    
+    else:
+        return NEUTRAL

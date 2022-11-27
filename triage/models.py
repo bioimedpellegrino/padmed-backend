@@ -24,6 +24,8 @@ from django.db.models.signals import pre_save, post_init
 from django.db.models.query import QuerySet
 from django.utils import timezone
 
+from triage.utils import get_color_score
+
 
 GENDER = (
     ('M', 'M'),
@@ -504,12 +506,60 @@ class PatientMeasureResult(models.Model):
     result = models.TextField(blank=True, null=True, default="{}")
     measure_short = models.TextField(blank=True, null=True, default="{}")
     
-    def __str__(self):
-        return "{} - {}".format(self.id, self.measurement_id)
-    
     class Meta:
         verbose_name = "Esito misurazioni"
         verbose_name_plural = "Esiti misurazioni"
+    
+    def __str__(self):
+        return "{} - {}".format(self.id, self.measurement_id)
+    
+    def pharma_parameters(self):
+        import ast
+        all_results = ast.literal_eval(self.measure_short)
+        all_indexes_result = all_results.get("measure",{})
+        deep_affex_points = list(DeepAffexPoint.objects.all().values('signal_name', 'signal_name_ita', 'limit_value'))
+        vitals_parameters = []
+        mental_parameters = []
+        global_parameters = []
+        total_ok = 0
+        total_warning = 0
+        total_danger = 0
+        
+        try:
+            for k,v in all_indexes_result.items():
+                point = list(filter(lambda deep_affex_point: deep_affex_point['signal_name']==v['name'], deep_affex_points))[0]
+                v['name_ita'] = point['signal_name_ita']
+                v['parameter_id'] = k
+                score, color = get_color_score(v['value'], k)
+                v['color'] = color
+                v['limit_value'] = point['limit_value']
+                
+                if score == 'ok':
+                    total_ok +=1
+                elif score == 'warning':
+                    total_warning +=1
+                elif score == 'danger':
+                    total_danger +=1
+                
+                if k in ['HR_BPM', 'BP_DIASTOLIC', 'BP_SYSTOLIC', 'IHB_COUNT', 'BR_BPM']:
+                    vitals_parameters.append(v)
+                elif k in ['MSI', 'BMI_CALC', 'AGE', 'WAIST_TO_HEIGHT', 'WAIST_CIRCUM', 'RISKS_SCORE','PHYSICAL_SCORE','MENTAL_SCORE','PHYSIO_SCORE','VITAL_SCORE']:
+                    mental_parameters.append(v)
+                elif k in ['HEALTH_SCORE', 'BP_HEART_ATTACK', 'BP_STROKE', 'BP_CVD']: 
+                	global_parameters.append(v)
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+        
+        return {
+            'vitals_parameters': vitals_parameters, 
+            'mental_parameters': mental_parameters, 
+            'global_parameters': global_parameters, 
+            'total_ok' :total_ok, 
+            'total_warning': total_warning, 
+            'total_danger': total_danger 
+        }
+    
     
     @property
     @lru_cache(maxsize=None)
@@ -662,7 +712,6 @@ class PatientMeasureResult(models.Model):
             alarm = 3
         return alarm
     
-
 class MeasureLogger(models.Model):
     
     id = models.AutoField(primary_key=True)

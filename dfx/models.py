@@ -21,6 +21,7 @@ class DeepAffexPoint(models.Model):
     signal_unit = models.CharField(max_length=32, blank=True, null=True, default="")
     multiplier = models.FloatField(blank=True, null=True)
     is_measure = models.BooleanField(default=True)
+    limit_value = models.FloatField(blank=True, null=True)
     
     def __str__(self):
         return self.signal_name

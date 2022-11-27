@@ -82,13 +82,13 @@
     <div class="col-md-4"></div>
     <div class="col-md-4 d-flex justify-content-around">
       <div class="dot-green">
-        {{measure.total_ok}}
+        {{total_ok}}
       </div>
       <div class="dot-yellow">
-        {{measure.total_warning}}
+        {{total_warning}}
       </div>
       <div class="dot-red">
-        {{measure.total_danger}}
+        {{total_danger}}
       </div>
     </div>
     <div class="col-md-4"></div>
@@ -109,45 +109,97 @@
     <div class="col-md-4"></div>
   </div>
 </div>
-<div class="pharma-glass">
+<div class="pharma-glass" id="vitals_parameters">
+  {% for parameter in vitals_parameters %}
   <div class="row mt-3 mb-3 d-flex justify-content-center">
     <div class="col-md-3 align-self-center" style="text-align: end;">
-      <span class="measure-label">{{measure.measure.HR_BPM.name}}</span>
+      <span class="measure-label">{{parameter.name_ita}}</span>
     </div>
     <div class="col-md-1 align-self-center">
-      <span class="measure-unit">{{measure.measure.HR_BPM.unit}}</span>
+      <span class="measure-unit">{{parameter.unit}}</span>
     </div>
     <div class="col-md-1 align-self-center">
-      <span class="measure-value" style="color: {{measure.measure.HR_BPM.rate}}">{{measure.measure.HR_BPM.value|floatformat:0}}</span>
+      <span class="measure-value" style="color: {{parameter.color}}">{{parameter.value|floatformat:0}}</span>
     </div>
     <div class="col-md-7 align-self-center">
       <div class="bar-back">
-        <div class="progressBar" id="{{measure.measure.HR_BPM.short_name}}">
-          <div class="bar" style="background-color: {{measure.measure.HR_BPM.rate}}">
+        <div class="progressBar" id="{{parameter.parameter_id}}">
+          <div class="bar" style="background-color: {{parameter.color}}">
             <div class="dot"></div>
           </div>
         </div>
       </div>
     </div>
   </div>
+  {% endfor %}
+</div>
+<div class="pharma-glass" id="mental_parameters" style="display: none;">
+  {% for parameter in mental_parameters %}
   <div class="row mt-3 mb-3 d-flex justify-content-center">
     <div class="col-md-3 align-self-center" style="text-align: end;">
-      <span class="measure-label">{{measure.measure.HR_BPM.name}}</span>
+      <span class="measure-label">{{parameter.name_ita}}</span>
     </div>
     <div class="col-md-1 align-self-center">
-      <span class="measure-unit">{{measure.measure.HR_BPM.unit}}</span>
+      <span class="measure-unit">{{parameter.unit}}</span>
     </div>
     <div class="col-md-1 align-self-center">
-      <span class="measure-value" style="color: {{measure.measure.HR_BPM.rate}}">{{measure.measure.HR_BPM.value|floatformat:0}}</span>
+      <span class="measure-value" style="color: {{parameter.color}}">{{parameter.value|floatformat:0}}</span>
     </div>
     <div class="col-md-7 align-self-center">
       <div class="bar-back">
-        <div class="progressBar" id="{{measure.measure.HR_BPM.short_name}}">
-          <div class="bar" style="background-color: {{measure.measure.HR_BPM.rate}}">
+        <div class="progressBar" id="{{parameter.parameter_id}}">
+          <div class="bar" style="background-color: {{parameter.color}}">
             <div class="dot"></div>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<div class="pharma-glass" id="global_parameters" style="display: none;">
+  {% for parameter in global_parameters %}
+  <div class="row mt-3 mb-3 d-flex justify-content-center">
+    <div class="col-md-3 align-self-center" style="text-align: end;">
+      <span class="measure-label">{{parameter.name_ita}}</span>
+    </div>
+    <div class="col-md-1 align-self-center">
+      <span class="measure-unit">{{parameter.unit}}</span>
+    </div>
+    <div class="col-md-1 align-self-center">
+      <span class="measure-value" style="color: {{parameter.color}}">{{parameter.value|floatformat:0}}</span>
+    </div>
+    <div class="col-md-7 align-self-center">
+      <div class="bar-back">
+        <div class="progressBar" id="{{parameter.parameter_id}}">
+          <div class="bar" style="background-color: {{parameter.color}}">
+            <div class="dot"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<div class="p-7 d-flex justify-content-xl-between">
+  <div>
+    <div id="prev_page" style="display: none;">
+      <img class="button-results flip-horizontal" onclick="changePage(-1)">
+      <label class="p-3" style="color: white; font-weight: bold;">INDIETRO</label>
+    </div>
+  </div>
+  <div>
+    <div id="next_page">
+      <label class="p-3" style="color: white; font-weight: bold;">AVANTI</label>
+      <img class="button-results" onclick="changePage(1)">
+    </div>
+  </div>
+  <div id="finish" style="display: none">
+    <div>
+      <label class="p-3" style="color: white; font-weight: bold;">TERMINA</label>
+        <a href="{% url 'end_page' %}">
+            <img class="button-results">
+        </a>
     </div>
   </div>
 </div>
@@ -158,6 +210,48 @@
 {% block javascripts %}
 
 <script>
+
+  const vital_parameters = {{vitals_parameters|safe}}
+  const mental_parameters = {{mental_parameters|safe}}
+  const global_parameters = {{global_parameters|safe}}
+
+  var page = 0;
+
+  animate_graph(vital_parameters);
+
+  function changePage(n){
+    page += n;
+
+    if (page == 0){
+      $('#vitals_parameters').show();
+      $('#mental_parameters').hide();
+      $('#global_parameters').hide();
+      $('#next_page').show();
+      $('#prev_page').hide();
+      $('#finish').hide();
+      animate_graph(vital_parameters);
+    }
+    else if (page == 1){
+      $('#vitals_parameters').hide();
+      $('#mental_parameters').show();
+      $('#global_parameters').hide();
+      $('#next_page').show();
+      $('#prev_page').show();
+      $('#finish').hide();
+      animate_graph(mental_parameters);
+    }
+    else if (page == 2){
+      $('#vitals_parameters').hide();
+      $('#mental_parameters').hide();
+      $('#global_parameters').show();
+      $('#next_page').hide();
+      $('#prev_page').show();
+      $('#finish').show();
+      animate_graph(global_parameters);
+    }
+
+  }
+
   function sendToQuickPrinterChrome(){
     var commandsToPrint =  '{{print_command}}';
     commandsToPrint = commandsToPrint.replaceAll("&lt;", "<");
@@ -170,8 +264,12 @@
     location.href="{% url 'user_conditions' %}";
   }
 
-  progress({{measure.measure.HR_BPM.value|safe}}, {{measure.measure.HR_BPM.limit_value|safe}}, $({{measure.measure.HR_BPM.short_name}}))
-
+  function animate_graph(elements){
+    let indx = 1;
+    for (const element of elements){
+      setTimeout( progress, 100*indx, element.value, element.limit_value, $('#'+element.parameter_id));
+    }   
+  }
 </script>
 
 {% endblock javascripts %}

@@ -292,6 +292,16 @@
       width: 100px;
     }
 
+    .button-results {
+      content:url(/static/assets/img/pharma/bottoneavantiOFF.png);
+    }
+
+    .button-results:active,
+    .button-results:focus,
+    .button-results:checked {
+      content:url(/static/assets/img/pharma/bottoneavantiON.png);
+    }
+
     .button-splash:active,
     .button-splash:focus,
     .button-splash:checked {
@@ -359,6 +369,10 @@
 
     .prepare-image {
       content:url(/static/assets/img/pharma/prepare-image.png);
+    }
+
+    .final-image {
+      content:url(/static/assets/img/pharma/datapharma.png);
     }
 
     .waiting-image {

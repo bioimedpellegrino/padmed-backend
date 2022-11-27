@@ -16,7 +16,7 @@ urlpatterns=[
     path('patientresults/', PatientResults.as_view(), name='patient_results'),
     path('patientresultsmock/', ResultsMock.as_view(), name='patient_results_mock'),
     path('patientresults_error/', PatientResultsError.as_view(), name='patient_results_error'),
-    
+    path('endpage/', EndPageView.as_view(), name='end_page'),
     #NFC and test Pages
     path('testnfc/', TestNFC.as_view(), name='test'),
     path('videoselecting/', VideoSelecting.as_view(), name='videoselecting'),
