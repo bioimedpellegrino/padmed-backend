@@ -439,6 +439,7 @@ class ResultsMock(APIView):
         user = AppUser.get_or_create_from_parent(request.user)
         patient_measure = PatientMeasureResult.objects.get(pk=47)
         result = patient_measure.pharma_parameters()
+        print(result)
         result['user'] = user
         return render(request, self.TEMPLATE_NAME, result)
 

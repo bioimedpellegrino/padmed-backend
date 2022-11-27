@@ -112,7 +112,7 @@
 <div class="pharma-glass" id="vitals_parameters">
   {% for parameter in vitals_parameters %}
   <div class="row mt-3 mb-3 d-flex justify-content-center">
-    <div class="col-md-3 align-self-center" style="text-align: end;">
+    <div class="col-md-5 align-self-center" style="text-align: end;">
       <span class="measure-label">{{parameter.name_ita}}</span>
     </div>
     <div class="col-md-1 align-self-center">
@@ -121,7 +121,7 @@
     <div class="col-md-1 align-self-center">
       <span class="measure-value" style="color: {{parameter.color}}">{{parameter.value|floatformat:0}}</span>
     </div>
-    <div class="col-md-7 align-self-center">
+    <div class="col-md-5 align-self-center">
       <div class="bar-back">
         <div class="progressBar" id="{{parameter.parameter_id}}">
           <div class="bar" style="background-color: {{parameter.color}}">
@@ -136,8 +136,8 @@
 <div class="pharma-glass" id="mental_parameters" style="display: none;">
   {% for parameter in mental_parameters %}
   <div class="row mt-3 mb-3 d-flex justify-content-center">
-    <div class="col-md-3 align-self-center" style="text-align: end;">
-      <span class="measure-label">{{parameter.name_ita}}</span>
+    <div class="col-md-5 align-self-center" style="text-align: end;">
+      <span class="measure-label">{{parameter.name_ita|to_upper_case}}</span>
     </div>
     <div class="col-md-1 align-self-center">
       <span class="measure-unit">{{parameter.unit}}</span>
@@ -145,7 +145,7 @@
     <div class="col-md-1 align-self-center">
       <span class="measure-value" style="color: {{parameter.color}}">{{parameter.value|floatformat:0}}</span>
     </div>
-    <div class="col-md-7 align-self-center">
+    <div class="col-md-5 align-self-center">
       <div class="bar-back">
         <div class="progressBar" id="{{parameter.parameter_id}}">
           <div class="bar" style="background-color: {{parameter.color}}">
@@ -158,28 +158,38 @@
   {% endfor %}
 </div>
 <div class="pharma-glass" id="global_parameters" style="display: none;">
-  {% for parameter in global_parameters %}
   <div class="row mt-3 mb-3 d-flex justify-content-center">
-    <div class="col-md-3 align-self-center" style="text-align: end;">
-      <span class="measure-label">{{parameter.name_ita}}</span>
-    </div>
-    <div class="col-md-1 align-self-center">
-      <span class="measure-unit">{{parameter.unit}}</span>
-    </div>
-    <div class="col-md-1 align-self-center">
-      <span class="measure-value" style="color: {{parameter.color}}">{{parameter.value|floatformat:0}}</span>
-    </div>
-    <div class="col-md-7 align-self-center">
-      <div class="bar-back">
-        <div class="progressBar" id="{{parameter.parameter_id}}">
-          <div class="bar" style="background-color: {{parameter.color}}">
-            <div class="dot"></div>
-          </div>
-        </div>
-      </div>
+    <div class="col-md-3">
+      <div role="progressbar" aria-valuenow="{{global_parameters.0.value|floatformat:0}}" aria-valuemin="0" aria-valuemax="{{global_parameters.0.limit_value}}" style="--value:{{global_parameters.0.value|floatformat:0}}; --colorScore:{{global_parameters.0.color}}"></div>
     </div>
   </div>
-  {% endfor %}
+  <div class="row mt-3 d-flex justify-content-center">
+    <div class="col-md-3 vertical-center">
+      <span class="measure-label mt-3">{{global_parameters.0.name_ita|to_upper_case}}</span>
+    </div>
+  </div>
+  <div class="row mt-5 mb-3 d-flex justify-content-center">
+    <div class="col-md-3">
+      <div role="progressbar" aria-valuenow="{{global_parameters.1.value|floatformat:0}}" aria-valuemin="0" aria-valuemax="{{global_parameters.1.limit_value}}" style="--value:{{global_parameters.1.value|floatformat:0}}; --colorScore:{{global_parameters.1.color}}"></div>
+    </div>
+    <div class="col-md-3">
+      <div role="progressbar" aria-valuenow="{{global_parameters.2.value|floatformat:0}}" aria-valuemin="0" aria-valuemax="{{global_parameters.2.limit_value}}" style="--value:{{global_parameters.2.value|floatformat:0}}; --colorScore:{{global_parameters.2.color}}"></div>
+    </div>
+    <div class="col-md-3">
+      <div role="progressbar" aria-valuenow="{{global_parameters.3.value|floatformat:0}}" aria-valuemin="0" aria-valuemax="{{global_parameters.3.limit_value}}" style="--value:{{global_parameters.3.value|floatformat:0}}; --colorScore:{{global_parameters.3.color}}"></div>
+    </div>
+  </div>
+  <div class="row mt-3 d-flex justify-content-center">
+    <div class="col-md-3 vertical-center">
+      <span class="res-label mt-3">{{global_parameters.1.name_ita|to_upper_case}}</span>
+    </div>
+    <div class="col-md-3 vertical-center">
+      <span class="res-label mt-3">{{global_parameters.2.name_ita|to_upper_case}}</span>
+    </div>
+    <div class="col-md-3 vertical-center">
+      <span class="res-label mt-3">{{global_parameters.3.name_ita|to_upper_case}}</span>
+    </div>
+  </div>
 </div>
 <div class="p-7 d-flex justify-content-xl-between">
   <div>
