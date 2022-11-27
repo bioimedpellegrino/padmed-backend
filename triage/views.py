@@ -331,10 +331,16 @@ class PatientResults(APIView):
         
         user = AppUser.get_or_create_from_parent(request.user)
         patient_result = PatientMeasureResult.objects.get(pk=int(request.POST.get('p_measure_result')))
-        measure = eval(patient_result.measure_short)
-        today_date = datetime.datetime.today().strftime('%Y-%m-%d')
-        print_command = print_command_measure(measure, today_date)
-        return render(request, self.TEMPLATE_NAME, {'measure': measure, 'date': today_date, 'user': user, 'print_command': print_command, 'show_arrow': True})
+
+        if settings.TEMPLATE_MISURATION == 'pharma-template':
+            results = patient_result.pharma_parameters()
+            results['user'] = user
+            return render(request, self.TEMPLATE_NAME, results)
+        else:
+            measure = eval(patient_result.measure_short)
+            today_date = datetime.datetime.today().strftime('%Y-%m-%d')
+            print_command = print_command_measure(measure, today_date)
+            return render(request, self.TEMPLATE_NAME, {'measure': measure, 'date': today_date, 'user': user, 'print_command': print_command, 'show_arrow': True})
     
 class PatientResultsError(APIView):
     """
