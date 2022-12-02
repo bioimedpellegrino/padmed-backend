@@ -515,6 +515,7 @@ class PatientMeasureResult(models.Model):
     
     def pharma_parameters(self):
         import ast
+        import random
         all_results = ast.literal_eval(self.measure_short)
         all_indexes_result = all_results.get("measure",{})
         deep_affex_points = list(DeepAffexPoint.objects.all().values('signal_name', 'signal_name_ita', 'limit_value'))
@@ -524,6 +525,25 @@ class PatientMeasureResult(models.Model):
         total_ok = 0
         total_warning = 0
         total_danger = 0
+        
+        #Add mock
+        vitals_parameters.append(
+            {'value': random.randrange(34, 36), 
+             'unit': '°C', 
+             'name': 'Temperatura', 
+             'name_ita': 'Temperatura', 
+             'parameter_id': 'TMP', 
+             'color': '#38FF82', 
+             'limit_value': 42})
+        vitals_parameters.append(
+            {'value': random.randrange(98, 99), 
+             'unit': '%', 
+             'name': 'Saturazione di ossigeno', 
+             'name_ita': 'Saturazione di ossigeno', 
+             'parameter_id': 'OXY', 
+             'color': '#38FF82', 
+             'limit_value': 100}
+        )
         
         try:
             for k,v in all_indexes_result.items():
@@ -547,6 +567,7 @@ class PatientMeasureResult(models.Model):
                     mental_parameters.append(v)
                 elif k in ['HEALTH_SCORE', 'BP_HEART_ATTACK', 'BP_STROKE', 'BP_CVD']: 
                 	global_parameters.append(v)
+        
         except Exception as e:
             import traceback
             traceback.print_exc()
