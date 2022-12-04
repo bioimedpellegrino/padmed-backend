@@ -277,7 +277,7 @@
   function animate_graph(elements){
     let indx = 1;
     for (const element of elements){
-      setTimeout( progress, 100*indx, element.value, element.limit_value, $('#'+element.parameter_id));
+      setTimeout( progress, 300*indx, element.value, element.limit_value, $('#'+element.parameter_id));
     }   
   }
 </script>
