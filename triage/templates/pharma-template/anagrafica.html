@@ -277,12 +277,9 @@
   $(document).ready(function () {
     show_height();
     show_weight();
-    $("#id_height").change(function () {
-      show_height()
-    });
-    $("#id_weight").change(function () {
-      show_weight()
-    });
+    
+    $("#id_height").attr('oninput', 'show_height()');
+    $("#id_weight").attr('oninput', 'show_weight()');
   });
 
   function show_height() {
