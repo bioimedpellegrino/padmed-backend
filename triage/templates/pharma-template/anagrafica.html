@@ -253,12 +253,16 @@
           {{form.is_allergic.errors}}
         </div>
       </div>
-      <div style="text-align:center">
-        <!--<img class="btn-anagrafica mb-3" onclick="submit_form()">-->
-        <button class="btn btn-triage m-3" type="submit"  name="submit" value="Submit"
-          id="id_input_true">
-          CONFERMA
-        </button>
+      <div class="d-flex justify-content-end mt-3 vertical-center p-3 gap-3">
+        <div>
+          <label class="label-next mr-3">AVANTI</label>
+        </div>
+        <div>
+          <a class="button-anagrafica" onclick="submit_form()">
+            <img class="button-anagrafica" onclick="submit_form()">
+          </a>
+          <button style="display: none;" type="submit"  name="submit" value="Submit"id="id_input_true"></button>
+        </div>
       </div>
   </div>
   </form>

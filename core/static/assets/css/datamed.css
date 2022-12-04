@@ -253,6 +253,13 @@
       text-justify: auto;
     }
 
+    .label-next {
+      font-weight: bolder;
+      font-size: 30px;
+      text-justify: auto;
+      color: #367C84;
+    }
+
     .space-btw {
       display: flex;
       justify-content: space-between;
@@ -323,6 +330,7 @@
     .button-info:checked {
       content:url(/static/assets/img/pharma/btn-info-pressed.png);
     }
+    
 
     .button-splash {
       cursor: pointer;
@@ -346,15 +354,15 @@
       content:url(/static/assets/img/pharma/button-pressed.png);
     }
 
-    .btn-anagrafica {
+    .button-anagrafica {
       cursor: pointer;
       content:url(/static/assets/img/pharma/button-anagrafica.png);
       width: 100px;
     }
 
-    .btn-anagrafica:active,
-    .btn-anagrafica:focus,
-    .btn-anagrafica:checked {
+    .button-anagrafica:active,
+    .button-anagrafica:focus,
+    .button-anagrafica:checked {
       content:url(/static/assets/img/pharma/button-anagrafica-pressed.png);
     }
 
