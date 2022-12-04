@@ -364,5 +364,21 @@ def get_color_score(value, deep_affex_point):
         else: 
             return RED
     
+    elif deep_affex_point == 'HRV_SDNN':
+        if value >= 30:
+            return GREEN
+        elif value <= 20:
+            return RED
+        else:
+            return YELLOW
+
+    elif deep_affex_point == 'BP_RPP':
+        if value <= 3.9:
+            return GREEN
+        elif value >= 4.1:
+            return RED
+        else:
+            return YELLOW
+
     else:
         return NEUTRAL

@@ -520,11 +520,12 @@ class PatientMeasureResult(models.Model):
         all_indexes_result = all_results.get("measure",{})
         deep_affex_points = list(DeepAffexPoint.objects.all().values('signal_name', 'signal_name_ita', 'limit_value'))
         vitals_parameters = []
+        body_parameters = []
         mental_parameters = []
         global_parameters = []
-        total_ok = 0
-        total_warning = 0
-        total_danger = 0
+        vitals_count =  {'ok': 0, 'warning': 0, 'danger': 0}
+        health_count = {'ok': 0, 'warning': 0, 'danger': 0}
+        risks_count =  {'ok': 0, 'warning': 0, 'danger': 0}
         
         #Add mock
         vitals_parameters.append(
@@ -535,6 +536,7 @@ class PatientMeasureResult(models.Model):
              'parameter_id': 'TMP', 
              'color': '#38FF82', 
              'limit_value': 42})
+        vitals_count['ok'] += 1
         vitals_parameters.append(
             {'value': random.randrange(98, 99), 
              'unit': '%', 
@@ -544,6 +546,7 @@ class PatientMeasureResult(models.Model):
              'color': '#38FF82', 
              'limit_value': 100}
         )
+        vitals_count['ok'] += 1
         
         try:
             for k,v in all_indexes_result.items():
@@ -554,31 +557,31 @@ class PatientMeasureResult(models.Model):
                 v['color'] = color
                 v['limit_value'] = point['limit_value']
                 
-                if score == 'ok':
-                    total_ok +=1
-                elif score == 'warning':
-                    total_warning +=1
-                elif score == 'danger':
-                    total_danger +=1
-                
                 if k in ['HR_BPM', 'BP_DIASTOLIC', 'BP_SYSTOLIC', 'IHB_COUNT', 'BR_BPM']:
                     vitals_parameters.append(v)
-                elif k in ['MSI', 'BMI_CALC', 'AGE', 'WAIST_TO_HEIGHT', 'WAIST_CIRCUM', 'RISKS_SCORE','PHYSICAL_SCORE','MENTAL_SCORE','PHYSIO_SCORE','VITAL_SCORE']:
+                    vitals_count[score] += 1
+                elif k in ['BMI_CALC', 'AGE', 'WAIST_TO_HEIGHT', 'WAIST_CIRCUM', 'RISKS_SCORE','PHYSICAL_SCORE','PHYSIO_SCORE','VITAL_SCORE']:
+                    body_parameters.append(v)
+                    health_count[score] += 1
+                elif k in ['MSI', 'MENTAL_SCORE', 'BP_RPP', 'HRV_SDNN']:
                     mental_parameters.append(v)
+                    health_count[score] += 1
                 elif k in ['HEALTH_SCORE', 'BP_HEART_ATTACK', 'BP_STROKE', 'BP_CVD']: 
-                	global_parameters.append(v)
-        
+                    global_parameters.append(v)
+                    risks_count[score] +=1
+
         except Exception as e:
             import traceback
             traceback.print_exc()
         
         return {
             'vitals_parameters': vitals_parameters, 
+            'body_parameters': body_parameters,
             'mental_parameters': mental_parameters, 
             'global_parameters': global_parameters, 
-            'total_ok' :total_ok, 
-            'total_warning': total_warning, 
-            'total_danger': total_danger 
+            'vitals_count' : vitals_count, 
+            'health_count': health_count, 
+            'risks_count': risks_count 
         }
     
     
