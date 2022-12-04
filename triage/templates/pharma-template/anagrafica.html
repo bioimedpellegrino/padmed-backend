@@ -220,7 +220,7 @@
           {{form.diabetes.errors}}
         </div>
       </div>
-      <div class="row ml-3">
+      <div class="row mt-3 ml-3">
         <div class="form-group col-md-5 space-btw">
           <label class="label-anagrafica" for="id_is_bloodpressure">IPERTESO</label>
           <input type="checkbox" class="pharma-check "  name="id_is_bloodpressure" id="id_is_bloodpressure"
@@ -236,7 +236,7 @@
           {{form.is_asthmatic.errors}}
         </div>
       </div>
-      <div class="row ml-3">
+      <div class="row mt-3 ml-3">
         <div class="form-group col-md-5 space-btw">
           <label class="label-anagrafica" for="id_bloodpressuremedication">ASSUME FARMACI <br>PER PRESSIONE</label>
           <input 
@@ -246,7 +246,7 @@
         </div>
         <div class="col-md-1"></div>
         <div class="form-group col-md-5 space-btw">
-          <label class="label-anagrafica" for="id_is_allergic">ALLERGICO AI POLLINI</label>
+          <label class="label-anagrafica" for="id_is_allergic">ALLERGICO <br>AI POLLINI</label>
           <input 
             type="checkbox" class="pharma-check " name="is_allergic" id="id_is_allergic" 
             {% if form.is_allergic.value == True %}checked="checked" {% endif %}>
