@@ -68,9 +68,11 @@
 {% block javascripts %}
 <script>
 
-    function submitForm(){
-        document.getElementById("#goOn").click();
+    function sendHome(){
+        location.href="{% url 'splash' %}";
     }
+
+  setTimeout(sendHome, 15000);
 
 </script>
 {% endblock javascripts %}
