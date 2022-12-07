@@ -32,6 +32,22 @@
       color: #5CB2CF
     }
 
+    .pharma-header-results-big {
+      display: flex;
+      text-align: center;
+      font-weight: lighter;
+      font-size: 80px;
+      color: #5CB2CF
+    }
+
+    .pharma-header-results-bigger {
+      display: flex;
+      text-align: center;
+      font-weight: lighter;
+      font-size: 100px;
+      color: #5CB2CF
+    }
+
     .pharma-title-2 {
       text-align: center;
       font-size: 40px;
@@ -101,6 +117,12 @@
       font-size: 30px;
     }
 
+    .measure-label-big {
+      color: #FFFF;
+      text-align: center;
+      font-size: 2.5rem;
+    }
+
     .ctr {
       display: flex;
       justify-content: center;
@@ -110,6 +132,12 @@
     .res-label {
       color: #FFFF;
       font-size: 2rem;
+    }
+
+    .res-label-big {
+      color: #FFFF;
+      font-size: 3.5rem;
+      font-weight: 100;
     }
 
     .measure-unit {
@@ -310,13 +338,15 @@
     }
 
     .background-shadow{
-      padding-top: 3vw;
-      padding-bottom: 3vw;
+      padding: 3vw;
+      padding-top: 5vw;
+      padding-bottom: 5vw;
       background: linear-gradient(rgba(48,64,91,0.1) 0%, rgba(72,197,249,0.2) 50%, rgba(48,64,91,0.3) 100%);
+      /* background: rgba(72,197,249,0.1); */
       -webkit-backdrop-filter: blur(5px);
       backdrop-filter: blur(5px);
-      border-bottom-left-radius: 10%;
-      border-bottom-right-radius: 10%;
+      border-bottom-left-radius: 15%;
+      border-bottom-right-radius: 15%;
     }
 
     .button-info {
@@ -513,7 +543,7 @@
     }
     
     div[role="progressbar"] {
-      --size: 12rem;
+      --size: var(--sz);
       --fg: var(--colorScore);
       --bg: rgba(0,0,0,0);
       --pgPercentage: var(--value);
@@ -526,7 +556,7 @@
       margin-left: auto;
       margin-right: auto;
       background: 
-        radial-gradient(closest-side, #484E63 70%, transparent 0 95%, #7fafd1 0),
+        radial-gradient(closest-side, #333A52 70%, transparent 0 95%, #7fafd1 0),
         conic-gradient(var(--fg) calc(var(--pgPercentage) * 1%), var(--bg) 0)
         ;
       font-family: AcuminVariableConcept, sans-serif;

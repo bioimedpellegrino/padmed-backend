@@ -7,7 +7,7 @@
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}
 <style>
-  // progress bar //
+  //progress bar//
   .progressBar {
     width: 90%;
     height: 35px;
@@ -53,7 +53,7 @@
 
   body {
     font: 30px/100% AcuminVariableConcept, sans-serif;
-    background: url("/static/assets/img/pharma/background-results.jpg") no-repeat center center fixed;
+    background: url("/static/assets/img/pharma/background-results.png") no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -68,12 +68,12 @@
 {% block content %}
 <!-- Header container -->
     <div class="row"><div class="col-md-12 mb-5"></div></div>
-    <div class="row pharma-header-results vertical-center line-res">
+    <div class="row pharma-header-results-big vertical-center line-res">
         <div id="header-title" style="margin-top: 8px;" class="col-md-12"></div>
     </div>
 <!-- Header container -->
 <!-- Main communication div -->
-<div class="mt-7 mb-7">
+<div id="dots" class="mt-7 mb-7">
   <div class="row mt-5">
     <div class="col-md-4"></div>
     <div class="col-md-4 d-flex justify-content-around">
@@ -181,33 +181,41 @@
     </div>
   </div>
 </div>
-<div id="global_parameters" style="display: none;">
+<div id="global_parameters" style="display: none;" class="mt-7">
   <div class="row mt-3 mb-3 d-flex justify-content-center">
-    <div class="col-md-2 background-shadow">
-      <div role="progressbar" aria-valuenow="{{global_parameters.0.value|floatformat:0}}" aria-valuemin="0" aria-valuemax="{{global_parameters.0.limit_value}}" style="--value:{{global_parameters.0.value|floatformat:0}}; --colorScore:{{global_parameters.0.color}}"></div>
-      <span class="measure-label ctr mt-5">{{global_parameters.0.name_ita|to_upper_case}}</span>
+    <div class="col-md-4 background-shadow">
+      <div role="progressbar" aria-valuenow="{{global_parameters.0.value|floatformat:0}}" aria-valuemin="0" aria-valuemax="{{global_parameters.0.limit_value}}" style="--value:{{global_parameters.0.value|floatformat:0}}; --sz:19rem; --colorScore:{{global_parameters.0.color}}"></div>
+      <span class="measure-label-big ctr mt-7">{{global_parameters.0.name_ita|to_upper_case}}</span>
     </div>
   </div>
   <div class="row mt-5 mb-3 d-flex justify-content-center">
-    <div class="col-md-3">
-      <div role="progressbar" aria-valuenow="{{global_parameters.1.value|floatformat:0}}" aria-valuemin="0" aria-valuemax="{{global_parameters.1.limit_value}}" style="--value:{{global_parameters.1.value|floatformat:0}}; --colorScore:{{global_parameters.1.color}}"></div>
+    <div class="col-md-2 vertical-center"></div>
+    <div class="col-md-2 vertical-center">
+      <span class="res-label mt-3">{{global_parameters.1.name_ita|to_upper_case}}</span>
     </div>
-    <div class="col-md-3">
-      <div role="progressbar" aria-valuenow="{{global_parameters.2.value|floatformat:0}}" aria-valuemin="0" aria-valuemax="{{global_parameters.2.limit_value}}" style="--value:{{global_parameters.2.value|floatformat:0}}; --colorScore:{{global_parameters.2.color}}"></div>
+    <div class="col-md-2 vertical-center">
+      <span class="res-label mt-3">{{global_parameters.2.name_ita|to_upper_case}}</span>
     </div>
-    <div class="col-md-3">
-      <div role="progressbar" aria-valuenow="{{global_parameters.3.value|floatformat:0}}" aria-valuemin="0" aria-valuemax="{{global_parameters.3.limit_value}}" style="--value:{{global_parameters.3.value|floatformat:0}}; --colorScore:{{global_parameters.3.color}}"></div>
+    <div class="col-md-2 vertical-center">
+      <span class="res-label mt-3">{{global_parameters.3.name_ita|to_upper_case}}</span>
+    </div>
+    <div class="col-md-2 vertical-center">
+      <span class="res-label mt-3">DIABETE</span>
     </div>
   </div>
   <div class="row mt-3 d-flex justify-content-center">
-    <div class="col-md-3 vertical-center">
-      <span class="res-label mt-3">{{global_parameters.1.name_ita|to_upper_case}}</span>
+    <div class="col-md-2 align-right"><p class="res-label-big mt-3">ANALISI DI <br>RISCHIO</p></div>
+    <div class="col-md-2">
+      <div role="progressbar" aria-valuenow="{{global_parameters.1.value|floatformat:0}}" aria-valuemin="0" aria-valuemax="{{global_parameters.1.limit_value}}" style="--value:{{global_parameters.1.value|floatformat:0}}; --sz:12rem; --colorScore:{{global_parameters.1.color}}"></div>
     </div>
-    <div class="col-md-3 vertical-center">
-      <span class="res-label mt-3">{{global_parameters.2.name_ita|to_upper_case}}</span>
+    <div class="col-md-2">
+      <div role="progressbar" aria-valuenow="{{global_parameters.2.value|floatformat:0}}" aria-valuemin="0" aria-valuemax="{{global_parameters.2.limit_value}}" style="--value:{{global_parameters.2.value|floatformat:0}}; --sz:12rem; --colorScore:{{global_parameters.2.color}}"></div>
     </div>
-    <div class="col-md-3 vertical-center">
-      <span class="res-label mt-3">{{global_parameters.3.name_ita|to_upper_case}}</span>
+    <div class="col-md-2">
+      <div role="progressbar" aria-valuenow="{{global_parameters.3.value|floatformat:0}}" aria-valuemin="0" aria-valuemax="{{global_parameters.3.limit_value}}" style="--value:{{global_parameters.3.value|floatformat:0}}; --sz:12rem; --colorScore:{{global_parameters.3.color}}"></div>
+    </div>
+    <div class="col-md-2">
+      <div role="progressbar" aria-valuenow="{{global_parameters.2.value|floatformat:0}}" aria-valuemin="0" aria-valuemax="{{global_parameters.2.limit_value}}" style="--value:{{global_parameters.2.value|floatformat:0}}; --sz:12rem; --colorScore:{{global_parameters.2.color}}"></div>
     </div>
   </div>
 </div>
@@ -255,6 +263,7 @@
     page += n;
 
     if (page == 0){
+      $('#dots').show();
       $('#vitals_parameters').show();
       $('#health_parameters').hide();
       $('#global_parameters').hide();
@@ -266,6 +275,7 @@
 
     }
     else if (page == 1){
+      $('#dots').show();
       $('#vitals_parameters').hide();
       $('#health_parameters').show();
       $('#global_parameters').hide();
@@ -277,6 +287,7 @@
       change_dot_value('mentals');
     }
     else if (page == 2){
+      $('#dots').hide();
       $('#vitals_parameters').hide();
       $('#health_parameters').hide();
       $('#global_parameters').show();
