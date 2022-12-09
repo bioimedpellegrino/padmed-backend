@@ -301,7 +301,8 @@
     .text-white {
       color: white;
       text-align: center;
-      font-size: 27px;
+      font-size: 2.5rem;
+      line-height: normal;
     }
 
     .text-red {
@@ -318,6 +319,7 @@
 
     .conditions-text {
       font: 21px/125% AcuminVariableConcept, sans-serif;
+      text-align: justify;
     }
 
     .prepare-video-text {
