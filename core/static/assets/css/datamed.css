@@ -217,7 +217,7 @@
     }
 
     .pharma-area-out-video {
-      width:500px;
+      width:400px;
       height:460px;
       background-color: #e7e7e7;
       border: 15px solid #4D4D4D;
@@ -315,6 +315,13 @@
       color: white;
       text-align: center;
       font-size: 2.5rem;
+      line-height: normal;
+    }
+
+    .text-white-big {
+      color: white;
+      text-align: center;
+      font-size: 3.5rem;
       line-height: normal;
     }
 

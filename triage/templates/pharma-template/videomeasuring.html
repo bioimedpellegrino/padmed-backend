@@ -74,19 +74,17 @@
 
 <!-- Header container -->
 <div class="row pharma-header-bar">
-  <div class="col-md-1"></div>
   <div class="col-md-2"></div>
   <div class="col-md-2 align-right">
-    <img width="35%" height="80%" src="/static/assets/img/pharma/triangle-left.png">
+    <img width="20%" height="80%" src="/static/assets/img/pharma/triangle-left.png">
   </div>
-  <div class="col-md-2 vertical-center">
-    <span class="text-white">CHECK UP IN CORSO</span>
+  <div class="col-md-4 vertical-center">
+    <span class="text-white-big">CHECK UP IN CORSO</span>
   </div>
   <div class="col-md-2 align-left">
-    <img width="35%" height="80%" class="flip-horizontal" src="/static/assets/img/pharma/triangle-left.png">
+    <img width="20%" height="80%" class="flip-horizontal" src="/static/assets/img/pharma/triangle-left.png">
   </div>
   <div class="col-md-2"></div>
-  <div class="col-md-1"></div>
 </div>
 <!-- Header container -->
 
@@ -100,19 +98,19 @@
     </div>
     <div class="com-area-out-base-video pharma-area-out-video overlay"> <!--rot-90-->
       {% if ROTATE_90_COUNTERCLOCKWISE %}
-        <div class="flip-horizontal" style="width:500px; height:100%; overflow:hidden">
-          <video  id="preview" style="width:100%;" autoplay muted>
+        <div class="flip-horizontal" style="width:600px; height:480px; overflow:hidden">
+          <video  id="preview" style="width:112%;" autoplay muted>
           </video>
         </div>
       {% else %}
-        <div class="flip-horizontal" style="width:500px; height:100%; overflow:hidden">
-          <video  id="preview" style="width:100%;" autoplay muted>
+        <div class="flip-horizontal" style="width:600px; height:480px; overflow:hidden">
+          <video  id="preview" style="width:112%;" autoplay muted>
           </video>
         </div>
       {% endif %}
       <div style="display:none">
         <div id="stopButton" class="button"></div>
-        <video id="recording" width="500" height="500" controls></video>
+        <video id="recording" width="600" height="480" controls></video>
       </div>
     </div>
     <div class="vertical-center">
@@ -288,15 +286,17 @@
               exact: devId
             },
             height: {
-              min: 500,
-              max: 500
+              min: 480,
+              max: 480,
+              ideal: 480
             },
             width: {
-              min: 500,
-              max: 500
+              min: 600,
+              max: 600,
+              ideal: 600
             },
             frameRate: {
-              min: 15,
+              min: 24,
               ideal: 30,
               max: 30
             },
@@ -396,7 +396,7 @@
     }
   };
 
-  progress(38, 38, $('#progressBar'));
+  progress(40, 40, $('#progressBar'));
 
   function show_complete() {
     $('#progressBar').animate({
