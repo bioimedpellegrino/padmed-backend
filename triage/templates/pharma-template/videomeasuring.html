@@ -97,22 +97,22 @@
       <span class="text-red-big-blink"><b>RIMANI FERMO</b></span>
     </div>
     <div class="com-area-out-base-video pharma-area-out-video overlay"> <!--rot-90-->
-      {% if ROTATE_90_COUNTERCLOCKWISE %}
-        <div class="flip-horizontal" style="width:600px; height:480px; overflow:hidden">
-          <video  id="preview" style="width:112%;" autoplay muted>
-          </video>
+        {% if ROTATE_90_COUNTERCLOCKWISE %}
+          <div class="flip-horizontal" style="width:600px; height:480px; overflow:hidden">
+            <video  id="preview" style="width:112%;" autoplay muted>
+            </video>
+          </div>
+        {% else %}
+            <div class="flip-horizontal" style="width:600px; height:480px; overflow:hidden">
+              <video  id="preview" style="width:112%;" autoplay muted>
+              </video>
+            </div>
+        {% endif %}
+        <div style="display:none">
+          <div id="stopButton" class="button"></div>
+          <video id="recording" width="600" height="480" controls></video>
         </div>
-      {% else %}
-        <div class="flip-horizontal" style="width:600px; height:480px; overflow:hidden">
-          <video  id="preview" style="width:112%;" autoplay muted>
-          </video>
-        </div>
-      {% endif %}
-      <div style="display:none">
-        <div id="stopButton" class="button"></div>
-        <video id="recording" width="600" height="480" controls></video>
       </div>
-    </div>
     <div class="vertical-center">
         <div class="bar-back">
           <div id="progressBar">
@@ -130,6 +130,9 @@
         <div class="time-left" id="time-left"></div>
       </div>
     </div>
+  </div>
+  <div class="mask-pharma">
+    <img src="/static/assets/img/pharma/video-mask.png" width="95%">
   </div>
 </div>
 <div id="waiting" style="display: none;">
@@ -377,7 +380,7 @@
     stop(preview.srcObject);
   }, false);
 
-  measure_started = setTimeout(doMeasure, 100);
+  measure_started = setTimeout(doMeasure, 100); 
 
   // ------------ Progress bar -------------------- //
 

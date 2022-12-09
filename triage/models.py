@@ -529,7 +529,7 @@ class PatientMeasureResult(models.Model):
         
         #Add mock
         vitals_parameters.append(
-            {'value': random.randrange(34, 36), 
+            {'value': random.uniform(36.0, 36.8), 
              'unit': '°C', 
              'name': 'Temperatura', 
              'name_ita': 'Temperatura', 

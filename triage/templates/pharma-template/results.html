@@ -109,7 +109,7 @@
       <span class="measure-unit">{{parameter.unit}}</span>
     </div>
     <div class="col-md-1 align-self-center">
-      <span class="measure-value" style="color: {{parameter.color}}">{{parameter.value|floatformat:0}}</span>
+      <span class="measure-value" style="color: {{parameter.color}}">{% if parameter.name_ita == 'Temperatura'%}{{parameter.value|stringformat:".1f"}}{% else %}{{parameter.value|floatformat:0}}{% endif %}</span>
     </div>
     <div class="col-md-5 align-self-center">
       <div class="bar-back">
