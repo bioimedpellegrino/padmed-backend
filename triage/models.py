@@ -560,15 +560,17 @@ class PatientMeasureResult(models.Model):
                 if k in ['HR_BPM', 'BP_DIASTOLIC', 'BP_SYSTOLIC', 'IHB_COUNT', 'BR_BPM']:
                     vitals_parameters.append(v)
                     vitals_count[score] += 1
-                elif k in ['BMI_CALC', 'AGE', 'WAIST_TO_HEIGHT', 'WAIST_CIRCUM', 'RISKS_SCORE','PHYSICAL_SCORE','PHYSIO_SCORE','VITAL_SCORE']:
+                elif k in ['ABSI', 'WEIGHT', 'BMI_CALC', 'AGE', 'WAIST_TO_HEIGHT']:
                     body_parameters.append(v)
                     health_count[score] += 1
-                elif k in ['MSI', 'MENTAL_SCORE', 'BP_RPP', 'HRV_SDNN']:
+                elif k in ['MSI', 'BP_RPP', 'PHYSIO_SCORE']:
                     mental_parameters.append(v)
                     health_count[score] += 1
                 elif k in ['HEALTH_SCORE', 'BP_HEART_ATTACK', 'BP_STROKE', 'BP_CVD']: 
                     global_parameters.append(v)
                     risks_count[score] +=1
+                    
+            body_parameters = sorted(body_parameters, key=lambda d: ['WEIGHT', 'BMI_CALC', 'AGE', 'WAIST_TO_HEIGHT', 'ABSI'])
 
         except Exception as e:
             import traceback

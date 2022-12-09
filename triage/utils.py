@@ -379,6 +379,17 @@ def get_color_score(value, deep_affex_point):
             return RED
         else:
             return YELLOW
-
+    elif deep_affex_point == 'WEIGHT':
+        if value > 50 and value < 95:
+            return GREEN
+        else:
+            return YELLOW
+    elif deep_affex_point == 'ABSI':
+        if value <= 6.6:
+            return GREEN
+        elif value > 6.6 and value <= 9.9:
+            return YELLOW
+        else: 
+            return RED
     else:
         return NEUTRAL
