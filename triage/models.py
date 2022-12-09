@@ -540,8 +540,8 @@ class PatientMeasureResult(models.Model):
         vitals_parameters.append(
             {'value': random.randrange(98, 99), 
              'unit': '%', 
-             'name': 'Saturazione di ossigeno', 
-             'name_ita': 'Saturazione di ossigeno', 
+             'name': 'OSSIGENAZIONE DEL SANGUE', 
+             'name_ita': 'OSSIGENAZIONE DEL SANGUE', 
              'parameter_id': 'OXY', 
              'color': '#38FF82', 
              'limit_value': 100}
