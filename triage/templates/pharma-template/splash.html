@@ -53,7 +53,7 @@
     <div class="vertical-center mt-5">
         <p class="text-splash">PREMI IL TASTO PER INIZIARE</p>
     </div>
-    <div class="vertical-center">
+    <div class="vertical-center" onclick="goNext()">
         <a href="{% url 'user_conditions' %}">
             <img class="button-splash">
         </a>
@@ -68,4 +68,9 @@
 {% endblock content %}
 
 {% block javascripts %}
+<script>
+    function goNext(){
+        location.href="{% url 'user_conditions' %}";
+    }
+</script>
 {% endblock javascripts %}

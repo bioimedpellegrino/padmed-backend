@@ -166,7 +166,7 @@ class AnagraficaView(APIView):
         patient = access.patient
         declared_anag = patient.declared_anag
         form = AnagraficaForm(request.POST,instance=declared_anag)
-        print(request.POST)
+        #print(request.POST)
         if form.is_valid():
             declared_anag = form.save()
             if 'is_pharma' in request.POST and request.POST['is_pharma']:
@@ -439,7 +439,7 @@ class ResultsMock(APIView):
         user = AppUser.get_or_create_from_parent(request.user)
         patient_measure = PatientMeasureResult.objects.get(pk=47)
         result = patient_measure.pharma_parameters()
-        print(result)
+        #print(result)
         result['user'] = user
         return render(request, self.TEMPLATE_NAME, result)
 
