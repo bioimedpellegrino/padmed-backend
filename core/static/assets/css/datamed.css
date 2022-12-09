@@ -220,7 +220,7 @@
       width:400px;
       height:460px;
       background-color: #e7e7e7;
-      border: 15px solid #4D4D4D;
+      border: 15px solid #127C84;
       margin-top: 5%;
       margin-left: auto !important;
       margin-right: auto !important;
@@ -329,6 +329,26 @@
       color: #a32036;
       text-align: center;
       font-size: 40px;
+    }
+
+    .text-red-big {
+      color: #a32036;
+      text-align: center;
+      font-size: 60px;
+    }
+
+    .text-red-big-blink {
+      color: #a32036;
+      text-align: center;
+      font-size: 50px;
+      animation: blinker 1.5s step-start infinite;
+    }
+
+
+    @keyframes blinker {
+      50% {
+        opacity: 0;
+      }
     }
 
     .time-left {
@@ -704,7 +724,7 @@
       height: 15px;
       margin-left: auto;
       border-radius: 100%;
-      background-color: black;
+      background-color: #237D91;
     }
 
     .arrow-scanner {
