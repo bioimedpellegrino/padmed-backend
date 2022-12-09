@@ -17,7 +17,7 @@
     <tbody>
       {% for item in items %}
         <tr>
-          <td scope="row" data-search="{%if item.is_white %}white{%elif item.is_green%}green{%elif item.is_yellow%}yellow{%endif%}" data-order="{%if item.is_white %}3{%elif item.is_green%}2{%elif item.is_yellow%}1{%endif%}">
+          <td scope="row" data-search="{%if item.is_white %}white{%elif item.is_green%}green{%elif item.is_yellow%}yellow{%endif%}" data-order="{{item.waiting_minutes_cache}}">
             <div class="media align-items-center">
               {% if item.is_white %}
                 <div class="icon-sm bg-white rounded-circle border"></div>
