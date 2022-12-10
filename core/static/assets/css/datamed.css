@@ -554,10 +554,20 @@
       right: 600px;
     }
 
-    .mask-pharma {
+    .mask {
+      position: relative;
+    }
+    .mask video {
+      display: block;
+    }
+    .mask:before {
+      content: '';
       position: absolute;
-      bottom: 195px;
-      right: 1180px;
+      background: url("/static/assets/img/pharma/video-mask.png") no-repeat center center fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
     }
 
     .spinner {

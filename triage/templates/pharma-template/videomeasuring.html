@@ -90,7 +90,7 @@
 <!-- Header container -->
 
 <!-- Main communication div -->
-<div id="detection" style="display: none;">
+<div id="detection">
   <div class="pharma-area-video">
     <div class="pharma-area-triangle vertical-center"></div>
     <div id="startButton" class="button"></div>
@@ -98,17 +98,9 @@
       <span class="text-red-big-blink"><b>RIMANI FERMO</b></span>
     </div>
     <div class="com-area-out-base-video pharma-area-out-video overlay"> <!--rot-90-->
-        {% if ROTATE_90_COUNTERCLOCKWISE %}
-          <div class="flip-horizontal" style="width:600px; height:480px; overflow:hidden">
-            <video  id="preview" style="width:112%;" autoplay muted>
-            </video>
-          </div>
-        {% else %}
-            <div class="flip-horizontal" style="width:600px; height:480px; overflow:hidden">
-              <video  id="preview" style="width:112%;" autoplay muted>
-              </video>
-            </div>
-        {% endif %}
+        <div class="flip-horizontal mask" style="width:600px; height:480px; overflow:hidden">
+          <video  id="preview" style="width:112%;" autoplay muted></video>
+        </div>
         <div style="display:none">
           <div id="stopButton" class="button"></div>
           <video id="recording" width="600" height="480" controls></video>
@@ -136,7 +128,7 @@
     <img src="/static/assets/img/pharma/video-mask.png" width="95%">
   </div>-->
 </div>
-<div id="waiting" style="display: block;">
+<div id="waiting" style="display: none;">
   <div class="pharma-area">
     <div class="pharma-area-triangle vertical-center"></div>
       <div class="row mt-5">
