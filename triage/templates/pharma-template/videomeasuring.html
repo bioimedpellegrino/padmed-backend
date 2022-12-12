@@ -79,8 +79,8 @@
     <img width="20%" height="80%" src="/static/assets/img/pharma/triangle-left.png">
   </div>
   <div class="col-md-4 vertical-center">
-    <div id="header-text-det" class="text-white-big" style="display: none">CHECK UP IN CORSO</div>
-    <div id="header-text-wait" class="text-white-big" style="display: block">ELABORAZIONE DATI</div>
+    <div id="header-text-det" class="text-white-big">CHECK UP IN CORSO</div>
+    <div id="header-text-wait" class="text-white-big" style="display: none">ELABORAZIONE DATI</div>
   </div>
   <div class="col-md-2 align-left">
     <img width="20%" height="80%" class="flip-horizontal" src="/static/assets/img/pharma/triangle-left.png">
@@ -99,7 +99,7 @@
     </div>
     <div class="com-area-out-base-video pharma-area-out-video overlay"> <!--rot-90-->
         <div class="flip-horizontal mask" style="width:640px; height:480px; overflow:hidden">
-          <video  id="preview" style="width:112%;" autoplay muted></video>
+          <video  id="preview" style="width:120%;" autoplay muted></video>
         </div>
         <div style="display:none">
           <div id="stopButton" class="button"></div>
@@ -401,7 +401,7 @@
       $('#detection').hide();
       $('#waiting').show();
       $('#header-text-det').hide();
-      $('#header-text-wait').hide();
+      $('#header-text-wait').show();
       //ajax_progress_text_changes();
     }, 500);
   }

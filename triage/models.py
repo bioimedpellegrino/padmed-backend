@@ -505,6 +505,7 @@ class PatientMeasureResult(models.Model):
     patient_video = models.ForeignKey(PatientVideo, blank=True, null=True, on_delete=models.CASCADE)
     result = models.TextField(blank=True, null=True, default="{}")
     measure_short = models.TextField(blank=True, null=True, default="{}")
+    patient = models.ForeignKey(Patient, blank=True, null=True, on_delete=models.SET_NULL)
     
     class Meta:
         verbose_name = "Esito misurazioni"
@@ -513,16 +514,23 @@ class PatientMeasureResult(models.Model):
     def __str__(self):
         return "{} - {}".format(self.id, self.measurement_id)
     
+    def compute_oxygenation(self, patient, measure):
+        import random
+        return random.randrange(98, 99)
+        
+    
     def pharma_parameters(self):
         import ast
         import random
         all_results = ast.literal_eval(self.measure_short)
         all_indexes_result = all_results.get("measure",{})
         deep_affex_points = list(DeepAffexPoint.objects.all().values('signal_name', 'signal_name_ita', 'limit_value'))
+        
         vitals_parameters = []
-        body_parameters = []
-        mental_parameters = []
+        body_parameters = {}
+        mental_parameters = {}
         global_parameters = []
+        
         vitals_count =  {'ok': 0, 'warning': 0, 'danger': 0}
         health_count = {'ok': 0, 'warning': 0, 'danger': 0}
         risks_count =  {'ok': 0, 'warning': 0, 'danger': 0}
@@ -538,7 +546,7 @@ class PatientMeasureResult(models.Model):
              'limit_value': 42})
         vitals_count['ok'] += 1
         vitals_parameters.append(
-            {'value': random.randrange(98, 99), 
+            {'value': self.compute_oxygenation(self.patient, all_indexes_result), 
              'unit': '%', 
              'name': 'OSSIGENAZIONE DEL SANGUE', 
              'name_ita': 'OSSIGENAZIONE DEL SANGUE', 
@@ -561,25 +569,26 @@ class PatientMeasureResult(models.Model):
                     vitals_parameters.append(v)
                     vitals_count[score] += 1
                 elif k in ['ABSI', 'WEIGHT', 'BMI_CALC', 'AGE', 'WAIST_TO_HEIGHT']:
-                    body_parameters.append(v)
+                    body_parameters[k] = v
                     health_count[score] += 1
                 elif k in ['MSI', 'BP_RPP', 'PHYSIO_SCORE']:
-                    mental_parameters.append(v)
+                    mental_parameters[k] = v
                     health_count[score] += 1
                 elif k in ['HEALTH_SCORE', 'BP_HEART_ATTACK', 'BP_STROKE', 'BP_CVD']: 
                     global_parameters.append(v)
                     risks_count[score] +=1
                     
-            body_parameters = sorted(body_parameters, key=lambda d: ['WEIGHT', 'BMI_CALC', 'AGE', 'WAIST_TO_HEIGHT', 'ABSI'])
-
+            body_parameters_ordered = [body_parameters[el] for el in ['WEIGHT', 'BMI_CALC', 'AGE', 'WAIST_TO_HEIGHT', 'ABSI']]
+            mental_parameters_ordered = [mental_parameters[el] for el in ['MSI', 'BP_RPP', 'PHYSIO_SCORE']] 
+        
         except Exception as e:
             import traceback
             traceback.print_exc()
         
         return {
             'vitals_parameters': vitals_parameters, 
-            'body_parameters': body_parameters,
-            'mental_parameters': mental_parameters, 
+            'body_parameters': body_parameters_ordered,
+            'mental_parameters': mental_parameters_ordered, 
             'global_parameters': global_parameters, 
             'vitals_count' : vitals_count, 
             'health_count': health_count, 
