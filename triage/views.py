@@ -279,6 +279,7 @@ class RecordVideoView(APIView):
             p_measure_result = PatientMeasureResult()
             p_measure_result.patient_video = patient_video
             p_measure_result.measurement_id = measurement_id
+            p_measure_result.patient = triage_access.patient
             # Retrive comprehensive measurement informations
             time.sleep(2)
             # triage_access.status_tracker.status = triage_access.status_tracker.receiving_results
