@@ -555,6 +555,8 @@ class PatientMeasureResult(models.Model):
              'limit_value': 100}
         )
         vitals_count['ok'] += 1
+        body_parameters_ordered = []
+        mental_parameters_ordered = []
         
         try:
             for k,v in all_indexes_result.items():
