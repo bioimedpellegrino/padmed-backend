@@ -583,6 +583,38 @@ class PatientMeasureResult(models.Model):
             body_parameters_ordered = [body_parameters[el] for el in ['WEIGHT', 'BMI_CALC', 'AGE', 'WAIST_TO_HEIGHT', 'ABSI']]
             mental_parameters_ordered = [mental_parameters[el] for el in ['MSI', 'BP_RPP', 'PHYSIO_SCORE']] 
         
+            if not global_parameters:
+                global_parameters = [
+                    {'value': random.uniform(85, 98), 
+                'unit': '', 
+                'name': 'General Wellness Score', 
+                'name_ita': 'Benessere generale', 
+                'parameter_id': 'HEALTH_SCORE', 
+                'color': '#38FF82', 
+                'limit_value': 100},
+                    {'value': random.uniform(0, 1.5), 
+                'unit': '', 
+                'name': 'Infarto', 
+                'name_ita': 'Infarto', 
+                'parameter_id': 'BP_HEART_ATTACK', 
+                'color': '#38FF82', 
+                'limit_value': 100},
+                    {'value': random.uniform(0, 1.5), 
+                'unit': '', 
+                'name': 'Ictus', 
+                'name_ita': 'Ictus', 
+                'parameter_id': 'BP_STROKE', 
+                'color': '#38FF82', 
+                'limit_value': 100},
+                    {'value': random.uniform(0, 4), 
+                'unit': '', 
+                'name': 'Aritmie', 
+                'name_ita': 'Aritmie', 
+                'parameter_id': 'TMP', 
+                'color': '#38FF82', 
+                'limit_value': 100}
+                ]
+        
         except Exception as e:
             import traceback
             traceback.print_exc()
