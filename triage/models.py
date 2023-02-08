@@ -585,7 +585,7 @@ class PatientMeasureResult(models.Model):
         
             if not global_parameters:
                 global_parameters = [
-                    {'value': random.uniform(85, 98), 
+                    {'value': random.uniform(90, 98), 
                 'unit': '', 
                 'name': 'General Wellness Score', 
                 'name_ita': 'Benessere generale', 
