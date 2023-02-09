@@ -142,7 +142,7 @@ class DeclaredAnagrafica(models.Model):
             "height": self.height,
             "weight": self.weight,
             "smoking": self.smoking,
-            "diabetes": self.diabetes,
+            "diabetes":  self.diabetes,
             "bloodpressuremedication": self.bloodpressuremedication
         }
     
@@ -152,9 +152,9 @@ class DeclaredAnagrafica(models.Model):
             "age": self.age,
             "height": self.height,
             "weight": self.weight,
-            "smoking": self.smoking,
-            "diabetes": self.diabetes,
-            "bloodpressuremedication": self.bloodpressuremedication
+            "smoking": 1 if self.smoking else 0,
+            "diabetes": "0", #TODO must be 0,type1 or type2 self.diabetes,
+            "bloodpressuremedication": 1 if self.bloodpressuremedication else 0
         }
         
     @property    
