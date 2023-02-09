@@ -135,10 +135,10 @@
             <span class="measure-label">{{parameter.name_ita|to_upper_case}}</span>
           </div>
           <div class="col-md-1 align-self-center">
-            <span class="measure-unit">{{parameter.unit}}</span>
+            <span class="measure-unit">{% if parameter.parameter_id != 'WEIGHT' %}{{parameter.unit}}{% endif %}</span>
           </div>
           <div class="col-md-1 align-self-center">
-            <span class="measure-value" style="color: {{parameter.color}}">{{parameter.value|floatformat:0}}</span>
+            <span class="measure-value" style="color: {{parameter.color}}">{% if parameter.parameter_id != 'WEIGHT' %}{{parameter.value|floatformat:0}}{% endif %}</span>
           </div>
           <div class="col-md-5 align-self-center">
             <div class="bar-back">
