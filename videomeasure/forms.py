@@ -29,7 +29,7 @@ class VideoSettingForm(forms.ModelForm):
             'red_value': forms.TextInput(attrs={'type': 'range','min':0,'max':100, 'default': 10}),
             'blue_value' : forms.TextInput(attrs={'type': 'range','min':0,'max':100, 'default': 10}), 
             'green_value' : forms.TextInput(attrs={'type': 'range','min':0,'max':100, 'default': 10}),
-            'color': forms.TextInput(attrs={'type': 'range','min':0,'max':100, 'default': 10}),
+            'color': forms.TextInput(attrs={'type': 'range','min':0,'max':10000, 'default': 10}),
             'contrast': forms.TextInput(attrs={'type': 'range','min':0,'max':100, 'default': 10}),
             'brightness': forms.TextInput(attrs={'type': 'range','min':0,'max':100, 'default': 10}), 
             'sharpness': forms.TextInput(attrs={'type': 'range','min':0,'max':100, 'default': 10}),
