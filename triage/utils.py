@@ -77,7 +77,7 @@ def frame_enhance(frame, video_settings, convert_from_array=True, return_pil_ima
         frame = Image.merge('RGB', (b, g, r))   
     # COLOR-CONTRAST CORRECTION
     frame = frame if video_settings['color'] == 1 else ImageEnhance.Color(frame).enhance(video_settings['color'])
-    frame = frame if video_settings['contrast'] == 1 else ImageEnhance.Contrast(frame).enhance(video_settings['color'])
+    frame = frame if video_settings['contrast'] == 1 else ImageEnhance.Contrast(frame).enhance(video_settings['contrast'])
     # BRIGHTNESS-SHARPNESS CORRECTION
     frame = frame if video_settings['brightness'] == 1 else ImageEnhance.Brightness(frame).enhance(video_settings['brightness'])
     frame = frame if video_settings['sharpness'] == 1 else ImageEnhance.Sharpness(frame).enhance(video_settings['sharpness'])
