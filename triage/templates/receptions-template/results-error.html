@@ -1,0 +1,68 @@
+{% extends 'layouts/base-triage.html' %}
+
+{% block title %} Receptions {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<!-- Header container -->
+  <div class="container-fluid">
+    <div class="row"><div class="col-md-12 mb-5"></div></div>
+    <div class="row header-bar">
+        <div class="col-md-2 "></div>
+        <div class="col-md-1">
+            <div class="com-triangle-left"></div>
+        </div>
+        <div class="col-md-6">
+            <span><b>UN ERRORE HA INTERROTTO LA MISURA</b></span>
+        </div>
+        <div class="col-md-1">
+            <div class="com-triangle-right"></div>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+  </div>
+<!-- Header container -->
+<!-- Main communication div -->
+  <div class="com-area">
+    <div class="com-area-triangle"></div>
+    <div class="com-area-out" style="text-align:center;">
+      <p class="normal-text">
+        {{error}}
+      </p>
+    </div>
+    <div class="row">
+      <div class="col-md-12" style="text-align:center;">
+        <h3>CONTATTARE L'ASSISTENZA O CLICCARE SULLO SMILE PER RIPETERLA</h3>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12" style="text-align:center;">
+        <h1>CI SCUSIAMO PER L'INCONVENIENTE!</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4"></div>
+      <div class="col-md-4" style="text-align:center;">
+        <img src="/static/assets/img/triage/smile.png" onclick="sendVideoMeasuring()">
+      </div>
+      <div class="col-md-4"></div>
+    </div>
+  </div>
+
+<!-- Main communication div -->
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+<script>
+
+  function sendVideoMeasuring(){
+    location.href="{% url 'record_video' access_id=access_id %}";
+  }
+  
+</script>
+
+{% endblock javascripts %}

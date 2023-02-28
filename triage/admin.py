@@ -41,7 +41,7 @@ class MeasureLoggerAdmin(admin.ModelAdmin):
     list_display = ['pk', 'triage_access']
 
 class DeclaredAnagraficaAdmin(admin.ModelAdmin):
-    list_display = ['gender','height','weight','smoking','diabetes','bloodpressuremedication']
+    list_display = ['patient', 'gender','height','weight','smoking','diabetes','bloodpressuremedication']
     list_filter = ['gender','smoking','diabetes','bloodpressuremedication', 'expired']
 
 admin.site.register(Patient, PatientAdmin)

@@ -1,0 +1,346 @@
+{% extends 'layouts/base-triage-pharma.html' %}
+
+{% block title %} Results {% endblock title %}
+
+{% load tags humanize  %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+<style>
+  //progress bar//
+  .progressBar {
+    width: 90%;
+    height: 35px;
+    background-color: #5C5C5C;
+    border-radius: 20px;
+  }
+
+  .bar {
+    height: 100%;
+    text-align: right;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 10px;
+    line-height: 35px;
+    /* same as #progressBar height if we want text middle aligned */
+    width: 0;
+    background-color: #38FF82;
+    box-sizing: border-box;
+    color: yellow;
+    border-radius: 20px;
+  }
+
+  .bar-back {
+    border-radius: 20px;
+    border: 3px #7fafd1 solid;
+    background-color: rbga(0,0,0,0);
+    width: 75%;
+  }
+
+  .overlay {
+    position: relative;
+  }
+
+  .overlay img {
+    position: absolute;
+    margin-top: 10%;
+    height: 70%;
+    width: auto;
+    object-fit: cover;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  body {
+    font: 30px/100% AcuminVariableConcept, sans-serif;
+    background: url("/static/assets/img/pharma/background-results.png") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    overflow: hidden;
+  }
+
+  /* ------------- */
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+<!-- Header container -->
+    <div class="row"><div class="col-md-12 mb-5"></div></div>
+    <div class="row pharma-header-results-big vertical-center line-res">
+        <div id="header-title" style="margin-top: 8px;" class="col-md-12"></div>
+    </div>
+<!-- Header container -->
+<!-- Main communication div -->
+<div id="dots" class="mt-7 mb-7">
+  <div class="row mt-5">
+    <div class="col-md-4"></div>
+    <div class="col-md-4 d-flex justify-content-around">
+      <div id="green-dot" class="dot-green"></div>
+      <div id="yellow-dot" class="dot-yellow"></div>
+      <div id ="red-dot" class="dot-red"></div>
+    </div>
+    <div class="col-md-4"></div>
+  </div>
+  <div class="row mt-3">
+    <div class="col-md-4"></div>
+    <div class="col-md-4 d-flex justify-content-around">
+      <div class="label-dot">
+        NELLA NORMA
+      </div>
+      <div class="label-dot">
+        ATTENZIONE
+      </div>
+      <div class="label-dot">
+        FUORI NORMA
+      </div>
+    </div>
+    <div class="col-md-4"></div>
+  </div>
+</div>
+<div class="mt-9" id="vitals_parameters">
+  {% for parameter in vitals_parameters %}
+  <div class="row mt-5 mb-5 d-flex justify-content-center">
+    <div class="col-md-3 align-self-center" style="text-align: end;">
+      <span class="measure-label">{{parameter.name_ita|to_upper_case}}</span>
+    </div>
+    <div class="col-md-1 align-self-center">
+      <span class="measure-unit">{{parameter.unit}}</span>
+    </div>
+    <div class="col-md-1 align-self-center">
+      <span class="measure-value" style="color: {{parameter.color}}">{% if parameter.name_ita == 'Temperatura'%}{{parameter.value|stringformat:".1f"}}{% else %}{{parameter.value|floatformat:0}}{% endif %}</span>
+    </div>
+    <div class="col-md-5 align-self-center">
+      <div class="bar-back">
+        <div class="progressBar" id="{{parameter.parameter_id}}">
+          <div class="bar" style="background-color: {{parameter.color}}">
+            <div class="dot"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<div id="health_parameters" style="display: none;">
+  <div class="row">
+    <div id="body" class="col-md-6">
+      <div class="row pharma-header-results vertical-center line-res">
+        <div style="margin-top: 5px; color:whitesmoke;" class="pharma-title-2">BENESSERE FISICO</div>
+      </div>
+      {% for parameter in body_parameters %}
+        <div class="row mt-5 mb-5 d-flex justify-content-center">
+          <div class="col-md-5 align-self-center" style="text-align: end;">
+            <span class="measure-label">{{parameter.name_ita|to_upper_case}}</span>
+          </div>
+          <div class="col-md-1 align-self-center">
+            <span class="measure-unit">{% if parameter.parameter_id != 'WEIGHT' %}{{parameter.unit}}{% endif %}</span>
+          </div>
+          <div class="col-md-1 align-self-center">
+            <span class="measure-value" style="color: {{parameter.color}}">{% if parameter.parameter_id != 'WEIGHT' %}{{parameter.value|floatformat:0}}{% endif %}</span>
+          </div>
+          <div class="col-md-5 align-self-center">
+            <div class="bar-back">
+              <div class="progressBar" id="{{parameter.parameter_id}}">
+                <div class="bar" style="background-color: {{parameter.color}}">
+                  <div class="dot"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <div id="mental" class="col-md-6">
+      <div class="row pharma-header-results vertical-center line-res">
+        <div style="margin-top: 5px; color:whitesmoke;" class="pharma-title-2">BENESSERE PSICOLOGICO</div>
+      </div>
+      {% for parameter in mental_parameters %}
+        <div class="row mt-5 mb-5 d-flex justify-content-center">
+          <div class="col-md-5 align-self-center" style="text-align: end;">
+            <span class="measure-label">{{parameter.name_ita|to_upper_case}}</span>
+          </div>
+          <div class="col-md-1 align-self-center">
+            <span class="measure-unit">{{parameter.unit}}</span>
+          </div>
+          <div class="col-md-1 align-self-center">
+            <span class="measure-value" style="color: {{parameter.color}}">{{parameter.value|floatformat:0}}</span>
+          </div>
+          <div class="col-md-5 align-self-center">
+            <div class="bar-back">
+              <div class="progressBar" id="{{parameter.parameter_id}}">
+                <div class="bar" style="background-color: {{parameter.color}}">
+                  <div class="dot"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+<div id="global_parameters" style="display: none;" class="mt-7">
+  <div class="row mt-3 mb-3 d-flex justify-content-center">
+    <div class="col-md-4 background-shadow">
+      <div role="progressbar" aria-valuenow="{{global_parameters.0.value|floatformat:0}}" aria-valuemin="0" aria-valuemax="{{global_parameters.0.limit_value}}" style="--value:{{global_parameters.0.value|floatformat:0}}; --sz:19rem; --colorScore:{{global_parameters.0.color}}"></div>
+      <span class="measure-label-big ctr mt-7">{{global_parameters.0.name_ita|to_upper_case}}</span>
+    </div>
+  </div>
+  <div class="row mt-5 mb-3 d-flex justify-content-center">
+    <div class="col-md-2 vertical-center"></div>
+    <div class="col-md-2 vertical-center">
+      <span class="res-label mt-3">{{global_parameters.1.name_ita|to_upper_case}}</span>
+    </div>
+    <div class="col-md-2 vertical-center">
+      <span class="res-label mt-3">{{global_parameters.2.name_ita|to_upper_case}}</span>
+    </div>
+    <div class="col-md-2 vertical-center" style="text-align: center;">
+      <span class="res-label mt-3">{{global_parameters.3.name_ita|to_upper_case}}</span>
+    </div>
+    <div class="col-md-2 vertical-center">
+      <span class="res-label mt-3">DIABETE</span>
+    </div>
+  </div>
+  <div class="row mt-3 d-flex justify-content-center">
+    <div class="col-md-2 align-right"><p class="res-label-big mt-3">ANALISI DEI <br>RISCHI</p></div>
+    <div class="col-md-2">
+      <div role="progressbar" aria-valuenow="{{global_parameters.1.value|floatformat:0}}" aria-valuemin="0" aria-valuemax="{{global_parameters.1.limit_value}}" style="--value:{{global_parameters.1.value|floatformat:0}}; --sz:12rem; --colorScore:{{global_parameters.1.color}}"></div>
+    </div>
+    <div class="col-md-2">
+      <div role="progressbar" aria-valuenow="{{global_parameters.2.value|floatformat:0}}" aria-valuemin="0" aria-valuemax="{{global_parameters.2.limit_value}}" style="--value:{{global_parameters.2.value|floatformat:0}}; --sz:12rem; --colorScore:{{global_parameters.2.color}}"></div>
+    </div>
+    <div class="col-md-2">
+      <div role="progressbar" aria-valuenow="{{global_parameters.3.value|floatformat:0}}" aria-valuemin="0" aria-valuemax="{{global_parameters.3.limit_value}}" style="--value:{{global_parameters.3.value|floatformat:0}}; --sz:12rem; --colorScore:{{global_parameters.3.color}}"></div>
+    </div>
+    <div class="col-md-2">
+      <div role="progressbar" aria-valuenow="{{global_parameters.2.value|floatformat:0}}" aria-valuemin="0" aria-valuemax="{{global_parameters.2.limit_value}}" style="--value:{{global_parameters.2.value|floatformat:0}}; --sz:12rem; --colorScore:{{global_parameters.2.color}}"></div>
+    </div>
+  </div>
+</div>
+<div class="p-5 d-flex justify-content-xl-between" style="margin-top:auto;">
+  <div>
+    <div id="prev_page" style="display: none;">
+      <img class="button-results flip-horizontal" onclick="changePage(-1)">
+      <label class="p-3" style="color: white; font-weight: bold;">INDIETRO</label>
+    </div>
+  </div>
+  <div>
+    <div id="next_page">
+      <label class="p-3" style="color: white; font-weight: bold;">AVANTI</label>
+      <img class="button-results" onclick="changePage(1)">
+    </div>
+  </div>
+  <div id="finish" style="display: none">
+    <div>
+      <label class="p-3" style="color: white; font-weight: bold;">TERMINA</label>
+        <a href="{% url 'end_page' %}">
+            <img class="button-results">
+        </a>
+    </div>
+  </div>
+</div>
+<!-- Main communication div -->
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+<script>
+
+  const vital_parameters = {{vitals_parameters|safe}};
+  const body_parameters = {{body_parameters|safe}};
+  const mental_parameters = {{mental_parameters|safe}};
+  const global_parameters = {{global_parameters|safe}};
+
+  var page = 0;
+
+  animate_graph(vital_parameters);
+  change_dot_value('vitals');
+
+  function changePage(n){
+    page += n;
+
+    if (page == 0){
+      $('#dots').show();
+      $('#vitals_parameters').show();
+      $('#health_parameters').hide();
+      $('#global_parameters').hide();
+      $('#next_page').show();
+      $('#prev_page').hide();
+      $('#finish').hide();
+      animate_graph(vital_parameters);
+      change_dot_value('vitals');
+
+    }
+    else if (page == 1){
+      $('#dots').show();
+      $('#vitals_parameters').hide();
+      $('#health_parameters').show();
+      $('#global_parameters').hide();
+      $('#next_page').show();
+      $('#prev_page').show();
+      $('#finish').hide();
+      animate_graph(body_parameters);
+      animate_graph(mental_parameters);
+      change_dot_value('mentals');
+    }
+    else if (page == 2){
+      $('#dots').hide();
+      $('#vitals_parameters').hide();
+      $('#health_parameters').hide();
+      $('#global_parameters').show();
+      $('#next_page').hide();
+      $('#prev_page').show();
+      $('#finish').show();
+      animate_graph(global_parameters);
+      change_dot_value('risks');
+    }
+
+  }
+
+  function sendToQuickPrinterChrome(){
+    var commandsToPrint =  '{{print_command}}';
+    commandsToPrint = commandsToPrint.replaceAll("&lt;", "<");
+    commandsToPrint = commandsToPrint.replaceAll("&gt;", ">");
+    var textEncoded = encodeURI(commandsToPrint);
+    window.location.href="intent://"+textEncoded+"#Intent;scheme=quickprinter;package=pe.diegoveloper.printerserverapp;end;";
+  }
+
+  function sendHome(){
+    location.href="{% url 'user_conditions' %}";
+  }
+
+  function animate_graph(elements){
+    let indx = 1;
+    for (const element of elements){
+      setTimeout( progress, 300*indx, element.value, element.limit_value, $('#'+element.parameter_id));
+    }   
+  }
+
+  function change_dot_value(parameter_type){
+      switch (parameter_type){
+        case 'vitals':
+          document.getElementById('green-dot').innerHTML = "{{vitals_count.ok|safe}}";
+          document.getElementById('yellow-dot').innerHTML = "{{vitals_count.warning|safe}}";
+          document.getElementById('red-dot').innerHTML = "{{vitals_count.danger|safe}}";
+          document.getElementById('header-title').innerHTML = "<span>PARAMETRI VITALI</span>"
+          break;
+        case 'mentals':
+          document.getElementById('green-dot').innerHTML = "{{health_count.ok|safe}}";
+          document.getElementById('yellow-dot').innerHTML = "{{health_count.warning|safe}}";
+          document.getElementById('red-dot').innerHTML = "{{health_count.danger|safe}}";
+          document.getElementById('header-title').innerHTML = "<span>BENESSERE PSICO-FISICO</span>"
+          break;
+        case 'risks':
+          document.getElementById('green-dot').innerHTML = "{{risks_count.ok|safe}}";
+          document.getElementById('yellow-dot').innerHTML = "{{risks_count.warning|safe}}";
+          document.getElementById('red-dot').innerHTML = "{{risks_count.danger|safe}}";
+          document.getElementById('header-title').innerHTML = "<span>VALUTAZIONE FINALE</span>"
+          break;
+    }
+  }
+</script>
+
+{% endblock javascripts %}

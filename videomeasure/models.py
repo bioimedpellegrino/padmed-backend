@@ -62,7 +62,7 @@ class VideoSettings(models.Model):
             "red_value": self.red_value / 10,
             "blue_value": self.blue_value / 10,
             "green_value": self.green_value / 10,
-            "color": self.color / 10,
+            "color": self.color / 1000,
             "contrast": self.contrast / 10,
             "brightness": self.brightness / 10,
             "sharpness": self.sharpness / 10

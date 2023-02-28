@@ -1,0 +1,81 @@
+{% extends 'layouts/base-triage-pharma.html' %}
+
+{% block title %} Conditions {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+<style>
+    body {
+        font: 30px/100% AcuminVariableConcept, sans-serif;
+        background: url("/static/assets/img/pharma/background-pharma-body.png") no-repeat center center fixed;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+        overflow: hidden;
+    }
+</style>
+{% endblock stylesheets %}
+{% block content %}
+<!-- Header container -->
+<div class="row pharma-header-bar">
+    <div class="col-md-2"></div>
+    <div class="col-md-2 align-right">
+        <img width="20%" height="80%" src="/static/assets/img/pharma/triangle-left.png">
+    </div>
+    <div class="col-md-4 vertical-center">
+        <span class="text-white-big">PREPARATI PER IL CHECK UP</span>
+    </div>
+    <div class="col-md-2 align-left">
+        <img width="20%" height="80%" class="flip-horizontal" src="/static/assets/img/pharma/triangle-left.png">
+    </div>
+    <div class="col-md-2"></div>
+</div>
+<!-- Header container -->
+
+<!-- Main communication div -->
+<div class="pharma-area">
+    <div class="pharma-area-triangle vertical-center"></div>
+    <div class="vertical-center mt-5">
+        <img class="prepare-image">
+    </div>
+    <div class="pharma-area-out-small vertical-center p-2">
+        <div class="row">
+            <div class="col-md-12 vertical-center">
+                <p class="prepare-video-text mt-2">
+                    DURANTE IL RILEVAMENTO <br>MANTIENI IL<br>
+                    VISO ALL'INTERNO DELLE CORNICI ROSSE<br>
+                    GLI OCCHI ALL'ALTEZZA DELLE LINEE LATERALI
+                </p>
+            </div>
+            <div class="col-md-12 vertical-center">
+                <p class="prepare-video-text-red">
+                    NON MUOVERTI - NON PARLARE
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="vertical-center mt-5">
+        <p class="text-prepare-go">PREMI IL TASTO <br>PER INIZIARE</p>
+        <a class="ml-3" href="{% url 'record_video' access_id=access_id %}">
+            <img class="button-splash">
+        </a>
+    </div>
+</div>
+<div class="vertical-center">
+    <img class="logo-footer" onclick="">
+</div>
+<!-- Main communication div -->
+
+<!-- Specific JS goes HERE -->
+{% endblock content %}
+
+{% block javascripts %}
+<script>
+
+    function submitForm(){
+        document.getElementById("#goOn").click();
+    }
+
+</script>
+{% endblock javascripts %}

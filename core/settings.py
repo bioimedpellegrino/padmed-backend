@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'logger',
     'mail',
     'fontawesomefree',
@@ -217,5 +218,5 @@ DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 ## Behaviour variables
 USE_CARD_READER = env("USE_CARD_READER", cast=bool, default=True)
 ROTATE_90_COUNTERCLOCKWISE = env("ROTATE_90_COUNTERCLOCKWISE", cast=bool, default=False)
-
+TEMPLATE_MISURATION = env("TEMPLATE_MISURATION", cast=str, default="pharma-template")
 FULL_URL = env("FULL_URL", cast=str, default="https://datamed.cloud")

@@ -1,0 +1,76 @@
+{% extends 'layouts/base-triage-pharma.html' %}
+
+{% block title %} Conditions {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+<style>
+    body {
+        font: 30px/100% AcuminVariableConcept, sans-serif;
+        background: url("/static/assets/img/pharma/background-pharma-body.png") no-repeat center center fixed;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+        overflow: hidden;
+    }
+</style>
+{% endblock stylesheets %}
+{% block content %}
+<!-- Header container -->
+<div class="row pharma-header-bar">
+    <div class="col-md-2"></div>
+    <div class="col-md-2 align-right">
+        <img width="20%" height="80%" src="/static/assets/img/pharma/triangle-left.png">
+    </div>
+    <div class="col-md-4 vertical-center">
+        <span class="text-white-big">CHECK UP COMPLETATO</span>
+    </div>
+    <div class="col-md-2 align-left">
+        <img width="20%" height="80%" class="flip-horizontal" src="/static/assets/img/pharma/triangle-left.png">
+    </div>
+    <div class="col-md-2"></div>
+</div>
+<!-- Header container -->
+
+<!-- Main communication div -->
+<div class="pharma-area">
+    <div class="pharma-area-triangle vertical-center"></div>
+    <div class="vertical-center mt-5">
+        <p class="text-prepare-go">GRAZIE PER AVER USATO</p>
+    </div>
+    <div class="vertical-center mt-5">
+        <img class="final-image">
+    </div>
+    <div class="pharma-area-out-small vertical-center p-2">
+        <div class="row">
+            <div class="col-md-12 vertical-center">
+                <p class="prepare-video-text mt-2" style="text-align: center;">
+                    RICORDIAMO CHE I RISULTATI DI
+                    QUESTO CHECK-UP NON OFFRONO ALCUN TIPO
+                    DI CONSULENZA MEDICA E QUINDI NON SONO
+                    DESTINATI AD ALCUN USO O SCOPO MEDICO
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="vertical-center">
+    <img class="logo-footer" onclick="">
+</div>
+<!-- Main communication div -->
+
+<!-- Specific JS goes HERE -->
+{% endblock content %}
+
+{% block javascripts %}
+<script>
+
+    function sendHome(){
+        location.href="{% url 'splash' %}";
+    }
+
+  setTimeout(sendHome, 15000);
+
+</script>
+{% endblock javascripts %}

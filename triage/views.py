@@ -52,7 +52,7 @@ class ReceptionsView(APIView):
     Args:
         APIView ([type]): [description]
     """
-    TEMPLATE_NAME = 'receptions-access.html'
+    TEMPLATE_NAME = os.path.join(settings.TEMPLATE_MISURATION, 'access.html')
     
     @method_decorator(totem_login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
@@ -60,7 +60,7 @@ class ReceptionsView(APIView):
         form = PatientForm()
         user = AppUser.get_or_create_from_parent(request.user)
         use_card_reader = settings.USE_CARD_READER
-        return render(request, self.TEMPLATE_NAME, {'form': form, 'user': user,'use_card_reader':use_card_reader})
+        return render(request, self.TEMPLATE_NAME, {'form': form, 'user': user,'use_card_reader':use_card_reader, 'is_pharma': settings.TEMPLATE_MISURATION == 'pharma-template'})
     
     @method_decorator(totem_login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
@@ -120,7 +120,10 @@ class ReceptionsView(APIView):
             if not already_compiled:
                 return HttpResponseRedirect(reverse('access_anagrafica',kwargs={"access_id":access.id}))
             else:
-                return HttpResponseRedirect(reverse('accessreason',kwargs={"access_id":access.id}))
+                if 'is_pharma' in request.POST and request.POST['is_pharma']:
+                    return HttpResponseRedirect(reverse('prepare_video_measure',kwargs={"access_id":access.id}))
+                else:
+                    return HttpResponseRedirect(reverse('accessreason',kwargs={"access_id":access.id}))
         else:
             print("Errors",form.errors)
             # TODO
@@ -133,7 +136,7 @@ class AnagraficaView(APIView):
     Args:
         APIView ([type]): [description]
     """
-    TEMPLATE_NAME = 'receptions-anagrafica.html'
+    TEMPLATE_NAME = os.path.join(settings.TEMPLATE_MISURATION, 'anagrafica.html')
     
     @method_decorator(totem_login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
@@ -144,7 +147,7 @@ class AnagraficaView(APIView):
         patient = access.patient
         declared_anag = patient.declared_anag
         form = AnagraficaForm(instance=declared_anag)
-        return render(request, self.TEMPLATE_NAME, {'form': form, 'user': user})
+        return render(request, self.TEMPLATE_NAME, {'form': form, 'user': user, 'is_pharma': settings.TEMPLATE_MISURATION == 'pharma-template'})
     
     @method_decorator(totem_login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
@@ -162,17 +165,33 @@ class AnagraficaView(APIView):
         access = get_object_or_404(TriageAccess,pk=access_id)
         patient = access.patient
         declared_anag = patient.declared_anag
-        print("request.POST")
-        print(request.POST)
         form = AnagraficaForm(request.POST,instance=declared_anag)
-        
+        #print(request.POST)
         if form.is_valid():
             declared_anag = form.save()
-            return HttpResponseRedirect(reverse('accessreason',kwargs={"access_id":access.id}))
+            if 'is_pharma' in request.POST and request.POST['is_pharma']:
+                return HttpResponseRedirect(reverse('prepare_video_measure',kwargs={"access_id":access.id}))
+            else:
+                return HttpResponseRedirect(reverse('accessreason',kwargs={"access_id":access.id}))
         else:
             print("Errors",form.errors)
             return render(request, self.TEMPLATE_NAME, {'form': form, 'has_error': True, 'user': user})
-        
+
+
+class PrepareVideoMeasureView(APIView):
+    """[summary]
+
+    Args:
+        APIView ([type]): [description]
+    """
+    TEMPLATE_NAME = os.path.join(settings.TEMPLATE_MISURATION, 'preparevideomeasure.html')
+
+    def get(self, request, *args, **kwargs):
+        user = AppUser.get_or_create_from_parent(request.user)
+        access_id = int(kwargs.get('access_id', None))
+        return render(request, self.TEMPLATE_NAME, {'access_id': access_id, 'user': user})
+
+
 class ReceptionsReasonsView(APIView):
     """[summary]
 
@@ -180,7 +199,7 @@ class ReceptionsReasonsView(APIView):
         APIView ([type]): [description]
     """
     
-    TEMPLATE_NAME = 'receptions-accessreason.html'
+    TEMPLATE_NAME = os.path.join(settings.TEMPLATE_MISURATION, 'accessreason.html')
     
     @method_decorator(totem_login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
@@ -212,7 +231,7 @@ class RecordVideoView(APIView):
     Args:
         APIView ([type]): [description]
     """
-    TEMPLATE_NAME = "receptions-videomeasuring.html"
+    TEMPLATE_NAME = os.path.join(settings.TEMPLATE_MISURATION,"videomeasuring.html")
     
     @method_decorator(totem_login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
@@ -260,6 +279,7 @@ class RecordVideoView(APIView):
             p_measure_result = PatientMeasureResult()
             p_measure_result.patient_video = patient_video
             p_measure_result.measurement_id = measurement_id
+            p_measure_result.patient = triage_access.patient
             # Retrive comprehensive measurement informations
             time.sleep(2)
             # triage_access.status_tracker.status = triage_access.status_tracker.receiving_results
@@ -305,28 +325,38 @@ class PatientResults(APIView):
     Args:
         ApiView ([type]): [description]
     """
+    TEMPLATE_NAME = os.path.join(settings.TEMPLATE_MISURATION, 'results.html')
+    
     @method_decorator(totem_login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
         
         user = AppUser.get_or_create_from_parent(request.user)
         patient_result = PatientMeasureResult.objects.get(pk=int(request.POST.get('p_measure_result')))
-        measure = eval(patient_result.measure_short)
-        today_date = datetime.datetime.today().strftime('%Y-%m-%d')
-        print_command = print_command_measure(measure, today_date)
-        return render(request,'receptions-results.html', {'measure': measure, 'date': today_date, 'user': user, 'print_command': print_command, 'show_arrow': True})
+
+        if settings.TEMPLATE_MISURATION == 'pharma-template':
+            results = patient_result.pharma_parameters()
+            results['user'] = user
+            return render(request, self.TEMPLATE_NAME, results)
+        else:
+            measure = eval(patient_result.measure_short)
+            today_date = datetime.datetime.today().strftime('%Y-%m-%d')
+            print_command = print_command_measure(measure, today_date)
+            return render(request, self.TEMPLATE_NAME, {'measure': measure, 'date': today_date, 'user': user, 'print_command': print_command, 'show_arrow': True})
     
 class PatientResultsError(APIView):
     """
     Args:
         ApiView ([type]): [description]
     """
+    TEMPLATE_NAME = os.path.join(settings.TEMPLATE_MISURATION, 'results-error.html')
+    
     @method_decorator(totem_login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
         
         user = AppUser.get_or_create_from_parent(request.user)
         access_id = request.POST.get('access_id')
         error = request.POST.get('error')
-        return render(request,'receptions-results-error.html', {'error': error, 'user': user,'access_id':access_id})
+        return render(request, self.TEMPLATE_NAME, {'error': error, 'user': user,'access_id':access_id})
 
 class TestNFC(APIView):
     """[summary]
@@ -350,18 +380,43 @@ class VideoSelecting(APIView):
 
         return render(request,'videoselecting.html')
 
+
+class SplashView(APIView):
+    """[summary]
+
+    Args:
+        APIView ([type]): [description]
+    """
+    TEMPLATE_NAME = os.path.join(settings.TEMPLATE_MISURATION, 'splash.html')
+    
+    @method_decorator(totem_login_required(login_url="/login/"))
+    def get(self, request, *args, **kwargs):
+        
+        user = AppUser.get_or_create_from_parent(request.user)
+        
+        return render(request, self.TEMPLATE_NAME, {'user': user})
+    
+    @method_decorator(totem_login_required(login_url="/login/"))
+    def post(self, request, *args, **kwargs):
+        
+        user = AppUser.get_or_create_from_parent(request.user)
+        
+        return HttpResponseRedirect(reverse('user_conditions'))
+
 class UserConditions(APIView):
     """[summary]
 
     Args:
         APIView ([type]): [description]
     """
+    TEMPLATE_NAME = os.path.join(settings.TEMPLATE_MISURATION, 'conditions.html')
+    
     @method_decorator(totem_login_required(login_url="/login/"))
     def get(self, request, *args, **kwargs):
         
         user = AppUser.get_or_create_from_parent(request.user)
         
-        return render(request,'receptions-conditions.html', {'user': user}) # receptions-conditions.html
+        return render(request, self.TEMPLATE_NAME, {'user': user})
     
     @method_decorator(totem_login_required(login_url="/login/"))
     def post(self, request, *args, **kwargs):
@@ -370,6 +425,25 @@ class UserConditions(APIView):
         
         return HttpResponseRedirect(reverse('receptions'))
     
+
+class ResultsMock(APIView):
+    """[summary]
+
+    Args:
+        APIView ([type]): [description]
+    """
+    TEMPLATE_NAME = os.path.join(settings.TEMPLATE_MISURATION, 'results.html')
+    
+    @method_decorator(totem_login_required(login_url="/login/"))
+    def get(self, request, *args, **kwargs):
+        
+        user = AppUser.get_or_create_from_parent(request.user)
+        patient_measure = PatientMeasureResult.objects.get(pk=47)
+        result = patient_measure.pharma_parameters()
+        #print(result)
+        result['user'] = user
+        return render(request, self.TEMPLATE_NAME, result)
+
 ### AJAX GET VIEWS ###
 
 class GetAccessStatusView(APIView):
@@ -395,4 +469,18 @@ class GetAccessStatusView(APIView):
         fe_status = self.ACCESS_STATUS[status]
         return JsonResponse({"status":fe_status})
 
+class EndPageView(APIView):
+    """[summary]
+
+    Args:
+        APIView ([type]): [description]
+    """
+    TEMPLATE_NAME = os.path.join(settings.TEMPLATE_MISURATION, 'end.html')
+    
+    @method_decorator(totem_login_required(login_url="/login/"))
+    def get(self, request, *args, **kwargs):
+        
+        user = AppUser.get_or_create_from_parent(request.user)
+        
+        return render(request, self.TEMPLATE_NAME, {'user': user})
     

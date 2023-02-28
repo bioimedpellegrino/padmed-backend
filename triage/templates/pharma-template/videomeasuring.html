@@ -1,0 +1,484 @@
+{% extends 'layouts/base-triage-pharma.html' %}
+
+{% block title %} Video measuring {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+<style>
+  // progress bar //
+  #progressBar {
+    width: 90%;
+    height: 35px;
+    background-color: #5C5C5C;
+    border-radius: 20px;
+  }
+
+  #progressBar .bar {
+    height: 100%;
+    text-align: right;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 10px;
+    line-height: 35px;
+    /* same as #progressBar height if we want text middle aligned */
+    width: 0;
+    background-color: #7EED86;
+    box-sizing: border-box;
+    color: yellow;
+    border-radius: 20px;
+  }
+
+  .bar-back {
+    border-radius: 20px;
+    border: 3px #7fafd1 solid;
+    background-color: rbga(0,0,0,0);
+    margin-top: 6%;
+    width: 75%;
+  }
+
+  #progressComplete {
+    display: none;
+    padding-top: 7px;
+    text-align: center;
+    height: 35px;
+  }
+
+  .overlay {
+    position: relative;
+  }
+
+  .overlay img {
+    position: absolute;
+    margin-top: 10%;
+    height: 70%;
+    width: auto;
+    object-fit: cover;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  body {
+    font: 30px/100% AcuminVariableConcept, sans-serif;
+    background: url("/static/assets/img/pharma/background-pharma-body.png") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    overflow: hidden;
+  }
+
+  /* ------------- */
+</style>
+{% endblock stylesheets %}
+{% block content %}
+
+<!-- Header container -->
+<div class="row pharma-header-bar">
+  <div class="col-md-2"></div>
+  <div class="col-md-2 align-right">
+    <img width="20%" height="80%" src="/static/assets/img/pharma/triangle-left.png">
+  </div>
+  <div class="col-md-4 vertical-center">
+    <div id="header-text-det" class="text-white-big">CHECK UP IN CORSO</div>
+    <div id="header-text-wait" class="text-white-big" style="display: none">ELABORAZIONE DATI</div>
+  </div>
+  <div class="col-md-2 align-left">
+    <img width="20%" height="80%" class="flip-horizontal" src="/static/assets/img/pharma/triangle-left.png">
+  </div>
+  <div class="col-md-2"></div>
+</div>
+<!-- Header container -->
+
+<!-- Main communication div -->
+<div id="detection">
+  <div class="pharma-area-video">
+    <div class="pharma-area-triangle vertical-center"></div>
+    <div id="startButton" class="button"></div>
+    <div class="vertical-center mt-5">
+      <span class="text-red-big-blink"><b>RIMANI FERMO</b></span>
+    </div>
+    <div class="com-area-out-base-video pharma-area-out-video overlay"> <!--rot-90-->
+        <div class="flip-horizontal mask" style="width:640px; height:480px; overflow:hidden;">
+          <video  id="preview" style="width:130%; margin-left: -15%;" autoplay muted></video>
+        </div>
+        <div style="display:none">
+          <div id="stopButton" class="button"></div>
+          <video id="recording" width="640" height="480" controls></video>
+        </div>
+      </div>
+    <div class="vertical-center">
+        <div class="bar-back">
+          <div id="progressBar">
+            <div class="bar">
+              <div class="dot"></div>
+            </div>
+          </div>
+        </div>
+        <div id="progressComplete">
+          <span></span>
+        </div>
+    </div>
+    <div class="vertical-center">
+      <div class="row mt-5">
+        <div class="time-left" id="time-left"></div>
+      </div>
+    </div>
+  </div>
+  <!--<div class="mask-pharma">
+    <img src="/static/assets/img/pharma/video-mask.png" width="95%">
+  </div>-->
+</div>
+<div id="waiting" style="display: none;">
+  <div class="pharma-area">
+    <div class="pharma-area-triangle vertical-center"></div>
+      <div class="row mt-5">
+        <div class="col-md-1"></div>
+        <div class="col-md-10 vertical-center">
+            <span class="waiting-text">RILEVAMENTO COMPLETATO</span>
+        </div>
+        <div class="col-md-1"></div>
+      </div>
+      <div style="background-color: white; width: 100%;padding-top: 13px; text-align: center;">
+        <span class="waiting-text">RESTA IN ATTESA</span>
+      </div>
+      <div class="row mt-5">
+        <div class="col-md-2"></div>
+        <div class="col-md-8 vertical-center">
+            <p class="waiting-video-text">TRA POCHI SECONDI<br>TI MOSTREREMO<br>I RISULTATI<br></p>
+        </div>
+        <div clas="col-md-2"></div>
+      </div>
+    <div class="vertical-center mt-5">
+      <div class="spinner"></div>
+    </div>
+  </div>
+</div>
+<div class="vertical-center">
+  <img class="logo-footer" onclick="">
+</div>
+<!-- Main communication div -->
+
+{% endblock content %}
+
+{% block javascripts %}
+<!-- Specific JS goes HERE -->
+<script>
+  let preview = document.getElementById("preview");
+  let recording = document.getElementById("recording");
+  let startButton = document.getElementById("startButton");
+  let stopButton = document.getElementById("stopButton");
+  let logElement = document.getElementById("log");
+
+  let recordingTimeMS = 39000;
+  let p_measure_result;
+
+
+  function log(msg) {
+    //logElement.innerHTML += msg + "\n";
+  }
+
+  function wait(delayInMS) {
+    return new Promise(resolve => setTimeout(resolve, delayInMS));
+  }
+
+  function startRecording(stream, lengthInMS) {
+    let options = {
+      mimeType: 'video/webm'
+    }
+    let recorder = new MediaRecorder(stream, options);
+    let data = [];
+
+    recorder.ondataavailable = event => data.push(event.data);
+    recorder.start();
+    log(recorder.state + " for " + (lengthInMS / 1000) + " seconds...");
+
+    let stopped = new Promise((resolve, reject) => {
+      recorder.onstop = resolve;
+      recorder.onerror = event => reject(event.name);
+    });
+
+    let recorded = wait(lengthInMS).then(
+      () => recorder.state == "recording" && recorder.stop()
+    );
+
+    return Promise.all([
+        stopped,
+        recorded
+      ])
+      .then(() => data);
+  }
+
+  async function getUserCameraID() {
+    let devices = await navigator.mediaDevices.enumerateDevices();
+    console.log("devices", devices);
+    devices = devices.filter(function (device) {
+      return device.kind == 'videoinput';
+    })
+    if (devices.length == 0) return null;
+    else {
+      default_device = devices[0];
+      let rakinda_device = devices.filter(function (device) {
+        return device.label.includes("JSK USB2.0 Camera RGB")
+      })[0];
+      if (rakinda_device) {
+        return rakinda_device.deviceId;
+      } else {
+        return getCookie("videoId");
+      }
+    }
+  }
+
+  function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      var cookies = document.cookie.split(';');
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  function stop(stream) {
+    stream.getTracks().forEach(track => track.stop());
+  }
+
+  function stopMeasure() {
+    stopButton.click();
+  }
+
+  function doMeasure(){
+    startButton.click();
+    let stop = setTimeout(stopMeasure, 41000);
+  }
+
+  function sendData(data, access_id) {
+    let csrftoken = getCookie('csrftoken');
+    let response = fetch("/triage/recordvideo/" + access_id + "/", {
+      method: "post",
+      body: data,
+      headers: {
+        "X-CSRFToken": csrftoken,
+        "Content-Type": 'video/webm'
+      },
+    })
+  }
+
+  function getDevices() {
+    return navigator.mediaDevices.enumerateDevices();
+  }
+
+  startButton.addEventListener("click", function () {
+    getUserCameraID().then(devId => {
+      devId = getCookie('videoId');
+      navigator.mediaDevices.getUserMedia({
+          video: {
+            deviceId: {
+              exact: devId
+            },
+            height: {
+              min: 480,
+              max: 480,
+              ideal: 480
+            },
+            width: {
+              min: 640,
+              max: 640,
+              ideal: 640
+            },
+            frameRate: {
+              min: 16,
+              ideal: 16,
+              max: 16
+            },
+          },
+          audio: false
+        }).then(stream => {
+          preview.srcObject = stream;
+          preview.captureStream = preview.captureStream || preview.mozCaptureStream;
+          return new Promise(resolve => preview.onplaying = resolve);
+        }).then(() => startRecording(preview.captureStream(), recordingTimeMS))
+        .then(recordedChunks => {
+          //console.log(recordedChunks, typeof recordedChunks)
+          let recordedBlob = new Blob(recordedChunks, {
+            type: 'video/webm'
+          });
+          recording.src = URL.createObjectURL(recordedBlob);
+          var url = "/triage/recordvideo/" + '{{access_id}}' + "/";
+          var xhr = new XMLHttpRequest();
+          var fd = new FormData();
+          fd.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+          fd.append('video', recordedBlob);
+
+          xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+              response = eval('(' + xhr.response + ')');
+              console.log("response", response);
+              if (response) {
+                if (response.success) {
+                  var success = true;
+                } else {
+                  var success = false;
+                  var error = response['error'];
+                }
+              } else {
+                var success = false;
+                var error = "Nessuna risposta ricevuta dal server.";
+              }
+              const form = document.createElement('form');
+              form.method = "post";
+              const csfrtoken = document.createElement('input');
+              csfrtoken.name = "csrfmiddlewaretoken";
+              csfrtoken.type = "hidden";
+              csfrtoken.value = getCookie('csrftoken');
+              form.appendChild(csfrtoken);
+              const hiddenField = document.createElement('input');
+              hiddenField.type = 'hidden';
+              const hiddenField_access_id = document.createElement('input');
+              hiddenField_access_id.type = 'hidden';
+              if (success) {
+                form.action = "{% url 'patient_results' %}";
+                hiddenField.name = 'p_measure_result';
+                hiddenField.value = response['p_measure_result'];
+                hiddenField_access_id.name = "access_id";
+                hiddenField_access_id.value = {{access_id}};
+              } else {
+                form.action = "{% url 'patient_results_error' %}";
+                hiddenField.name = 'error';
+                hiddenField.value = error;
+                hiddenField_access_id.name = "access_id";
+                hiddenField_access_id.value = {{access_id}};
+              }
+              form.appendChild(hiddenField);
+              form.appendChild(hiddenField_access_id);
+              document.body.appendChild(form);
+              form.submit();
+            }
+          }
+          xhr.open("post", url, true);
+          xhr.send(fd);
+        })
+        .catch(console.log(log));
+    }, false)
+  });
+
+
+
+  stopButton.addEventListener("click", function () {
+    stop(preview.srcObject);
+  }, false);
+
+  measure_started = setTimeout(doMeasure, 100); 
+
+  // ------------ Progress bar -------------------- //
+
+  function progress(timeleft, timetotal, $element) {
+    var progressBarWidth = timeleft * $element.width() / timetotal;
+    $element.find('.bar').animate({
+      width: progressBarWidth
+    }, 500);
+    document.getElementById("time-left").textContent=timeleft%60 + "sec";
+    if (timeleft > 0) {
+      setTimeout(function () {
+        progress(timeleft - 1, timetotal, $element);
+      }, 1000);
+    } else {
+      show_complete();
+    }
+  };
+
+  progress(40, 40, $('#progressBar'));
+
+  function show_complete() {
+    $('#progressBar').animate({
+      width: 0
+    }, 500);
+    setTimeout(function () {
+      $('#detection').hide();
+      $('#waiting').show();
+      $('#header-text-det').hide();
+      $('#header-text-wait').show();
+      //ajax_progress_text_changes();
+    }, 500);
+  }
+
+  /*  var last_status = ""
+  var steps = 0
+  var old_text = ""
+
+  function ajax_progress_text_changes() {
+    $.ajax({
+      type: "GET",
+      url: "{% url 'get_access_status' %}",
+      dataType: "json",
+      data: {
+        "access_id": {{access_id}}
+      },
+      complete: function () {},
+      success: function (data) {
+        if (last_status != data.status) {
+          var new_text = data.status;
+        } else {
+          if (steps < 3) {
+            var new_text = old_text + ".";
+            steps = steps + 1;
+          } else {
+            var new_text = data.status;
+            steps = 0;
+          }
+        }
+        $('#progressComplete span').html(new_text);
+        last_status = data.status;
+        old_text = new_text;
+        setTimeout(function () {
+          ajax_progress_text_changes();
+        }, 1000);
+      },
+      error: function () {
+        alert(
+          "Un errore ha impedito la comunicazione con il server. La barra di progresso non verrà aggiornata.");
+      }
+    });
+  }
+
+  {% comment %} {
+    %
+    comment %
+  }
+
+  function progress_text_changes() {
+    var text_list = [
+      ["Analisi dei dati in corso", 1],
+      ["Analisi dei dati in corso.", 1],
+      ["Analisi dei dati in corso..", 1],
+      ["Analisi dei dati in corso...", 2],
+      ["Estrazione dati flusso sanguigno", 1],
+      ["Estrazione dati flusso sanguigno.", 1],
+      ["Estrazione dati flusso sanguigno..", 1],
+      ["Estrazione dati flusso sanguigno...", 2],
+      ["Calcolo dei parametri biometrici", 1],
+      ["Calcolo dei parametri biometrici.", 1],
+      ["Calcolo dei parametri biometrici..", 1],
+      ["Calcolo dei parametri biometrici...", 1.5],
+      ["Preparazione formato di output", 1],
+      ["Preparazione formato di output.", 1],
+      ["Preparazione formato di output..", 1],
+      ["Preparazione formato di output...", 1],
+    ];
+    var progression = 0;
+    text_list.forEach(function (item, index) {
+      setTimeout(function () {
+        $('#progressComplete span').html(item[0]);
+      }, progression * 1000);
+      progression += item[1]
+    });
+  } {
+    %
+    endcomment %
+  } {% endcomment %} */
+</script>
+{% endblock javascripts %}

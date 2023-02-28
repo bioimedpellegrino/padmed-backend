@@ -19,5 +19,6 @@ class Command(BaseCommand):
             deep_affex_point.signal_config = signal['CONFIG']
             deep_affex_point.signal_unit = "" if signal['UNIT'] == 'None' else signal['UNIT'] 
             deep_affex_point.multiplier = float(signal['MULTIPLIER'])
+            deep_affex_point.limit_value = float(signal['LIMIT_VALUE'])
             deep_affex_point.is_measure = True if str(signal['IS_MEASURE']).strip() == 'True' else False
             deep_affex_point.save()

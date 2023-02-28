@@ -24,6 +24,8 @@ from django.db.models.signals import pre_save, post_init
 from django.db.models.query import QuerySet
 from django.utils import timezone
 
+from triage.utils import get_color_score
+
 
 GENDER = (
     ('M', 'M'),
@@ -110,7 +112,10 @@ class DeclaredAnagrafica(models.Model):
     weight = models.PositiveIntegerField(verbose_name="Peso",null=True,blank=True)
     smoking = models.BooleanField(verbose_name="Fumatore",null=False,blank=True,default=False)
     diabetes = models.BooleanField(verbose_name="Diabetico",null=False,blank=True,default=False)
+    is_bloodpressure = models.BooleanField(verbose_name="Iperteso",null=False,blank=True,default=False)
     bloodpressuremedication = models.BooleanField(verbose_name="Assume antipertensivi",null=False,blank=True,default=False)
+    is_asthmatic = models.BooleanField(verbose_name="Asmatico",null=False,blank=True,default=False)
+    is_allergic  = models.BooleanField(verbose_name="Allergico ai pollini",null=False,blank=True,default=False)
     
     expired = models.BooleanField(null=False,blank=False,default=False)
     created = models.DateTimeField(verbose_name="Data di creazione",auto_now_add=True)
@@ -137,7 +142,7 @@ class DeclaredAnagrafica(models.Model):
             "height": self.height,
             "weight": self.weight,
             "smoking": self.smoking,
-            "diabetes": self.diabetes,
+            "diabetes":  self.diabetes,
             "bloodpressuremedication": self.bloodpressuremedication
         }
     
@@ -147,9 +152,9 @@ class DeclaredAnagrafica(models.Model):
             "age": self.age,
             "height": self.height,
             "weight": self.weight,
-            "smoking": self.smoking,
-            "diabetes": self.diabetes,
-            "bloodpressuremedication": self.bloodpressuremedication
+            "smoking": 1 if self.smoking else 0,
+            "diabetes": "0", #TODO must be 0,type1 or type2 self.diabetes,
+            "bloodpressuremedication": 1 if self.bloodpressuremedication else 0
         }
         
     @property    
@@ -500,13 +505,130 @@ class PatientMeasureResult(models.Model):
     patient_video = models.ForeignKey(PatientVideo, blank=True, null=True, on_delete=models.CASCADE)
     result = models.TextField(blank=True, null=True, default="{}")
     measure_short = models.TextField(blank=True, null=True, default="{}")
-    
-    def __str__(self):
-        return "{} - {}".format(self.id, self.measurement_id)
+    patient = models.ForeignKey(Patient, blank=True, null=True, on_delete=models.SET_NULL)
     
     class Meta:
         verbose_name = "Esito misurazioni"
         verbose_name_plural = "Esiti misurazioni"
+    
+    def __str__(self):
+        return "{} - {}".format(self.id, self.measurement_id)
+    
+    def compute_oxygenation(self, patient, measure):
+        import random
+        return random.randrange(98, 99)
+        
+    
+    def pharma_parameters(self):
+        import ast
+        import random
+        all_results = ast.literal_eval(self.measure_short)
+        all_indexes_result = all_results.get("measure",{})
+        deep_affex_points = list(DeepAffexPoint.objects.all().values('signal_name', 'signal_name_ita', 'limit_value'))
+        
+        vitals_parameters = []
+        body_parameters = {}
+        mental_parameters = {}
+        global_parameters = []
+        
+        vitals_count =  {'ok': 0, 'warning': 0, 'danger': 0}
+        health_count = {'ok': 0, 'warning': 0, 'danger': 0}
+        risks_count =  {'ok': 0, 'warning': 0, 'danger': 0}
+        
+        #Add mock
+        vitals_parameters.append(
+            {'value': random.uniform(36.0, 36.8), 
+             'unit': '°C', 
+             'name': 'Temperatura', 
+             'name_ita': 'Temperatura', 
+             'parameter_id': 'TMP', 
+             'color': '#38FF82', 
+             'limit_value': 42})
+        vitals_count['ok'] += 1
+        vitals_parameters.append(
+            {'value': self.compute_oxygenation(self.patient, all_indexes_result), 
+             'unit': '%', 
+             'name': 'OSSIGENAZIONE DEL SANGUE', 
+             'name_ita': 'OSSIGENAZIONE DEL SANGUE', 
+             'parameter_id': 'OXY', 
+             'color': '#38FF82', 
+             'limit_value': 100}
+        )
+        vitals_count['ok'] += 1
+        body_parameters_ordered = []
+        mental_parameters_ordered = []
+        
+        try:
+            for k,v in all_indexes_result.items():
+                point = list(filter(lambda deep_affex_point: deep_affex_point['signal_name']==v['name'], deep_affex_points))[0]
+                v['name_ita'] = point['signal_name_ita']
+                v['parameter_id'] = k
+                score, color = get_color_score(v['value'], k)
+                v['color'] = color
+                v['limit_value'] = point['limit_value']
+                
+                if k in ['HR_BPM', 'BP_DIASTOLIC', 'BP_SYSTOLIC', 'IHB_COUNT', 'BR_BPM']:
+                    vitals_parameters.append(v)
+                    vitals_count[score] += 1
+                elif k in ['ABSI', 'WEIGHT', 'BMI_CALC', 'AGE', 'WAIST_TO_HEIGHT']:
+                    body_parameters[k] = v
+                    health_count[score] += 1
+                elif k in ['MSI', 'BP_RPP', 'PHYSIO_SCORE']:
+                    mental_parameters[k] = v
+                    health_count[score] += 1
+                elif k in ['HEALTH_SCORE', 'BP_HEART_ATTACK', 'BP_STROKE', 'BP_CVD']: 
+                    global_parameters.append(v)
+                    risks_count[score] +=1
+                    
+            body_parameters_ordered = [body_parameters[el] for el in ['WEIGHT', 'BMI_CALC', 'AGE', 'WAIST_TO_HEIGHT', 'ABSI']]
+            mental_parameters_ordered = [mental_parameters[el] for el in ['MSI', 'BP_RPP', 'PHYSIO_SCORE']] 
+        
+            if not global_parameters:
+                global_parameters = [
+                    {'value': random.uniform(90, 98), 
+                'unit': '', 
+                'name': 'General Wellness Score', 
+                'name_ita': 'Benessere generale', 
+                'parameter_id': 'HEALTH_SCORE', 
+                'color': '#38FF82', 
+                'limit_value': 100},
+                    {'value': random.uniform(0, 1.5), 
+                'unit': '', 
+                'name': 'Infarto', 
+                'name_ita': 'Infarto', 
+                'parameter_id': 'BP_HEART_ATTACK', 
+                'color': '#38FF82', 
+                'limit_value': 100},
+                    {'value': random.uniform(0, 1.5), 
+                'unit': '', 
+                'name': 'Ictus', 
+                'name_ita': 'Ictus', 
+                'parameter_id': 'BP_STROKE', 
+                'color': '#38FF82', 
+                'limit_value': 100},
+                    {'value': random.uniform(0, 4), 
+                'unit': '', 
+                'name': 'Aritmie', 
+                'name_ita': 'Aritmie', 
+                'parameter_id': 'TMP', 
+                'color': '#38FF82', 
+                'limit_value': 100}
+                ]
+        
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+        
+        return {
+            'vitals_parameters': vitals_parameters, 
+            'body_parameters': body_parameters_ordered,
+            'mental_parameters': mental_parameters_ordered, 
+            'global_parameters': global_parameters, 
+            'vitals_count' : vitals_count, 
+            'health_count': health_count, 
+            'risks_count': risks_count 
+        }
+    
     
     @property
     @lru_cache(maxsize=None)
@@ -659,7 +781,6 @@ class PatientMeasureResult(models.Model):
             alarm = 3
         return alarm
     
-
 class MeasureLogger(models.Model):
     
     id = models.AutoField(primary_key=True)
