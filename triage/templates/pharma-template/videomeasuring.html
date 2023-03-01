@@ -169,7 +169,7 @@
   let stopButton = document.getElementById("stopButton");
   let logElement = document.getElementById("log");
 
-  let recordingTimeMS = 39000;
+  let recordingTimeMS = 59000;
   let p_measure_result;
 
 
@@ -253,7 +253,7 @@
 
   function doMeasure(){
     startButton.click();
-    let stop = setTimeout(stopMeasure, 41000);
+    let stop = setTimeout(stopMeasure,61000);
   }
 
   function sendData(data, access_id) {
@@ -391,7 +391,7 @@
     }
   };
 
-  progress(40, 40, $('#progressBar'));
+  progress(60, 60, $('#progressBar'));
 
   function show_complete() {
     $('#progressBar').animate({
