@@ -63,9 +63,9 @@ def generate_video_measure(file_path, video_id, video_settings=None):
         out.write(frame)
     # --------
     e=time.time()
-    print("CONVERTING TIME: ", e-s)
+    print("CONVERTING TIME: ", e-s, f"LEN: {len(video_frames)} FPS: {frame_rate}")
     # --------
-    return video_name
+    return video_name, frame_rate
 
 def frame_enhance(frame, video_settings, convert_from_array=True, return_pil_image=False):
     

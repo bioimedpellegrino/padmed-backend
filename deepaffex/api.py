@@ -219,6 +219,7 @@ async def retrieve_sdk_config(config, config_file, sdk_id):
 async def make_measure(config, config_path, video_path, demographics={}, start_time=0, end_time=40, rotation=None, fps=None, debug_study_cfg_file=None, profile_id="", partner_id=""):
     
     # access_tracker.status = access_tracker.initializing_dfx
+    print(f"Config: START: {start_time}, END: {end_time}, TRACKEK{settings.FACE_TRACKER}, FPS: {fps}")
     token = dfxapi.Settings.user_token if dfxapi.Settings.user_token else dfxapi.Settings.device_token
     headers = {"Authorization": f"Bearer {token}"}
     # Prepare to make a measurement..
