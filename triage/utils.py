@@ -30,7 +30,9 @@ def generate_video_measure(file_path, video_id, video_settings=None):
     cap = cv2.VideoCapture(os.path.join(settings.MEDIA_ROOT, file_path))
     # GET VIDEO RESOLUTION -> VIDEO COULD BE ROTATED
     frame_width = int(cap.get(3)) if settings.ROTATE_90_COUNTERCLOCKWISE else int(cap.get(4))
-    frame_height = int(cap.get(4)) if settings.ROTATE_90_COUNTERCLOCKWISE else int(cap.get(3))   
+    frame_height = int(cap.get(4)) if settings.ROTATE_90_COUNTERCLOCKWISE else int(cap.get(3))
+    start_time = settings.START_TIME
+    end_time = settings.END_TIME
     # DEFINE VIDEO CODER AND WRITED
     fourcc = cv2.VideoWriter_fourcc(*'MPEG')
     video_name = 'tmp/' + "{}.avi".format(video_id)
@@ -49,7 +51,7 @@ def generate_video_measure(file_path, video_id, video_settings=None):
     video_frames = np.array(video_frames)
     # COMPUTE FRAME RATE
     try:
-        frame_rate = int(len(video_frames)/38)
+        frame_rate = int(len(video_frames)/(end_time - start_time))
     except Exception as e:
         import traceback
         message = "Error at video conversion"
