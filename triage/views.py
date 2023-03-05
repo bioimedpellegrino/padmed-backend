@@ -484,3 +484,20 @@ class EndPageView(APIView):
         
         return render(request, self.TEMPLATE_NAME, {'user': user})
     
+
+class SettingsView(APIView):
+    
+    @method_decorator(totem_login_required(login_url="/login/"))
+    def get(self, request, *args, **kwargs):
+        
+        json = {
+            "CHUNK_DURATION": settings.CHUNK_DURATION,
+            "DEEPAFFEX_DEBUG": settings.DEEPAFFEX_DEBUG,
+            "DEEPAFFEX_DEBUG_SAVE_CHUNKS_FOLDER": settings.DEEPAFFEX_DEBUG_SAVE_CHUNKS_FOLDER,
+            "FACE_TRACKER": settings.FACE_TRACKER,
+            "USE_VISAGE_ANALYZER": settings.USE_VISAGE_ANALYZER,
+            "VISAGE_LICENSE": settings.VISAGE_LICENSE,
+            "START_TIME": settings.START_TIME,
+            "END_TIME": settings.END_TIME,
+        }
+        return JsonResponse(json, safe=False)

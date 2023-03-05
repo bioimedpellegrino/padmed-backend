@@ -26,4 +26,5 @@ urlpatterns=[
     ## AJAX GET
     path('get_access_status/', GetAccessStatusView.as_view(), name='get_access_status'),
 
+    path('settings/', SettingsView.as_view(), name="settings")
 ]
