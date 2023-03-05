@@ -268,7 +268,7 @@ class RecordVideoView(APIView):
             config_path = os.path.join(settings.CORE_DIR, "config.json")
             config = load_config(config_path)
             triage_access.status_tracker.status = triage_access.status_tracker.data_preelaborations
-            measurement_id, logs = asyncio.run(make_measure(config=config, config_path=config_path, video_path=video_path, demographics=anagrafica, start_time=settings.START_TIME, end_time=settings.END_TIME, fps=fps))
+            measurement_id, logs = asyncio.run(make_measure(config=config, config_path=config_path, video_path=video_path, demographics=anagrafica, start_time=0, end_time=50))
             # Logger
             # triage_access.status_tracker.status = triage_access.status_tracker.saving_logs
             log = MeasureLogger()

@@ -51,13 +51,17 @@ def generate_video_measure(file_path, video_id, video_settings=None):
     video_frames = np.array(video_frames)
     # COMPUTE FRAME RATE
     try:
-        frame_rate = int(len(video_frames)/(end_time - start_time))
+        frame_rate = int(len(video_frames)/56)
     except Exception as e:
         import traceback
         message = "Error at video conversion"
         add_log(level=5, message=1, exception=traceback.format_exc(), custom_message=message)
         frame_rate = 24
     # SAVE TO VIDEO FILE, WITH METADATA
+    output_frames = frame_rate * 56
+    if output_frames <= len(video_frames):
+        video_frames = video_frames[:output_frames]
+        
     out = cv2.VideoWriter(video_path,fourcc, frame_rate, (frame_height, frame_width)) 
     for frame in video_frames: 
         out.write(frame)
