@@ -104,7 +104,7 @@
       </div>
     <div class="vertical-center">
       <div class="row mt-5">
-        <div class="time-left" id="prepare-time-left"></div>
+        <div class="time-left" id="count-down"></div>
       </div>
     </div>
   </div>
@@ -210,6 +210,8 @@
           console.log("Something went wrong!");
         });
     }
+
+    countDown(5,5);
   }
 
   function wait(delayInMS) {
@@ -427,6 +429,15 @@
       }, 1000);
     } else {
       show_complete();
+    }
+  };
+
+  function countDown(timeleft, timetotal) {
+    document.getElementById("count-down").textContent=timeleft%60 + "sec";
+    if (timeleft > 0) {
+      setTimeout(function () {
+        countDown(timeleft - 1, timetotal);
+      }, 1000);
     }
   };
 
