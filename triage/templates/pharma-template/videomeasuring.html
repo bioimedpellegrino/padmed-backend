@@ -90,7 +90,25 @@
 <!-- Header container -->
 
 <!-- Main communication div -->
-<div id="detection">
+<div id="prepare">
+  <div class="pharma-area-video">
+    <div class="pharma-area-triangle vertical-center"></div>
+    <div id="startButton" class="button"></div>
+    <div class="vertical-center mt-5">
+      <span class="text-red-big-blink"><b>CENTRA IL VISO</b></span>
+    </div>
+    <div class="com-area-out-base-video pharma-area-out-video overlay"> <!--rot-90-->
+        <div class="flip-horizontal mask" style="width:640px; height:480px; overflow:hidden;">
+          <video  autoplay="true" id="prepareVideo" style="width:130%; margin-left: -15%;" muted></video>
+        </div>
+      </div>
+    <div class="vertical-center">
+      <div class="row mt-5">
+        <div class="time-left" id="prepare-time-left"></div>
+      </div>
+    </div>
+</div>
+<div id="detection" style="display: none;">
   <div class="pharma-area-video">
     <div class="pharma-area-triangle vertical-center"></div>
     <div id="startButton" class="button"></div>
@@ -170,11 +188,26 @@
   let logElement = document.getElementById("log");
 
   let recordingTimeMS = 39000;
+  let prepareTimeMS = 5000;
   let p_measure_result;
 
 
   function log(msg) {
     //logElement.innerHTML += msg + "\n";
+  }
+  
+  function prepare(){
+    var video = document.querySelector("#prepareVideo");
+    if (navigator.mediaDevices.getUserMedia) {
+      devId = getCookie('videoId');
+      navigator.mediaDevices.getUserMedia({ video: true, exact: devId})
+        .then(function (stream) {
+          video.srcObject = stream;
+        })
+        .catch(function (err0r) {
+          console.log("Something went wrong!");
+        });
+    }
   }
 
   function wait(delayInMS) {
@@ -253,6 +286,7 @@
 
   function doMeasure(){
     startButton.click();
+    progress(40, 40, $('#progressBar'));
     let stop = setTimeout(stopMeasure, 41000);
   }
 
@@ -372,7 +406,8 @@
     stop(preview.srcObject);
   }, false);
 
-  measure_started = setTimeout(doMeasure, 100); 
+  prepare();
+  measure_started = setTimeout(doMeasure, 5100); 
 
   // ------------ Progress bar -------------------- //
 
@@ -390,8 +425,6 @@
       show_complete();
     }
   };
-
-  progress(40, 40, $('#progressBar'));
 
   function show_complete() {
     $('#progressBar').animate({
