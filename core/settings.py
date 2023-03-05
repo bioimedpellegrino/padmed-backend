@@ -197,6 +197,7 @@ USE_VISAGE_ANALYZER = env("USE_VISAGE_ANALYZER", cast=bool, default=False)
 VISAGE_LICENSE = "libvisagepython/251-558-584-486-848-495-358-849-601-138-972.vlc"
 START_TIME = env("START_TIME", cast=int, default=0)
 END_TIME = env("END_TIME", cast=int, default=30)
+LD_LIBRARY_PATH= env("LD_LIBRARY_PATH", cast=str, default="")
 ## CUSTOM SETTINGS VARIABLES FOR GRAPHS
 INIT_MAX_WAITING_SECONDS = env("INIT_MAX_WAITING_SECONDS", cast=float, default=2400)
 

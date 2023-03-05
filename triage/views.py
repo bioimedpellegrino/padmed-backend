@@ -499,5 +499,6 @@ class SettingsView(APIView):
             "VISAGE_LICENSE": settings.VISAGE_LICENSE,
             "START_TIME": settings.START_TIME,
             "END_TIME": settings.END_TIME,
+            "LD_LIBRARY_PATH": settings.LD_LIBRARY_PATH
         }
         return JsonResponse(json, safe=False)
