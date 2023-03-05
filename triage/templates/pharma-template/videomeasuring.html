@@ -107,6 +107,7 @@
         <div class="time-left" id="prepare-time-left"></div>
       </div>
     </div>
+  </div>
 </div>
 <div id="detection" style="display: none;">
   <div class="pharma-area-video">
@@ -197,6 +198,7 @@
   }
   
   function prepare(){
+
     var video = document.querySelector("#prepareVideo");
     if (navigator.mediaDevices.getUserMedia) {
       devId = getCookie('videoId');
@@ -285,7 +287,10 @@
   }
 
   function doMeasure(){
+    $('#prepare').hide();
+    $('#detection').show();
     startButton.click();
+    progress(60, 60, $('#progressBar'));
     let stop = setTimeout(stopMeasure,61000);
   }
 
@@ -424,8 +429,6 @@
       show_complete();
     }
   };
-
-  progress(60, 60, $('#progressBar'));
 
   function show_complete() {
     $('#progressBar').animate({
