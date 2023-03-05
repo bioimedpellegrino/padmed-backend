@@ -30,7 +30,9 @@ def generate_video_measure(file_path, video_id, video_settings=None):
     cap = cv2.VideoCapture(os.path.join(settings.MEDIA_ROOT, file_path))
     # GET VIDEO RESOLUTION -> VIDEO COULD BE ROTATED
     frame_width = int(cap.get(3)) if settings.ROTATE_90_COUNTERCLOCKWISE else int(cap.get(4))
-    frame_height = int(cap.get(4)) if settings.ROTATE_90_COUNTERCLOCKWISE else int(cap.get(3))   
+    frame_height = int(cap.get(4)) if settings.ROTATE_90_COUNTERCLOCKWISE else int(cap.get(3))
+    start_time = settings.START_TIME
+    end_time = settings.END_TIME
     # DEFINE VIDEO CODER AND WRITED
     fourcc = cv2.VideoWriter_fourcc(*'MPEG')
     video_name = 'tmp/' + "{}.avi".format(video_id)
@@ -49,21 +51,25 @@ def generate_video_measure(file_path, video_id, video_settings=None):
     video_frames = np.array(video_frames)
     # COMPUTE FRAME RATE
     try:
-        frame_rate = int(len(video_frames)/38)
+        frame_rate = int(len(video_frames)/56)
     except Exception as e:
         import traceback
         message = "Error at video conversion"
         add_log(level=5, message=1, exception=traceback.format_exc(), custom_message=message)
         frame_rate = 24
     # SAVE TO VIDEO FILE, WITH METADATA
+    output_frames = frame_rate * 56
+    if output_frames <= len(video_frames):
+        video_frames = video_frames[:output_frames]
+        
     out = cv2.VideoWriter(video_path,fourcc, frame_rate, (frame_height, frame_width)) 
     for frame in video_frames: 
         out.write(frame)
     # --------
     e=time.time()
-    print("CONVERTING TIME: ", e-s)
+    print("CONVERTING TIME: ", e-s, f"LEN: {len(video_frames)} FPS: {frame_rate}")
     # --------
-    return video_name
+    return video_name, frame_rate
 
 def frame_enhance(frame, video_settings, convert_from_array=True, return_pil_image=False):
     

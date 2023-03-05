@@ -255,7 +255,7 @@ class RecordVideoView(APIView):
             file_path = default_storage.save('tmp/' + "{}.webm".format(access_id), video)
             time.sleep(1)
             video_setting = VideoSettings.objects.filter(totem=triage_access.totem, is_active=True).first()
-            video = generate_video_measure(file_path, access_id, video_settings=video_setting)
+            video, fps = generate_video_measure(file_path, access_id, video_settings=video_setting)
             
             patient_video = PatientVideo()
             patient_video.triage_access = triage_access
@@ -268,7 +268,7 @@ class RecordVideoView(APIView):
             config_path = os.path.join(settings.CORE_DIR, "config.json")
             config = load_config(config_path)
             triage_access.status_tracker.status = triage_access.status_tracker.data_preelaborations
-            measurement_id, logs = asyncio.run(make_measure(config=config, config_path=config_path, video_path=video_path, demographics=anagrafica, start_time=settings.START_TIME, end_time=settings.END_TIME))
+            measurement_id, logs = asyncio.run(make_measure(config=config, config_path=config_path, video_path=video_path, demographics=anagrafica, start_time=0, end_time=50))
             # Logger
             # triage_access.status_tracker.status = triage_access.status_tracker.saving_logs
             log = MeasureLogger()
@@ -484,3 +484,21 @@ class EndPageView(APIView):
         
         return render(request, self.TEMPLATE_NAME, {'user': user})
     
+
+class SettingsView(APIView):
+    
+    @method_decorator(totem_login_required(login_url="/login/"))
+    def get(self, request, *args, **kwargs):
+        
+        json = {
+            "CHUNK_DURATION": settings.CHUNK_DURATION,
+            "DEEPAFFEX_DEBUG": settings.DEEPAFFEX_DEBUG,
+            "DEEPAFFEX_DEBUG_SAVE_CHUNKS_FOLDER": settings.DEEPAFFEX_DEBUG_SAVE_CHUNKS_FOLDER,
+            "FACE_TRACKER": settings.FACE_TRACKER,
+            "USE_VISAGE_ANALYZER": settings.USE_VISAGE_ANALYZER,
+            "VISAGE_LICENSE": settings.VISAGE_LICENSE,
+            "START_TIME": settings.START_TIME,
+            "END_TIME": settings.END_TIME,
+            "LD_LIBRARY_PATH": settings.LD_LIBRARY_PATH
+        }
+        return JsonResponse(json, safe=False)
