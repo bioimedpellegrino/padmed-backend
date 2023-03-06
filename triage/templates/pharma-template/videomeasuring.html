@@ -188,7 +188,7 @@
   let stopButton = document.getElementById("stopButton");
   let logElement = document.getElementById("log");
 
-  let recordingTimeMS = 59000;
+  let recordingTimeMS = 60000;
   let prepareTimeMS = 5000;
   let p_measure_result;
 
@@ -211,7 +211,7 @@
         });
     }
 
-    countDown(5,5);
+    setTimeout(function(){ countDown(5,5) }, 2000);
   }
 
   function wait(delayInMS) {
@@ -285,15 +285,17 @@
   }
 
   function stopMeasure() {
+    console.log("Measure stopped")
     stopButton.click();
   }
 
   function doMeasure(){
+    console.log("Measure started")
     $('#prepare').hide();
     $('#detection').show();
     startButton.click();
     progress(60, 60, $('#progressBar'));
-    let stop = setTimeout(stopMeasure,61000);
+    let stop = setTimeout(stopMeasure,60000);
   }
 
   function sendData(data, access_id) {
@@ -413,7 +415,7 @@
   }, false);
 
   prepare();
-  measure_started = setTimeout(doMeasure, 5100); 
+  measure_started = setTimeout(doMeasure, 7000); 
 
   // ------------ Progress bar -------------------- //
 
