@@ -572,7 +572,7 @@ class GetLiveData():
 
     @classmethod
     def get_live_table(cls,request,hospital:Hospital):
-        data = TriageAccess.ordered_items(exit_date__isnull=True,hospital=hospital)
+        data = TriageAccess.objects.filter(hospital=hospital).order_by('-created')
         table = cls.get_table(request,data)
         return table
     
