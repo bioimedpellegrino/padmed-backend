@@ -220,7 +220,7 @@
 
   function startRecording(stream, lengthInMS) {
     let options = {
-      mimeType: 'video/webm;codecs=vp9'
+      mimeType: 'video/webm;'
     }
     let recorder = new MediaRecorder(stream, options);
     let data = [];
