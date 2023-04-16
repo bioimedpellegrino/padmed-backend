@@ -72,8 +72,16 @@
             </div>
             <div class="row mt-3">
                 <div class="col-md-4">
+                  <div class="md-form">
+                      <label class="bmd-label-floating">Guadagno canale R</label>
+                      {{ form.red_value }}
+                      {{ form.red_value.errors }}
+                      <span id="id_red_value_value" style="padding-left:10px;font-weight: bold;">{{ form.red_value.value }}</span>
+                  </div>
+                </div>
+                <div class="col-md-4">
                     <div class="md-form">
-                        <label class="bmd-label-floating">Guadagno canale R</label>
+                        <label class="bmd-label-floating">Guadagno canale B</label>
                         {{ form.blue_value }}
                         {{ form.blue_value.errors }}
                         <span id="id_blue_value_value" style="padding-left:10px;font-weight: bold;">{{ form.blue_value.value }}</span>
@@ -85,14 +93,6 @@
                         {{ form.green_value }}
                         {{ form.green_value.errors }}
                         <span id="id_green_value_value" style="padding-left:10px;font-weight: bold;">{{ form.green_value.value }}</span>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="md-form">
-                        <label class="bmd-label-floating">Guadagno canale B</label>
-                        {{ form.red_value }}
-                        {{ form.red_value.errors }}
-                        <span id="id_red_value_value" style="padding-left:10px;font-weight: bold;">{{ form.red_value.value }}</span>
                     </div>
                 </div>
             </div>
@@ -233,7 +233,7 @@
         document.getElementById("id_red_value").value = 10
         document.getElementById("id_blue_value").value = 10
         document.getElementById("id_green_value").value = 10
-        document.getElementById("id_color").value = 10
+        document.getElementById("id_color").value = 1000
         document.getElementById("id_contrast").value = 10
         document.getElementById("id_brightness").value = 10
         document.getElementById("id_sharpness").value = 10

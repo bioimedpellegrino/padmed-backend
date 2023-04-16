@@ -76,11 +76,11 @@ def frame_enhance(frame, video_settings, convert_from_array=True, return_pil_ima
     frame = Image.fromarray(frame) if convert_from_array else frame
     # CHANNEL CORRECTION
     if video_settings['adjust_color']:
-        b, g, r = frame.split()
+        r, g, b = frame.split()
         r = r.point(lambda i: i * video_settings['red_value']) 
         g = g.point(lambda i: i * video_settings['green_value']) 
         b = b.point(lambda i: i * video_settings['blue_value']) 
-        frame = Image.merge('RGB', (b, g, r))   
+        frame = Image.merge('RGB', (r, g, b))
     # COLOR-CONTRAST CORRECTION
     frame = frame if video_settings['color'] == 1 else ImageEnhance.Color(frame).enhance(video_settings['color'])
     frame = frame if video_settings['contrast'] == 1 else ImageEnhance.Contrast(frame).enhance(video_settings['contrast'])
@@ -91,8 +91,10 @@ def frame_enhance(frame, video_settings, convert_from_array=True, return_pil_ima
         return frame
     # RECONVERT TO FRAME
     tmp_frame = frame.copy()
-    tmp_frame = cv2.cvtColor(np.array(tmp_frame), cv2.COLOR_RGB2BGR)
-    tmp_frame = cv2.cvtColor(np.array(tmp_frame), cv2.COLOR_BGR2RGB)
+    #tmp_frame = cv2.cvtColor(np.array(tmp_frame), cv2.COLOR_RGB2BGR)
+    #tmp_frame = cv2.cvtColor(np.array(tmp_frame), cv2.COLOR_BGR2RGB)
+    tmp_frame = np.array(frame)
+    tmp_frame = cv2.cvtColor(tmp_frame, cv2.COLOR_RGB2BGR)
     # RETURN IT
     return tmp_frame
     
