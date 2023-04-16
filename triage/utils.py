@@ -61,7 +61,7 @@ def generate_video_measure(file_path, video_id, video_settings=None):
     # SAVE TO VIDEO FILE, WITH METADATA
     output_frames = frame_rate * 30
     if output_frames <= len(video_frames):
-        video_frames = video_frames[:output_frames+1]
+        video_frames = video_frames[:output_frames+2]
         
     out = cv2.VideoWriter(video_path,fourcc, frame_rate, (frame_height, frame_width)) 
     for frame in video_frames: 
