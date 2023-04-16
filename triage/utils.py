@@ -51,7 +51,7 @@ def generate_video_measure(file_path, video_id, video_settings=None):
     video_frames = np.array(video_frames)
     # COMPUTE FRAME RATE
     try:
-        frame_rate = int(len(video_frames)/35)
+        frame_rate = 16
     except Exception as e:
         import traceback
         message = "Error at video conversion"
