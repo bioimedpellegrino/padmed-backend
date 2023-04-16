@@ -49,6 +49,7 @@ def generate_video_measure(file_path, video_id, video_settings=None):
             video_frames.append(frame)
     # CONVERT INTO NUMPY ARRAY
     video_frames = np.array(video_frames)
+    print(len(video_frames))
     # COMPUTE FRAME RATE
     try:
         frame_rate = 16
@@ -60,7 +61,7 @@ def generate_video_measure(file_path, video_id, video_settings=None):
     # SAVE TO VIDEO FILE, WITH METADATA
     output_frames = frame_rate * 30
     if output_frames <= len(video_frames):
-        video_frames = video_frames[:output_frames]
+        video_frames = video_frames[:output_frames+1]
         
     out = cv2.VideoWriter(video_path,fourcc, frame_rate, (frame_height, frame_width)) 
     for frame in video_frames: 
